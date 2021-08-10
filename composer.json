@@ -1,0 +1,42 @@
+{
+    "name": "eboreum/exceptional",
+    "description": "Create and format PHP exceptions easily. Automatically unravel method arguments. Ensure that sensitive strings like passwords, tokens, PHPSESSID, etc. are being masked and thus will instead appear as e.g. \"******\" in the resulting text.",
+    "type": "library",
+    "require": {
+        "php": ">=7.4",
+        "eboreum/caster": "^0.0.1"
+    },
+    "require-dev": {
+        "doctrine/annotations": "^1.13",
+        "phpstan/phpstan": "0.12.94",
+        "phpunit/phpunit": "^9.5",
+        "sebastian/diff": "^4.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kasper Søfren",
+            "email": "soefritz@gmail.com",
+            "homepage": "https://github.com/kafoso"
+        },
+        {
+            "name": "Carsten Jørgensen",
+            "email": "dev@corex.dk",
+            "homepage": "https://github.com/corex"
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Eboreum\\Exceptional\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TestResource\\Unit\\Eboreum\\Exceptional\\": "tests/resources/TestResource/Unit",
+            "Test\\Unit\\Eboreum\\Exceptional\\": "tests/tests/Test/Unit"
+        }
+    }
+}
