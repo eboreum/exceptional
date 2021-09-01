@@ -191,3 +191,30 @@ Formats the throwable as XML.
 ```
 %run "script/misc/readme/formatter/example-5-xmlformatter.php"%
 ```
+
+## Test/development requirements
+
+%composer.json.require-dev%
+
+## Running tests
+
+For all unit tests, first follow these steps:
+
+```
+cd tests
+php ../vendor/bin/phpunit
+```
+
+# License & Disclaimer
+
+See [`LICENSE`](LICENSE) file. Basically: Use this library at your own risk.
+
+# Contributing
+
+We prefer that you create a ticket and or a pull request at https://github.com/eboreum/exceptional, and have a discussion about a feature or bug here.
+
+# Credits
+
+## Authors
+
+%composer.json.authors%

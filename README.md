@@ -544,3 +544,36 @@ echo $result;
   <previous/>
 </exception>
 ```
+
+## Test/development requirements
+
+```json
+"doctrine/annotations": "^1.13",
+"phpstan/phpstan": "0.12.94",
+"phpunit/phpunit": "^9.5",
+"sebastian/diff": "^4.0"
+```
+
+## Running tests
+
+For all unit tests, first follow these steps:
+
+```
+cd tests
+php ../vendor/bin/phpunit
+```
+
+# License & Disclaimer
+
+See [`LICENSE`](LICENSE) file. Basically: Use this library at your own risk.
+
+# Contributing
+
+We prefer that you create a ticket and or a pull request at https://github.com/eboreum/exceptional, and have a discussion about a feature or bug here.
+
+# Credits
+
+## Authors
+
+- **Kasper Søfren** (kafoso)<br>E-mail: <a href="mailto:soefritz@gmail.com">soefritz@gmail.com</a><br>Homepage: <a href="https://github.com/kafoso">https://github.com/kafoso</a>
+- **Carsten Jørgensen** (corex)<br>E-mail: <a href="mailto:dev@corex.dk">dev@corex.dk</a><br>Homepage: <a href="https://github.com/corex">https://github.com/corex</a>
