@@ -20,6 +20,9 @@ class AbstractFunctionArgumentDiscloserTest extends TestCase
 
         $object = new class($caster, $reflectionMethod, []) extends AbstractFunctionArgumentDiscloser
         {
+            /**
+             * @param array<mixed> $functionArgumentValues
+             */
             public function __construct(
                 CasterInterface $caster,
                 \ReflectionMethod $reflectionMethod,

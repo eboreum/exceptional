@@ -85,6 +85,8 @@ class MethodArgumentDiscloser extends AbstractFunctionArgumentDiscloser
 
     public function getReflectionFunction(): \ReflectionMethod
     {
+        assert($this->reflectionFunction instanceof \ReflectionMethod); // Make phpstan happy
+
         return $this->reflectionFunction;
     }
 

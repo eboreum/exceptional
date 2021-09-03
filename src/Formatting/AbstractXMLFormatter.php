@@ -20,6 +20,9 @@ abstract class AbstractXMLFormatter extends AbstractFormatter
      */
     protected bool $isPrettyPrinting = false;
 
+    /**
+     * Returns a clone.
+     */
     public function withIsPrettyPrinting(bool $isPrettyPrinting): AbstractXMLFormatter
     {
         $clone = clone $this;

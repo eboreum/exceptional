@@ -7,6 +7,7 @@ namespace Test\Unit\Eboreum\Exceptional\Formatting;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Exceptional\Exception\RuntimeException;
+use Eboreum\Exceptional\Factory\PHPCore\SimpleXMLElement\SimpleXMLElementFactory;
 use Eboreum\Exceptional\Formatting\AbstractFormatter;
 use Eboreum\Exceptional\Formatting\AbstractXMLFormatter;
 use Eboreum\Exceptional\Formatting\XMLFormatter;
@@ -40,7 +41,7 @@ class XMLFormatterTest extends TestCase
     }
 
     /**
-     * @return array<int, array{0: string, 1: XMLFormatter, 2: \Exception}>
+     * @return array<int, array{0: string, 1: XMLFormatter, 2: \Throwable}>
      */
     public function dataProvider_testFormatWorks(): array
     {
@@ -102,6 +103,58 @@ class XMLFormatterTest extends TestCase
                     implode("", [
                         '/',
                         '^',
+                        '\<\?xml version\="1\.0" encoding\="UTF\-8"\?\>\n',
+                        '\<error\>',
+                            '\<class\>\\\\Error\<\/class\>',
+                            '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                            '\<line\>\d+\<\/line\>',
+                            '\<code\>0\<\/code\>',
+                            '\<message\>foo\<\/message\>',
+                            '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
+                            '\<previous\/\>',
+                        '\<\/error\>',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                ),
+                (function(){
+                    $caster = $this->_mockCasterInterface();
+                    $characterEncoding = $this->_mockCharacterEncoding();
+
+                    $characterEncoding
+                        ->expects($this->any())
+                        ->method("__toString")
+                        ->with()
+                        ->willReturn("UTF-8");
+
+                    $caster
+                        ->expects($this->exactly(2))
+                        ->method("maskString")
+                        ->withConsecutive(
+                            ["foo"],
+                            [
+                                $this->callback(function(string $v){
+                                    return (1 === preg_match('/^#0 /', $v));
+                                }),
+                            ],
+                        )
+                        ->willReturnOnConsecutiveCalls(
+                            "foo",
+                            "#0 Lorem",
+                        );
+
+                    $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
+
+                    return $xmlFormatter;
+                })(),
+                new \Error("foo"),
+            ],
+            [
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
                         '\<\?xml version\="1\.0" encoding\="UTF\-8"\?\>',
                         '\n\<exception\>',
                         '\n  \<class\>\\\\Exception\<\/class\>',
@@ -145,6 +198,9 @@ class XMLFormatterTest extends TestCase
 
                     $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
+                    /**
+                     * @var XMLFormatter
+                     */
                     $xmlFormatter = $xmlFormatter->withIsPrettyPrinting(true);
 
                     return $xmlFormatter;
@@ -200,6 +256,9 @@ class XMLFormatterTest extends TestCase
 
                     $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
+                    /**
+                     * @var XMLFormatter
+                     */
                     $xmlFormatter = $xmlFormatter->withIsProvidingTimestamp(true);
 
                     return $xmlFormatter;
@@ -363,6 +422,9 @@ class XMLFormatterTest extends TestCase
 
                     $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
+                    /**
+                     * @var XMLFormatter
+                     */
                     $xmlFormatter = $xmlFormatter->withMaximumPreviousDepth(1);
 
                     return $xmlFormatter;
@@ -426,6 +488,70 @@ class XMLFormatterTest extends TestCase
                     return $xmlFormatter;
                 })(),
                 new \Exception("æøå"),
+            ],
+            [
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        '\<\?xml version\="1\.0" encoding\="UTF\-8"\?\>\n',
+                        '\<lorem\>',
+                            '\<class\>\\\\Exception\<\/class\>',
+                            '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                            '\<line\>\d+\<\/line\>',
+                            '\<code\>0\<\/code\>',
+                            '\<message\>foo\<\/message\>',
+                            '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
+                            '\<previous\/\>',
+                        '\<\/lorem\>',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                ),
+                (function(){
+                    $caster = $this->_mockCasterInterface();
+                    $characterEncoding = $this->_mockCharacterEncoding();
+                    $simpleXMLElementFactory = $this->_mockSimpleXMLElementFactory();
+
+                    $characterEncoding
+                        ->expects($this->any())
+                        ->method("__toString")
+                        ->with()
+                        ->willReturn("UTF-8");
+
+                    $caster
+                        ->expects($this->exactly(2))
+                        ->method("maskString")
+                        ->withConsecutive(
+                            ["foo"],
+                            [
+                                $this->callback(function(string $v){
+                                    return (1 === preg_match('/^#0 /', $v));
+                                }),
+                            ],
+                        )
+                        ->willReturnOnConsecutiveCalls(
+                            "foo",
+                            "#0 Lorem",
+                        );
+
+                    $simpleXMLElementFactory
+                        ->expects($this->exactly(1))
+                        ->method("createSimpleXMLElement")
+                        ->with("exception")
+                        ->willReturn(new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><lorem></lorem>'));
+
+                    $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
+
+                    /**
+                     * @var XMLFormatter
+                     */
+                    $xmlFormatter = $xmlFormatter->withSimpleXMLElementFactory($simpleXMLElementFactory);
+
+                    return $xmlFormatter;
+                })(),
+                new \Exception("foo"),
             ],
         ];
     }
@@ -511,6 +637,26 @@ class XMLFormatterTest extends TestCase
         $this->fail("Exception was never thrown.");
     }
 
+    public function testWithSimpleXMLElementFactoryWorks(): void
+    {
+        $caster = $this->_mockCasterInterface();
+        $characterEncoding = $this->_mockCharacterEncoding();
+
+        $xmlFormatterA = new XMLFormatter($caster, $characterEncoding);
+        $xmlFormatterB = $xmlFormatterA->withSimpleXMLElementFactory(null);
+
+        $simpleXMLElementFactoryC = $this->_mockSimpleXMLElementFactory();
+
+        $xmlFormatterC = $xmlFormatterA->withSimpleXMLElementFactory($simpleXMLElementFactoryC);
+
+        $this->assertNotSame($xmlFormatterA, $xmlFormatterB);
+        $this->assertNotSame($xmlFormatterA, $xmlFormatterC);
+        $this->assertNotSame($xmlFormatterB, $xmlFormatterC);
+        $this->assertSame(null, $xmlFormatterA->getSimpleXMLElementFactory());
+        $this->assertSame(null, $xmlFormatterB->getSimpleXMLElementFactory());
+        $this->assertSame($simpleXMLElementFactoryC, $xmlFormatterC->getSimpleXMLElementFactory());
+    }
+
     /**
      * @return CasterInterface&MockObject
      */
@@ -529,6 +675,17 @@ class XMLFormatterTest extends TestCase
     {
         return $this
             ->getMockBuilder(CharacterEncoding::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
+     * @return SimpleXMLElementFactory&MockObject
+     */
+    private function _mockSimpleXMLElementFactory(): SimpleXMLElementFactory
+    {
+        return $this
+            ->getMockBuilder(SimpleXMLElementFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

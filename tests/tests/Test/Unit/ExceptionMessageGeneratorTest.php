@@ -9,6 +9,7 @@ use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeFailureInMethodMessageWorks_ClassANoNamedArguments;
 use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeFailureInMethodMessageWorks_ClassB4NamedArguments;
@@ -31,7 +32,6 @@ class ExceptionMessageGeneratorTest extends TestCase
 
     /**
      * @dataProvider dataProvider_testCastFunctionArgumentsToStringWorks
-     * @param array<int, mixed> $expected
      * @param array<int, mixed> $arguments
      */
     public function testCastFunctionArgumentsToStringWorks(
@@ -53,7 +53,7 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @return array<int, array{array<int, mixed>}>
+     * @return array<int, array{string, \Closure, array<int, mixed>, ExceptionMessageGenerator}>
      */
     public function dataProvider_testCastFunctionArgumentsToStringWorks(): array
     {
@@ -117,7 +117,7 @@ class ExceptionMessageGeneratorTest extends TestCase
 
                     $object = new class
                     {
-                        public function foo(int $a = 42, ?string $b = "bar", float $c)
+                        public function foo(int $a = 42, ?string $b = "bar", float $c): void
                         {
 
                         }
@@ -138,7 +138,7 @@ class ExceptionMessageGeneratorTest extends TestCase
 
                     $object = new class
                     {
-                        public function foo(int $a = 42, ?string $b = "bar", float $c)
+                        public function foo(int $a = 42, ?string $b = "bar", float $c): void
                         {
 
                         }
@@ -190,7 +190,7 @@ class ExceptionMessageGeneratorTest extends TestCase
 
                     $object = new class
                     {
-                        public function foo(int $a = 42, string ...$b)
+                        public function foo(int $a = 42, string ...$b): void
                         {
 
                         }
@@ -247,7 +247,7 @@ class ExceptionMessageGeneratorTest extends TestCase
 
                     $object = new class
                     {
-                        public function foo(int $a = 42, string ...$b)
+                        public function foo(int $a = 42, string ...$b): void
                         {
 
                         }
@@ -295,7 +295,7 @@ class ExceptionMessageGeneratorTest extends TestCase
 
                     $object = new class
                     {
-                        public function foo(int $a = 42, string ...$b)
+                        public function foo(int $a = 42, string ...$b): void
                         {
 
                         }
@@ -454,9 +454,9 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testMakeFailureInFunctionMessageWorks
+     * @dataProvider dataProvider_testMakeFailureInFunctionMessageWorksForAnonymousFunctions
      */
-    public function testMakeFailureInFunctionMessageWorks(
+    public function testMakeFailureInFunctionMessageWorksForAnonymousFunctions(
         string $message,
         string $expectedRegex,
         \Closure $callback
@@ -480,7 +480,7 @@ class ExceptionMessageGeneratorTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string, 2: object}>
      */
-    public function dataProvider_testMakeFailureInFunctionMessageWorks(): array
+    public function dataProvider_testMakeFailureInFunctionMessageWorksForAnonymousFunctions(): array
     {
         return [
             [
@@ -535,6 +535,60 @@ class ExceptionMessageGeneratorTest extends TestCase
                     };
 
                     return $anonymousFunction(42, "foo", 3.14); /** @phpstan-ignore-line */
+                },
+            ],
+            [
+                "An anonymous function, 1 named argument with default, 0 arguments are passed",
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Failure in closure\/anonymous function defined in %s:\d+',
+                        ', called with 0 arguments and actually having arguments\: \(',
+                            '\$a \= \(int\) 42',
+                        '\)',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(__FILE__, "/"),
+                ),
+                function(){
+                    $anonymousFunction = function(int $a = 42) use (&$anonymousFunction): array
+                    {
+                        return [
+                            new \ReflectionFunction($anonymousFunction),
+                            func_get_args(),
+                        ];
+                    };
+
+                    return $anonymousFunction();
+                },
+            ],
+            [
+                "An anonymous function, 1 named argument with default, 1 argument is passed",
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Failure in closure\/anonymous function defined in %s:\d+',
+                        ', called with 1 argument and actually having arguments\: \(',
+                            '\$a \= \(int\) 43',
+                        '\)',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(__FILE__, "/"),
+                ),
+                function(){
+                    $anonymousFunction = function(int $a = 42) use (&$anonymousFunction): array
+                    {
+                        return [
+                            new \ReflectionFunction($anonymousFunction),
+                            func_get_args(),
+                        ];
+                    };
+
+                    return $anonymousFunction(43);
                 },
             ],
             [
@@ -596,6 +650,80 @@ class ExceptionMessageGeneratorTest extends TestCase
                 },
             ],
         ];
+    }
+
+    public function testMakeFailureInFunctionMessageWorksForANamedFunction(): void
+    {
+        $reflectionFunction = new \ReflectionFunction("strpos");
+
+        $this->assertMatchesRegularExpression(
+            sprintf(
+                implode("", [
+                    '/',
+                    '^',
+                    'Failure in function \\\\strpos\(',
+                        '\$haystack \= \(string\(9\)\) "foobarbaz"',
+                        ', \$needle \= \(string\(3\)\) "bar"',
+                        ', \$offset \= \(null\) null',
+                    '\)',
+                    '$',
+                    '/',
+                ]),
+            ),
+            ExceptionMessageGenerator::getInstance()->makeFailureInFunctionMessage(
+                $reflectionFunction,
+                ["foobarbaz", "bar"],
+            ),
+        );
+    }
+
+    public function testMakeFailureInFunctionMessageHandlesExceptionGracefully(): void
+    {
+        $reflectionFunction = $this
+            ->getMockBuilder('ReflectionFunction')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $exception = new \Exception;
+
+        $reflectionFunction
+            ->expects($this->exactly(1))
+            ->method("isClosure")
+            ->with()
+            ->willThrowException($exception);
+
+        try {
+            ExceptionMessageGenerator::getInstance()->makeFailureInFunctionMessage(
+                $reflectionFunction,
+                [],
+            );
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s\-\>makeFailureInFunctionMessage\(',
+                            '\$reflectionFunction \= \(object\) \\\\Mock_ReflectionFunction_[0-9a-f]{8}',
+                            ', \$functionArgumentValues \= \(array\(0\)\) \[\]',
+                        '\)',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(ExceptionMessageGenerator::class, "/"),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame($exception, $currentException);
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
     }
 
     /**
@@ -1238,6 +1366,122 @@ class ExceptionMessageGeneratorTest extends TestCase
         $this->fail("Exception was never thrown.");
     }
 
+    public function testMakeFailureInMethodMessageThrowsExceptionWhenArgumentObjectOrClassNameIsAStringAndIsNotASubclassOfTheDeclaringClassOfTheReflectionMethod(): void
+    {
+        $reflectionMethod = new \ReflectionMethod('DateTime', 'format');
+
+        try {
+            ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                'stdClass',
+                $reflectionMethod,
+                [],
+            );
+        } catch (\Throwable $t) {
+            $currentThrowable = $t;
+            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s->makeFailureInMethodMessage\(',
+                            '\$objectOrClassName = \(string\(8\)\) "stdClass"',
+                            ', \$reflectionMethod = \(object\) \\\\ReflectionMethod',
+                            ', \$methodArgumentValues = \(array\(0\)\) \[\]',
+                        '\)',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(ExceptionMessageGenerator::class, "/"),
+                ),
+                $currentThrowable->getMessage(),
+            );
+
+            $currentThrowable = $currentThrowable->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Arguments \$objectOrClassName \= \(string\(8\)\) "stdClass"',
+                        ' and \$reflectionMethod \= \(object\) \\\\ReflectionMethod',
+                        ' \(declaring class name: \\\\DateTime\) are problematic as they do not do not reference the',
+                        ' same class or a child class hereof',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(ExceptionMessageGenerator::class, "/"),
+                ),
+                $currentThrowable->getMessage(),
+            );
+
+            $currentThrowable = $currentThrowable->getPrevious();
+            $this->assertTrue(is_null($currentThrowable));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
+    }
+
+    public function testMakeFailureInMethodMessageThrowsExceptionWhenArgumentObjectOrClassNameIsAStringAndClassDoesNotExist(): void
+    {
+        $reflectionMethod = new \ReflectionMethod('DateTime', 'format');
+
+        try {
+            ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                'IDoNotExist425393c93a7d435ea6e95b2d0a6ac670',
+                $reflectionMethod,
+                [],
+            );
+        } catch (\Throwable $t) {
+            $currentThrowable = $t;
+            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s->makeFailureInMethodMessage\(',
+                            '\$objectOrClassName = \(string\(43\)\) "IDoNotExist425393c93a7d435ea6e95b2d0a6ac670"',
+                            ', \$reflectionMethod = \(object\) \\\\ReflectionMethod',
+                            ', \$methodArgumentValues = \(array\(0\)\) \[\]',
+                        '\)',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(ExceptionMessageGenerator::class, "/"),
+                ),
+                $currentThrowable->getMessage(),
+            );
+
+            $currentThrowable = $currentThrowable->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Argument \$objectOrClassName \= \(string\(43\)\)',
+                        ' "IDoNotExist425393c93a7d435ea6e95b2d0a6ac670" refers to a non\-existing class',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(ExceptionMessageGenerator::class, "/"),
+                ),
+                $currentThrowable->getMessage(),
+            );
+
+            $currentThrowable = $currentThrowable->getPrevious();
+            $this->assertTrue(is_null($currentThrowable));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
+    }
+
     /**
      * @dataProvider dataProvider_testMakeUninitializedPropertySafeToTextualIdentifierStringWorks
      */
@@ -1346,6 +1590,71 @@ class ExceptionMessageGeneratorTest extends TestCase
                 new testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassB,
             ],
         ];
+    }
+
+    public function testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenAValueInArgumentPropertyNamesToBeShownIsNotAString(): void
+    {
+        $object = new class
+        {
+            protected string $foo;
+        };
+
+        try {
+            ExceptionMessageGenerator::getInstance()->makeUninitializedPropertySafeToTextualIdentifierString(
+                $object,
+                [
+                    "foo",
+                    42,
+                ],
+            );
+        } catch (\Throwable $t) {
+            $currentThrowable = $t;
+            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s-\>makeUninitializedPropertySafeToTextualIdentifierString\(',
+                            '\$object = \(object\) class@anonymous\/in\/.+\/%s:\d+',
+                            ', \$propertyNamesToBeShown = \(array\(2\)\) \[',
+                                '\(int\) 0 =\> \(string\(3\)\) "foo"',
+                                ', \(int\) 1 =\> \(int\) 42',
+                            '\]',
+                        '\)',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(ExceptionMessageGenerator::class, "/"),
+                    preg_quote(basename(__FILE__), "/"),
+                ),
+                $currentThrowable->getMessage(),
+            );
+
+            $currentThrowable = $currentThrowable->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'In argument \$propertyNamesToBeShown, 1\/2 elements are invalid, including\:',
+                        ' Element is not a string\: 1 \=\> \(int\) 42',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                ),
+                $currentThrowable->getMessage(),
+            );
+
+            $currentThrowable = $currentThrowable->getPrevious();
+            $this->assertTrue(is_null($currentThrowable));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
     }
 
     /**
@@ -1619,6 +1928,9 @@ class ExceptionMessageGeneratorTest extends TestCase
         $this->assertSame($exceptionMessageGeneratorA, $exceptionMessageGeneratorB);
     }
 
+    /**
+     * @return CasterInterface&MockObject
+     */
     private function _mockCasterInterface(): CasterInterface
     {
         return $this

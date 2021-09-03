@@ -131,6 +131,9 @@ class JSONFormatterTest extends TestCase
 
                     $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
 
+                    /**
+                     * @var JSONFormatter
+                     */
                     $jsonFormatter = $jsonFormatter->withIsProvidingTimestamp(true);
 
                     return $jsonFormatter;
@@ -280,6 +283,9 @@ class JSONFormatterTest extends TestCase
 
                     $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
 
+                    /**
+                     * @var JSONFormatter
+                     */
                     $jsonFormatter = $jsonFormatter->withMaximumPreviousDepth(1);
 
                     return $jsonFormatter;
@@ -335,6 +341,9 @@ class JSONFormatterTest extends TestCase
 
                     $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
 
+                    /**
+                     * @var JSONFormatter
+                     */
                     $jsonFormatter = $jsonFormatter->withFlags(JSON_UNESCAPED_UNICODE);
 
                     return $jsonFormatter;
@@ -491,6 +500,182 @@ class JSONFormatterTest extends TestCase
                     '/',
                     '^',
                     'Maximum JSON depth of 1 was reached; cannot produce JSON',
+                    '$',
+                    '/',
+                ]),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(is_null($currentException));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
+    }
+
+    public function testFormatThrowsExceptionWhenjson_encodeFailsByReturningFalse(): void
+    {
+        $caster = $this->_mockCasterInterface();
+        $characterEncoding = $this->_mockCharacterEncoding();
+
+        $jsonFormatter = new class($caster, $characterEncoding) extends JSONFormatter
+        {
+            /**
+             * @override
+             */
+            protected function formatInner(\Throwable $throwable, JSONFormatter $topLevelJSONFormatter): \stdClass
+            {
+                return (object)[
+                    "too" => [
+                        "many" => [
+                            "levels" => [],
+                        ],
+                    ],
+                ];
+            }
+        };
+
+        $jsonFormatter = $jsonFormatter->withDepth(2);
+
+        $exception = new \Exception;
+
+        try {
+            $jsonFormatter->format($exception);
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Failure in class@anonymous\/in\/.+\/%s:\d+-\>format\(',
+                            '\$throwable = \(object\) \\\\Exception \{.+\}',
+                        '\) inside \(object\) class@anonymous\/in\/.+\/%s:\d+ \{',
+                            '\\\\%s\-\>\$characterEncoding = \(object\) \\\\Mock_CharacterEncoding_[0-9a-f]{8}',
+                            ', \\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
+                            ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
+                            ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
+                            ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
+                        '\}',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(JSONFormatter::class, "/"),
+                    preg_quote(AbstractFormatter::class, "/"),
+                    preg_quote(AbstractFormatter::class, "/"),
+                    preg_quote(AbstractFormatter::class, "/"),
+                    preg_quote(AbstractFormatter::class, "/"),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                implode("", [
+                    '/',
+                    '^',
+                    'JSON encoding failed\: \(JSON_ERROR_DEPTH\) Maximum stack depth exceeded',
+                    '$',
+                    '/',
+                ]),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(is_null($currentException));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
+    }
+
+    public function testFormatThrowsExceptionWhenjson_encodeFailsByThrowingException(): void
+    {
+        $caster = $this->_mockCasterInterface();
+        $characterEncoding = $this->_mockCharacterEncoding();
+
+        $jsonFormatter = new class($caster, $characterEncoding) extends JSONFormatter
+        {
+            /**
+             * @override
+             */
+            protected function formatInner(\Throwable $throwable, JSONFormatter $topLevelJSONFormatter): \stdClass
+            {
+                return (object)[
+                    "too" => [
+                        "many" => [
+                            "levels" => [],
+                        ],
+                    ],
+                ];
+            }
+        };
+
+        $jsonFormatter = $jsonFormatter->withFlags(JSON_THROW_ON_ERROR);
+        $jsonFormatter = $jsonFormatter->withDepth(2);
+
+        $exception = new \Exception;
+
+        try {
+            $jsonFormatter->format($exception);
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Failure in class@anonymous\/in\/.+\/%s:\d+-\>format\(',
+                            '\$throwable = \(object\) \\\\Exception \{.+\}',
+                        '\) inside \(object\) class@anonymous\/in\/.+\/%s:\d+ \{',
+                            '\\\\%s\-\>\$characterEncoding = \(object\) \\\\Mock_CharacterEncoding_[0-9a-f]{8}',
+                            ', \\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
+                            ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
+                            ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
+                            ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
+                        '\}',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(JSONFormatter::class, "/"),
+                    preg_quote(AbstractFormatter::class, "/"),
+                    preg_quote(AbstractFormatter::class, "/"),
+                    preg_quote(AbstractFormatter::class, "/"),
+                    preg_quote(AbstractFormatter::class, "/"),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                implode("", [
+                    '/',
+                    '^',
+                    'Failure when calling\: json_encode\(, , \)',
+                    '$',
+                    '/',
+                ]),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame("JsonException", get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                implode("", [
+                    '/',
+                    '^',
+                    'Maximum stack depth exceeded',
                     '$',
                     '/',
                 ]),

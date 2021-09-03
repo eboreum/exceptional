@@ -181,6 +181,9 @@ class HTML5TableFormatterTest extends TestCase
 
                     $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
 
+                    /**
+                     * @var HTML5TableFormatter
+                     */
                     $html5TableFormatter = $html5TableFormatter->withIsPrettyPrinting(true);
 
                     return $html5TableFormatter;
@@ -329,6 +332,9 @@ class HTML5TableFormatterTest extends TestCase
 
                     $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
 
+                    /**
+                     * @var HTML5TableFormatter
+                     */
                     $html5TableFormatter = $html5TableFormatter->withIsProvidingTimestamp(true);
 
                     return $html5TableFormatter;
@@ -614,6 +620,9 @@ class HTML5TableFormatterTest extends TestCase
 
                     $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
 
+                    /**
+                     * @var HTML5TableFormatter
+                     */
                     $html5TableFormatter = $html5TableFormatter->withMaximumPreviousDepth(1);
 
                     return $html5TableFormatter;

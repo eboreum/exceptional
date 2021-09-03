@@ -142,6 +142,9 @@ class DefaultFormatterTest extends TestCase
 
                     $defaultFormatter = new DefaultFormatter($caster);
 
+                    /**
+                     * @var DefaultFormatter
+                     */
                     $defaultFormatter = $defaultFormatter->withIsProvidingTimestamp(true);
 
                     return $defaultFormatter;
@@ -283,6 +286,9 @@ class DefaultFormatterTest extends TestCase
 
                     $defaultFormatter = new DefaultFormatter($caster);
 
+                    /**
+                     * @var DefaultFormatter
+                     */
                     $defaultFormatter = $defaultFormatter->withMaximumPreviousDepth(1);
 
                     return $defaultFormatter;

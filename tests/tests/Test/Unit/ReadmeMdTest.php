@@ -20,6 +20,7 @@ class ReadmeMdTest extends TestCase
         $contents = file_get_contents($readmeFilePath);
 
         $this->assertIsString($contents);
+        assert(is_string($contents)); // Make phpstan happy
 
         $this->contents = $contents;
     }
@@ -60,6 +61,7 @@ class ReadmeMdTest extends TestCase
         $split = preg_split('/([\\\\\/])/', $rootPath);
 
         $this->assertIsArray($split);
+        assert(is_array($split)); // Make phpstan happy
 
         $rootPathRegex = sprintf(
             '/%s/',

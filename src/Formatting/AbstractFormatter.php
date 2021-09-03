@@ -112,7 +112,7 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
             $clone->maximumPreviousDepth = max(0, $maximumPreviousDepth);
         }
 
-        return $clone; /** @phpstan-ignore-line */
+        return $clone;
     }
 
     /**
@@ -149,6 +149,9 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
         return $this->caster;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getMaximumPreviousDepth(): ?int
     {
         return $this->maximumPreviousDepth;

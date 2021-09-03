@@ -44,33 +44,31 @@ class JSONFormatter extends AbstractFormatter
     {
         try {
             $stdClass = $this->formatInner($throwable, $this);
-            $previousThrowable = null;
 
             try {
                 $json = json_encode($stdClass, $this->getFlags(), $this->getDepth());
             } catch (\Throwable $t) {
-                $previousThrowable = $t;
+                throw new RuntimeException(sprintf(
+                    "Failure when calling: json_encode(%s, %s, %s)",
+                    $this->getCaster()->castTyped($stdClass),
+                    $this->getCaster()->castTyped($this->getFlags()),
+                    $this->getCaster()->castTyped($this->getDepth()),
+                ), 0, $t);
             }
 
-            if (!$previousThrowable || false === $json) {
+            if (false === is_string($json)) {
                 $jsonErrorCode = json_last_error();
 
                 if (JSON_ERROR_NONE !== $jsonErrorCode) {
                     $errorName = static::errorCodeToText($jsonErrorCode);
 
                     throw new RuntimeException(sprintf(
-                        "JSON encoding failed: %s",
-                        (
-                            $errorName
-                            ? sprintf(" (%s)", $errorName)
-                            : ""
-                        ),
+                        "JSON encoding failed: (%s) %s",
+                        ($errorName ?? ""),
                         (json_last_error_msg() ?: "(No error message available)")
-                    ), 0, $previousThrowable);
+                    ));
                 }
             }
-
-            assert(is_string($json));
         } catch (\Throwable $t) {
             throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                 $this,
@@ -78,6 +76,8 @@ class JSONFormatter extends AbstractFormatter
                 func_get_args(),
             ), 0, $t);
         }
+
+        assert(is_string($json)); // Make phpstan happy
 
         return $json;
     }

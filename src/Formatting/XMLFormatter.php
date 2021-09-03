@@ -10,6 +10,7 @@ use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
+use Eboreum\Exceptional\Factory\PHPCore\SimpleXMLElement\SimpleXMLElementFactory;
 
 /**
  * {@inheritDoc}
@@ -22,6 +23,8 @@ class XMLFormatter extends AbstractXMLFormatter
      * @DebugIdentifier
      */
     protected CharacterEncoding $characterEncoding;
+
+    protected ?SimpleXMLElementFactory $simpleXMLElementFactory = null;
 
     public function __construct(CasterInterface $caster, CharacterEncoding $characterEncoding)
     {
@@ -39,22 +42,30 @@ class XMLFormatter extends AbstractXMLFormatter
     public function format(\Throwable $throwable): string
     {
         try {
-            $firstElementName = (
+            $rootElementName = (
                 $throwable instanceof \Error
                 ? "error"
                 : "exception"
             );
 
-            $simpleXMLElement = new \SimpleXMLElement(sprintf(
-                '<?xml version="1.0" encoding="%s" ?><%s></%s>',
-                htmlspecialchars(
-                    (string)$this->getCharacterEncoding(),
-                    (ENT_COMPAT | ENT_HTML401),
-                    (string)$this->getCharacterEncoding(),
-                ),
-                $firstElementName,
-                $firstElementName,
-            ));
+            $simpleXMLElement = null;
+
+            if ($this->getSimpleXMLElementFactory()) {
+                $simpleXMLElement = $this->getSimpleXMLElementFactory()->createSimpleXMLElement($rootElementName);
+            }
+
+            if (null === $simpleXMLElement) {
+                $simpleXMLElement = new \SimpleXMLElement(sprintf(
+                    '<?xml version="1.0" encoding="%s" ?><%s></%s>',
+                    htmlspecialchars(
+                        (string)$this->getCharacterEncoding(),
+                        (ENT_COMPAT | ENT_HTML401),
+                        (string)$this->getCharacterEncoding(),
+                    ),
+                    $rootElementName,
+                    $rootElementName,
+                ));
+            }
 
             $simpleXMLElement = $this->formatInner($throwable, $simpleXMLElement);
 
@@ -89,14 +100,33 @@ class XMLFormatter extends AbstractXMLFormatter
         return parent::withIsPrettyPrinting($isPrettyPrinting); /** @phpstan-ignore-line */
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function withPreviousThrowableLevel(int $previousThrowableLevel): XMLFormatter
     {
         return parent::withPreviousThrowableLevel($previousThrowableLevel); /** @phpstan-ignore-line */
     }
 
+    /**
+     * Returns a clone.
+     */
+    public function withSimpleXMLElementFactory(?SimpleXMLElementFactory $simpleXMLElementFactory): XMLFormatter
+    {
+        $clone = clone $this;
+        $clone->simpleXMLElementFactory = $simpleXMLElementFactory;
+
+        return $clone;
+    }
+
     public function getCharacterEncoding(): CharacterEncoding
     {
         return $this->characterEncoding;
+    }
+
+    public function getSimpleXMLElementFactory(): ?SimpleXMLElementFactory
+    {
+        return $this->simpleXMLElementFactory;
     }
 
     protected function formatInner(\Throwable $throwable, \SimpleXMLElement $simpleXMLElement): \SimpleXMLElement

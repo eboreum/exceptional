@@ -121,6 +121,9 @@ class OnelineFormatterTest extends TestCase
 
                     $onelineFormatter = new OnelineFormatter($caster);
 
+                    /**
+                     * @var OnelineFormatter
+                     */
                     $onelineFormatter = $onelineFormatter->withIsProvidingTimestamp(true);
 
                     return $onelineFormatter;
@@ -303,6 +306,9 @@ class OnelineFormatterTest extends TestCase
 
                     $onelineFormatter = new OnelineFormatter($caster);
 
+                    /**
+                     * @var OnelineFormatter
+                     */
                     $onelineFormatter = $onelineFormatter->withMaximumPreviousDepth(1);
 
                     return $onelineFormatter;

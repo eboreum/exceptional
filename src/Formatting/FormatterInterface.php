@@ -46,6 +46,11 @@ interface FormatterInterface
     public function getCaster(): CasterInterface;
 
     /**
+     * Retrieve the maximum previous exception depth.
+     */
+    public function getMaximumPreviousDepth(): ?int;
+
+    /**
      * Retrieve the current previous exception level.
      */
     public function getPreviousThrowableLevel(): int;

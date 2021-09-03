@@ -57,7 +57,7 @@ class MethodArgumentDiscloserTest extends TestCase
     }
 
     /**
-     * @return array<array{0: string, 1: object, 2: \Closure, 3: \Closure}>
+     * @return array<array{0: string, 1: \Closure, 2: \Closure, 3: \Closure}>
      */
     public function dataProvider_testBasics(): array
     {
