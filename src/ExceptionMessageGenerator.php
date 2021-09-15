@@ -247,7 +247,8 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
      * As this method utilizes the Reflection API (https://www.php.net/manual/en/book.reflection.php), which is slow,
      * this method should mainly be used in failure scenarios, e.g. as part of building an exception message.
      *
-     * @param object|string $objectOrClassName  Must be an object instance or a valid class name. For static methods,
+     * @param object|class-string $objectOrClassName
+     *                                          Must be an object instance or a valid class name. For static methods,
      *                                          you may use `get_called_class()`.
      * @param array<int, mixed> $methodArgumentValues
      * @throws RuntimeException
@@ -268,14 +269,17 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
 
                 $isClassAcceptable = (
                     $reflectionObject->getName() === $reflectionMethod->getDeclaringClass()->getName()
-                    || is_subclass_of(
-                        $reflectionObject->getName(),
-                        $reflectionMethod->getDeclaringClass()->getName(),
-                        true
-                    )
                 );
 
                 if (false === $isClassAcceptable) {
+                    $isClassAcceptable = is_subclass_of(
+                        $reflectionObject->getName(),
+                        $reflectionMethod->getDeclaringClass()->getName(),
+                        true,
+                    );
+                }
+
+                if (false == $isClassAcceptable) {
                     $errorMessages[] = sprintf(
                         implode("", [
                             "Arguments \$objectOrClassName = %s and \$reflectionMethod = %s (declaring class name:",
@@ -291,14 +295,17 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                 if (class_exists($objectOrClassName)) {
                     $isClassAcceptable = (
                         $objectOrClassName === $reflectionMethod->getDeclaringClass()->getName()
-                        || is_subclass_of(
-                            $objectOrClassName,
-                            $reflectionMethod->getDeclaringClass()->getName(),
-                            true
-                        )
                     );
 
                     if (false === $isClassAcceptable) {
+                        $isClassAcceptable = is_subclass_of(
+                            $objectOrClassName,
+                            $reflectionMethod->getDeclaringClass()->getName(),
+                            true,
+                        );
+                    }
+
+                    if (false == $isClassAcceptable) {
                         $errorMessages[] = sprintf(
                             implode("", [
                                 "Arguments \$objectOrClassName = %s and \$reflectionMethod = %s (declaring class",
@@ -399,7 +406,7 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
             $propertyNameToReflectionPropertyMap = [];
 
             foreach ($propertyNamesToBeShown as $i => $propertyName) {
-                if (false === is_string($propertyName)) {
+                if (false == is_string($propertyName)) {
                     $invalids[] = sprintf(
                         "Element is not a string: %s => %s",
                         $this->getCaster()->cast($i),
@@ -415,14 +422,11 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                         $classHierarchyIndex++;
 
                         if ($reflectionClassCurrent->hasProperty($propertyName)) {
+                            $hasProperty = true;
                             $reflectionProperty = $reflectionClassCurrent->getProperty($propertyName);
+                            $propertyNameToReflectionPropertyMap[$propertyName] = $reflectionProperty;
 
-                            if ($reflectionProperty) {
-                                $hasProperty = true;
-                                $propertyNameToReflectionPropertyMap[$propertyName] = $reflectionProperty;
-
-                                break;
-                            }
+                            break;
                         }
 
                         $reflectionClassCurrent = $reflectionClassCurrent->getParentClass();

@@ -1639,7 +1639,7 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         $object = new class
         {
-            public function foo(int $a = self::BAR): MethodArgumentDiscloser
+            public function foo(int $a = self::BAR): void
             {
             }
         };
@@ -1695,7 +1695,7 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         $object = new class
         {
-            public function foo(int $a = parent::BAR): MethodArgumentDiscloser
+            public function foo(int $a = parent::BAR): void
             {
             }
         };
@@ -1751,7 +1751,7 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         $object = new class extends \DateTimeImmutable
         {
-            public function foo(int $a = parent::I_DONT_EXIST_836a6cf1a90749d0831ebcb8cb7776a4): MethodArgumentDiscloser
+            public function foo(int $a = parent::I_DONT_EXIST_836a6cf1a90749d0831ebcb8cb7776a4): void
             {
             }
         };
@@ -1808,7 +1808,7 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         $object = new class
         {
-            public function foo(int $a = \IDontExista8728361d30f42bfb9a954abfac4ccab::BAR)
+            public function foo(int $a = \IDontExista8728361d30f42bfb9a954abfac4ccab::BAR): void
             {
 
             }
@@ -1885,7 +1885,7 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         $object = new class
         {
-            public function foo(int $a = \IDontExist2da718442a7547e2b970aed55a2324b0::BAR): MethodArgumentDiscloser
+            public function foo(int $a = \IDontExist2da718442a7547e2b970aed55a2324b0::BAR): void
             {
             }
         };
@@ -2335,7 +2335,7 @@ class MethodArgumentDiscloserTest extends TestCase
         {
             CONST BAR = 42;
 
-            public function foo(int $a = self::BAR)
+            public function foo(int $a = self::BAR): void
             {
 
             }

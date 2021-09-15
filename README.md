@@ -549,7 +549,7 @@ echo $result;
 
 ```json
 "doctrine/annotations": "^1.13",
-"phpstan/phpstan": "0.12.94",
+"phpstan/phpstan": "0.12.99",
 "phpunit/phpunit": "^9.5",
 "sebastian/diff": "^4.0"
 ```
