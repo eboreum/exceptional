@@ -4,7 +4,7 @@
     "type": "library",
     "require": {
         "php": ">=7.4",
-        "eboreum/caster": "^0.0.1"
+        "eboreum/caster": "^0.0.2"
     },
     "require-dev": {
         "doctrine/annotations": "^1.13",

@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Test\Unit\Eboreum\Exceptional;
 
+use Eboreum\Exceptional\AbstractFunctionArgumentDiscloser;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\MethodArgumentDiscloser;
@@ -1634,7 +1635,309 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail("Exception was never thrown.");
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpression(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToANonExistingClassConstant(): void
+    {
+        $object = new class
+        {
+            public function foo(int $a = self::BAR): MethodArgumentDiscloser
+            {
+            }
+        };
+
+        $reflectionObject = new \ReflectionObject($object);
+        $reflectionMethod = $reflectionObject->getMethod("foo");
+        $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
+        $reflectionParameter = $reflectionMethod->getParameters()[0];
+
+        try {
+            $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
+                        ' has a default value, which is a constant, but a problem with this constant was encountered',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                implode("", [
+                    '/',
+                    '^',
+                    'Unable to locate the constant self\:\:BAR',
+                    '$',
+                    '/',
+                ]),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(is_null($currentException));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
+    }
+
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToAConstantOnANonExistingParentClass(): void
+    {
+        $object = new class
+        {
+            public function foo(int $a = parent::BAR): MethodArgumentDiscloser
+            {
+            }
+        };
+
+        $reflectionObject = new \ReflectionObject($object);
+        $reflectionMethod = $reflectionObject->getMethod("foo");
+        $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
+        $reflectionParameter = $reflectionMethod->getParameters()[0];
+
+        try {
+            $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
+                        ' has a default value, which is a constant, but a problem with this constant was encountered',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                implode("", [
+                    '/',
+                    '^',
+                    'Unable to locate the constant parent\:\:BAR',
+                    '$',
+                    '/',
+                ]),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(is_null($currentException));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
+    }
+
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToAConstantWhichDoesNotExistOnTheParentClass(): void
+    {
+        $object = new class extends \DateTimeImmutable
+        {
+            public function foo(int $a = parent::I_DONT_EXIST_836a6cf1a90749d0831ebcb8cb7776a4): MethodArgumentDiscloser
+            {
+            }
+        };
+
+        $reflectionObject = new \ReflectionObject($object);
+        $reflectionMethod = $reflectionObject->getMethod("foo");
+        $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
+        $reflectionParameter = $reflectionMethod->getParameters()[0];
+
+        try {
+            $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
+                        ' has a default value, which is a constant, but a problem with this constant was encountered',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                implode("", [
+                    '/',
+                    '^',
+                    'Unable to locate the constant parent\:\:I_DONT_EXIST_836a6cf1a90749d0831ebcb8cb7776a4',
+                    ' or at any parent class',
+                    '$',
+                    '/',
+                ]),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(is_null($currentException));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
+    }
+
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenCaseForScopeIsUncovered(): void
+    {
+        $object = new class
+        {
+            public function foo(int $a = \IDontExista8728361d30f42bfb9a954abfac4ccab::BAR)
+            {
+
+            }
+        };
+
+        $reflectionMethod = new \ReflectionMethod($object, "foo");
+
+        $discloser = new class(Caster::getInstance(), $reflectionMethod) extends AbstractFunctionArgumentDiscloser
+        {
+            public function __construct(
+                Caster $caster,
+                \ReflectionMethod $reflectionMethod
+            )
+            {
+                $this->caster = $caster;
+                $this->reflectionFunction = $reflectionMethod;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public static function getDefaultValueConstantRegex(): string
+            {
+                return '/^(?<scope>(IDontExista8728361d30f42bfb9a954abfac4ccab))::(?<scopedName>(\w+))$/';
+            }
+        };
+
+        $reflectionParameter = $reflectionMethod->getParameters()[0];
+
+        try {
+            $discloser->getDefaultValueForReflectionParameter($reflectionParameter);
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
+                        ' has a default value, which is a constant, but a problem with this constant was encountered',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                implode("", [
+                    '/',
+                    '^',
+                    'Uncovered case for \$match\["scope"\] \=',
+                    ' \(string\(42\)\) "IDontExista8728361d30f42bfb9a954abfac4ccab"',
+                    '$',
+                    '/',
+                ]),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(is_null($currentException));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
+    }
+
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToANonExistingFullyQuantifiedClassConstant(): void
+    {
+        $object = new class
+        {
+            public function foo(int $a = \IDontExist2da718442a7547e2b970aed55a2324b0::BAR): MethodArgumentDiscloser
+            {
+            }
+        };
+
+        $reflectionObject = new \ReflectionObject($object);
+        $reflectionMethod = $reflectionObject->getMethod("foo");
+        $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
+        $reflectionParameter = $reflectionMethod->getParameters()[0];
+
+        try {
+            $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
+                        ' has a default value, which is a constant, but a problem with this constant was encountered',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                implode("", [
+                    '/',
+                    '^',
+                    'Class constant "IDontExist2da718442a7547e2b970aed55a2324b0\:\:BAR" is not defined',
+                    '$',
+                    '/',
+                ]),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(is_null($currentException));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
+    }
+
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpressionForNonStaticMethod(): void
     {
         $object = new class
         {
@@ -1700,6 +2003,104 @@ class MethodArgumentDiscloserTest extends TestCase
                         '/',
                         '^',
                         'Parameter \$foo in method class@anonymous\/in\/.+\/%s:\d+->foo',
+                        ' has a default value, which is a constant, but a problem with this constant was encountered',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                implode("", [
+                    '/',
+                    '^',
+                    'Expects default value of parameter \$foo - a constant - to match regular expression \'.+\'',
+                    ', but it does not\. Found: \(string\(35\)\) "  I don\'t work as a constant name  "',
+                    '$',
+                    '/',
+                ]),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(is_null($currentException));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
+    }
+
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpressionForStaticMethod(): void
+    {
+        $object = new class
+        {
+            public static function foo(int $a): MethodArgumentDiscloser
+            {
+                $reflectionMethod = new \ReflectionMethod(static::class, __FUNCTION__);
+
+                return new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, [42]);
+            }
+        };
+
+        $methodArgumentDiscloser = $object->foo(42);
+
+        $reflectionParameter = $this
+            ->getMockBuilder("ReflectionParameter")
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $reflectionParameter
+            ->expects($this->exactly(1))
+            ->method("isDefaultValueAvailable")
+            ->with()
+            ->willReturn(true);
+
+        $reflectionParameter
+            ->expects($this->exactly(1))
+            ->method("isDefaultValueConstant")
+            ->with()
+            ->willReturn(true);
+
+        $reflectionParameter
+            ->expects($this->exactly(2))
+            ->method("getDefaultValueConstantName")
+            ->with()
+            ->willReturn("  I don't work as a constant name  ");
+
+        $reflectionParameter
+            ->expects($this->exactly(2))
+            ->method("getName")
+            ->with()
+            ->willReturn("foo");
+
+        $reflectionParameter
+            ->expects($this->exactly(2))
+            ->method("getDeclaringClass")
+            ->with()
+            ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass());
+
+        $reflectionParameter
+            ->expects($this->exactly(4))
+            ->method("getDeclaringFunction")
+            ->with()
+            ->willReturn($methodArgumentDiscloser->getReflectionFunction());
+
+        try {
+            $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Parameter \$foo in method class@anonymous\/in\/.+\/%s:\d+\:\:foo',
                         ' has a default value, which is a constant, but a problem with this constant was encountered',
                         '$',
                         '/',
@@ -1913,6 +2314,85 @@ class MethodArgumentDiscloserTest extends TestCase
                     'The namespaced constant',
                     ' "Foo\\\\\\\\Bar\\\\\\\\NONEXSITING_CONSTANT_e68ff2bd2d214c59abb3ad374163871f"',
                     ' is not defined',
+                    '$',
+                    '/',
+                ]),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(is_null($currentException));
+
+            return;
+        }
+
+        $this->fail("Exception was never thrown.");
+    }
+
+    public function testGetDefaultValueForReflectionParameterHandlesUncoveredCaseGracefully(): void
+    {
+        $object = new class
+        {
+            CONST BAR = 42;
+
+            public function foo(int $a = self::BAR)
+            {
+
+            }
+        };
+
+        $reflectionMethod = new \ReflectionMethod($object, "foo");
+
+        $discloser = new class(Caster::getInstance(), $reflectionMethod) extends AbstractFunctionArgumentDiscloser
+        {
+            public function __construct(
+                Caster $caster,
+                \ReflectionMethod $reflectionMethod
+            )
+            {
+                $this->caster = $caster;
+                $this->reflectionFunction = $reflectionMethod;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public static function getDefaultValueConstantRegex(): string
+            {
+                return '/^.+$/';
+            }
+        };
+
+        $reflectionParameter = $reflectionMethod->getParameters()[0];
+
+        try {
+            $discloser->getDefaultValueForReflectionParameter($reflectionParameter);
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode("", [
+                        '/',
+                        '^',
+                        'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
+                        ' has a default value, which is a constant, but a problem with this constant was encountered',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), "/"),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                implode("", [
+                    '/',
+                    '^',
+                    'Uncovered case for constant name "self\:\:BAR"',
+                    ' and \$match \= \(array\(1\)\) \[\(int\) 0 \=\> \(string\(9\)\) "self\:\:BAR"\]',
                     '$',
                     '/',
                 ]),

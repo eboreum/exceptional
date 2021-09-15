@@ -35,6 +35,7 @@ class ExceptionMessageGeneratorTest extends TestCase
      * @param array<int, mixed> $arguments
      */
     public function testCastFunctionArgumentsToStringWorks(
+        string $message,
         string $expected,
         \Closure $reflectionFunctionFactory,
         array $arguments,
@@ -49,6 +50,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 $reflectionFunction,
                 $arguments,
             ),
+            $message,
         );
     }
 
@@ -59,6 +61,7 @@ class ExceptionMessageGeneratorTest extends TestCase
     {
         return [
             [
+                "`stripos` called with 2 arguments.",
                 '$haystack = , $needle = , $offset = ',
                 function(){
                     return new \ReflectionFunction('stripos');
@@ -70,6 +73,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 new ExceptionMessageGenerator($this->_mockCasterInterface()),
             ],
             [
+                "`stripos` called with 3 arguments.",
                 '$haystack = foo, $needle = bar, $offset = 42',
                 function(){
                     return new \ReflectionFunction('stripos');
@@ -112,6 +116,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 })(),
             ],
             [
+                "Method in anonymous class. 2 optional named arguments. 1 required argument. Called with 3 arguments. No argument output.",
                 '$a = , $b = , $c = ',
                 function(){
 
@@ -133,6 +138,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 new ExceptionMessageGenerator($this->_mockCasterInterface()),
             ],
             [
+                "Method in anonymous class. 2 optional named arguments. 1 required argument. Called with 3 arguments. Custom argument output.",
                 '$a = 43, $b = baz, $c = 3.14',
                 function(){
 
@@ -185,6 +191,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 })(),
             ],
             [
+                "Method in anonymous class. 2 named arguments. 1st optional, 2nd required and variadic. Called with 4 arguments; no splat operator.",
                 '$a = 42, $b = ...foo,bar,baz',
                 function(){
 
@@ -242,9 +249,9 @@ class ExceptionMessageGeneratorTest extends TestCase
                 })(),
             ],
             [
+                "Method in anonymous class. 2 named arguments. 1st optional. 2nd required and variadic. Called with 1 argument; with splat operator.",
                 '$a = 42, $b = ...[]',
                 function(){
-
                     $object = new class
                     {
                         public function foo(int $a = 42, string ...$b): void
@@ -290,6 +297,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 })(),
             ],
             [
+                "Method in anonymous class. 2 named arguments. 1st optional. 2nd is required and variadic. Called with 1 argument.",
                 '$a = 42, $b = ...[]',
                 function(){
 

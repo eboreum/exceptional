@@ -8,6 +8,7 @@ use Eboreum\Caster\Caster as OriginalCaster;
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Caster\Collection\Formatter\ObjectFormatterCollection;
 use Eboreum\Caster\Contract\CharacterEncodingInterface;
+use Eboreum\Caster\Formatter\Object_\ClosureFormatter;
 use Eboreum\Caster\Formatter\Object_\DateTimeInterfaceFormatter;
 use Eboreum\Caster\Formatter\Object_\DebugIdentifierAnnotationInterfaceFormatter;
 use Eboreum\Caster\Formatter\Object_\DirectoryFormatter;
@@ -35,6 +36,7 @@ class Caster extends OriginalCaster
         $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection(...[
             new TextuallyIdentifiableInterfaceFormatter(),
             new DebugIdentifierAnnotationInterfaceFormatter(),
+            new ClosureFormatter(),
             new DirectoryFormatter(),
             new DateTimeInterfaceFormatter(),
             new ThrowableFormatter(),

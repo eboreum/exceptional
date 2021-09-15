@@ -133,8 +133,8 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
                             $exceptionMessage = sprintf(
                                 "Unable to locate the constant %s::%s",
-                                $this->getCaster()->cast($match["scope"]),
-                                $this->getCaster()->cast($match["scopedName"]),
+                                $match["scope"],
+                                $match["scopedName"],
                             );
 
                             if (

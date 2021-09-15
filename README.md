@@ -13,7 +13,7 @@ When a method is called, and somehow that leads to an exception/throwable being 
 
 ```json
 "php": ">=7.4",
-"eboreum/caster": "^0.0.1"
+"eboreum/caster": "^0.0.2"
 ```
 
 For more information, see the [`composer.json`](composer.json) file.

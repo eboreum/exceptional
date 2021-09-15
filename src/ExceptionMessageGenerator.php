@@ -107,59 +107,17 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                     && $lastParameterIndex === $index
                 );
 
-                if (false === array_key_exists($index, $normalizedMethodArgumentValues)) {
-                    /**
-                     * Handle that default parameter values do not get populated by `func_get_args()`.
-                     */
-
-                    if ($isAtLastNamedParameterAndLastParameterIsVariadic) {
-                        $argumentsAsStrings[] = sprintf(
-                            "$%s = ...%s",
-                            $reflectionParameter->getName(),
-                            $casterInner->castTyped([]),
-                        );
-
-                        $handledParameterCount++;
-
-                        continue;
-                    }
-
-                    if ($reflectionParameter->isDefaultValueAvailable()) {
-                        if ($reflectionParameter->isDefaultValueConstant()) {
-                            $argumentsAsStrings[] = sprintf(
-                                "$%s = %s",
-                                $reflectionParameter->getName(),
-                                $reflectionParameter->getDefaultValueConstantName(),
-                            );
-                        } else {
-                            $argumentsAsStrings[] = sprintf(
-                                "$%s = %s",
-                                $reflectionParameter->getName(),
-                                $casterInner->castTyped(
-                                    $reflectionParameter->getDefaultValue()
-                                ),
-                            );
-                        }
-
-                        $handledParameterCount++;
-
-                        continue;
-                    }
-
-                    continue;
-                }
-
                 if ($isAtLastNamedParameterAndLastParameterIsVariadic) {
                     $argumentsAsStrings[] = sprintf(
                         "$%s = ...%s",
                         $reflectionParameter->getName(),
-                        $casterInner->castTyped($normalizedMethodArgumentValues[$index]),
+                        $casterInner->castTyped($normalizedMethodArgumentValues[$index] ?? []),
                     );
                 } else {
                     $argumentsAsStrings[] = sprintf(
                         "$%s = %s",
                         $reflectionParameter->getName(),
-                        $casterInner->castTyped($normalizedMethodArgumentValues[$index]),
+                        $casterInner->castTyped($normalizedMethodArgumentValues[$index] ?? null),
                     );
                 }
 
