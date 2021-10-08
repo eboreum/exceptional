@@ -56,15 +56,13 @@ class ReadmeMdTest extends TestCase
 
     public function testDoesReadmeMdContainLocalFilePaths(): void
     {
-        $rootPath = dirname(TEST_ROOT_PATH);
-
-        $split = preg_split('/([\\\\\/])/', $rootPath);
+        $split = preg_split('/([\\\\\/])/', PROJECT_ROOT_DIRECTORY_PATH);
 
         $this->assertIsArray($split);
         assert(is_array($split)); // Make phpstan happy
 
         $rootPathRegex = sprintf(
-            '/%s/',
+            '/%s[\\\\\/]/',
             implode(
                 '(\\\\+\/|\\\\+|\/)', // Handle both Windows and Unix
                 array_map(
@@ -78,7 +76,7 @@ class ReadmeMdTest extends TestCase
 
         $this->assertSame(
             0,
-            preg_match($rootPathRegex, $this->contents),
+            preg_match($rootPathRegex, $this->contents, $match),
             "README.md contains local file paths (on your system) and it should not.",
         );
     }

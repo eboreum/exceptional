@@ -102,7 +102,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         ->withConsecutive(
                             ['Lorem ipsum'],
                             ['ip'],
-                            [''],
+                            [0],
                         )
                         ->willReturnOnConsecutiveCalls(
                             'foo',
@@ -672,7 +672,11 @@ class ExceptionMessageGeneratorTest extends TestCase
                     'Failure in function \\\\strpos\(',
                         '\$haystack \= \(string\(9\)\) "foobarbaz"',
                         ', \$needle \= \(string\(3\)\) "bar"',
-                        ', \$offset \= \(null\) null',
+                        ', \$offset \= (',
+                            '(\(null\) null)', // PHP 7.4
+                            '|',
+                            '(\(int\) 0)', // PHP 8.0
+                        ')',
                     '\)',
                     '$',
                     '/',

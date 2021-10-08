@@ -1,6 +1,10 @@
 Eboreum/Exceptional: Create and format PHP exceptions easily
 ===============================
 
+![License](https://img.shields.io/packagist/l/eboreum/exceptional.svg)
+![Build Status](https://app.travis-ci.com/eboreum/exceptional.svg?branch=main)
+![codecov](https://codecov.io/gh/eboreum/exceptional/branch/main/graph/badge.svg)
+
 Create and format PHP exceptions easily. Automatically unravel method arguments. Ensure that sensitive strings like passwords, tokens, PHPSESSID, etc. are being masked and thus will instead appear as e.g. "******" in the resulting text.
 
 [comment]: # (The README.md is generated using `script/generate-readme.php`)
@@ -363,7 +367,7 @@ echo $result;
 \Exception
 Message:
     foo
-File: /some/file/path/eboreum/exceptional/script/misc/readme/formatter/example-1-defaultformatter.php
+File: /some/file/path/script/misc/readme/formatter/example-1-defaultformatter.php
 Line: 13
 Code: 0
 Stacktrace:
@@ -412,7 +416,7 @@ echo $result;
     </tr>
     <tr>
       <td>File:</td>
-      <td>/some/file/path/eboreum/exceptional/script/misc/readme/formatter/example-2-html5tableformatter.php</td>
+      <td>/some/file/path/script/misc/readme/formatter/example-2-html5tableformatter.php</td>
     </tr>
     <tr>
       <td>Line:</td>
@@ -466,7 +470,7 @@ echo $result;
 ```
 {
     "class": "\\Exception",
-    "file": "\/some\/file\/path\/eboreum\/exceptional\/script\/misc\/readme\/formatter\/example-3-jsonformatter.php",
+    "file": "\/some\/file\/path\/script\/misc\/readme\/formatter\/example-3-jsonformatter.php",
     "line": "16",
     "code": "0",
     "message": "foo",
@@ -502,7 +506,7 @@ echo $result;
 **Output:**
 
 ```
-\Exception. Message: foo. File: /some/file/path/eboreum/exceptional/script/misc/readme/formatter/example-4-onelineformatter.php. Line: 15. Code: 0. Stacktrace: #0 /path/to/some/file.php:34: fake_function(). Previous: (None)
+\Exception. Message: foo. File: /some/file/path/script/misc/readme/formatter/example-4-onelineformatter.php. Line: 15. Code: 0. Stacktrace: #0 /path/to/some/file.php:34: fake_function(). Previous: (None)
 ```
 
 ### Example 5: XML formatter
@@ -536,7 +540,7 @@ echo $result;
 <?xml version="1.0" encoding="UTF-8"?>
 <exception>
   <class>\Exception</class>
-  <file>/some/file/path/eboreum/exceptional/script/misc/readme/formatter/example-5-xmlformatter.php</file>
+  <file>/some/file/path/script/misc/readme/formatter/example-5-xmlformatter.php</file>
   <line>16</line>
   <code>0</code>
   <message>foo</message>
