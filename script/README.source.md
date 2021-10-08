@@ -1,6 +1,10 @@
 Eboreum/Exceptional: Create and format PHP exceptions easily
 ===============================
 
+![License](https://img.shields.io/packagist/l/eboreum/exceptional.svg)
+![Build Status](https://app.travis-ci.com/eboreum/exceptional.svg?branch=main)
+![codecov](https://codecov.io/gh/eboreum/exceptional/branch/main/graph/badge.svg)
+
 %composer.json.description%
 
 When a method is called, and somehow that leads to an exception/throwable being raised, wouldn't it be nice knowing all arguments a method was called with? Exceptional can unravel that for you and present these arguments with their respective names in a concise and meaningful way. Additionally, the integration with Eboreum/Caster (https://packagist.org/packages/eboreum/caster) allows revealing of information about the object within which the exception/error occured. This is sometimes valuable and crucial information, and it is superb for debugging.
