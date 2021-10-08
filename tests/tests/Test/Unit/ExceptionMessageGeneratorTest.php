@@ -55,7 +55,7 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @return array<int, array{string, \Closure, array<int, mixed>, ExceptionMessageGenerator}>
+     * @return array<int, array{string, string, \Closure, array<int, mixed>, ExceptionMessageGenerator}>
      */
     public function dataProvider_testCastFunctionArgumentsToStringWorks(): array
     {
@@ -1443,7 +1443,7 @@ class ExceptionMessageGeneratorTest extends TestCase
 
         try {
             ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                'IDoNotExist425393c93a7d435ea6e95b2d0a6ac670',
+                'IDoNotExist425393c93a7d435ea6e95b2d0a6ac670', /** @phpstan-ignore-line */
                 $reflectionMethod,
                 [],
             );
@@ -1614,7 +1614,7 @@ class ExceptionMessageGeneratorTest extends TestCase
         try {
             ExceptionMessageGenerator::getInstance()->makeUninitializedPropertySafeToTextualIdentifierString(
                 $object,
-                [
+                [ /** @phpstan-ignore-line */
                     "foo",
                     42,
                 ],

@@ -1177,6 +1177,7 @@ class FunctionArgumentDiscloserTest extends TestCase
 
     /**
      * @dataProvider dataProvider_testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction
+     * @param array<int, int> $functionArgumentValues
      */
     public function testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction(
         int $expectedPassedArgumentCount,
@@ -1243,7 +1244,7 @@ class FunctionArgumentDiscloserTest extends TestCase
     }
 
     /**
-     * @return array<int, array{0: string, 1: string, 2: object}>
+     * @return array<int, array{int, int, string, array<int, int>, \Closure}>
      */
     public function dataProvider_testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction(): array
     {
@@ -1254,7 +1255,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                 "(array(0)) []",
                 [],
                 function(){
-                    function foo_4d2650269a324a3788f827ee739afee1(int $a)
+                    function foo_4d2650269a324a3788f827ee739afee1(int $a): void
                     {
                     }
 
@@ -1267,7 +1268,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                 "(array(2)) [(int) 0 => (int) 42, (int) 1 => (int) 43]",
                 [42, 43],
                 function(){
-                    function foo_fe25fbdda555464f982783f37b43ade9(int $a, int $b, int $c, int $d)
+                    function foo_fe25fbdda555464f982783f37b43ade9(int $a, int $b, int $c, int $d): void
                     {
                     }
 

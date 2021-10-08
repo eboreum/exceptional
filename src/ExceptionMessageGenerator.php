@@ -50,7 +50,6 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
      * If a method is called with arguments, these will be indexed and shown as "{#}", e.g. "{0}" for the first
      * argument.
      *
-     * @param \ReflectionFunction|\ReflectionMethod $reflectionFunction
      * @param array<int, mixed> $functionArgumentValues
      *                                          As produced by `func_get_args()` inside the function/method referred to
      *                                          in the $reflectionFunction argument.
