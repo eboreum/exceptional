@@ -38,10 +38,6 @@
         "psr-4": {
             "TestResource\\Unit\\Eboreum\\Exceptional\\": "tests/resources/TestResource/Unit",
             "Test\\Unit\\Eboreum\\Exceptional\\": "tests/tests/Test/Unit"
-        },
-        "files": [
-            "tests/resources/TestResource/Unit/FunctionArgumentDiscloserTest/testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist/constants.php",
-            "tests/resources/TestResource/Unit/FunctionArgumentDiscloserTest/testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist/functions.php"
-        ]
+        }
     }
 }

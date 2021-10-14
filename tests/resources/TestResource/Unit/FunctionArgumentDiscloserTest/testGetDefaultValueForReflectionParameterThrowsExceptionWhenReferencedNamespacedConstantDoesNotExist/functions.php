@@ -71,25 +71,6 @@ function foo_1863be0363a14f498ae9e8368267db83(int $a, string $b, ?float $c = nul
 /**
  * @return array{\ReflectionFunction, array<int, mixed>, FunctionArgumentDiscloser}
  */
-function foo_1a8f697a50e54529a1096ca99ed1b8c6(int $a, string $b = "baz", float $c): array
-{
-    $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-    $functionArgumentValues = func_get_args();
-
-    return [
-        $reflectionFunction,
-        $functionArgumentValues,
-        new FunctionArgumentDiscloser(
-            Caster::getInstance(),
-            $reflectionFunction,
-            $functionArgumentValues
-        ),
-    ];
-}
-
-/**
- * @return array{\ReflectionFunction, array<int, mixed>, FunctionArgumentDiscloser}
- */
 function foo_1ca3717f657946cc8ea73a9c10d25a15(
     int $a,
     string $b,

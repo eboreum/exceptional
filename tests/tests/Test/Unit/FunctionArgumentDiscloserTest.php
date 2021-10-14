@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_0632691243674084af85b52269f0d4d2;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1318db58f81f45c8a955f860c371ae5c;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1863be0363a14f498ae9e8368267db83;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1a8f697a50e54529a1096ca99ed1b8c6;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1ca3717f657946cc8ea73a9c10d25a15;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_26670d45e52341889d9dd9d9a2026810;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_273f629332064648a935524ecf024cc9;
@@ -698,44 +697,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                         $message,
                     );
                     $this->assertSame(true, $functionArgumentDiscloser->isLastNamedParameterVariadic(), $message);
-                },
-            ],
-            [
-                implode("", [
-                    "3 named parameters. \$b has default value, but \$a and \$c do not. 3 passed argument values.",
-                ]),
-                function(){
-                    return foo_1a8f697a50e54529a1096ca99ed1b8c6(43, "bim", 3.14);
-                },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
-
-                    $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
-                        [
-                            43,
-                            "bim",
-                            3.14,
-                        ],
-                        $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
-                        $message,
-                    );
-                    $this->assertSame(3, $functionArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(), $message);
-                    $this->assertSame(0, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
-                    $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
-                    $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
-                    $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
-                        3,
-                        $functionArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
-                        $message,
-                    );
-                    $this->assertSame(false, $functionArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
