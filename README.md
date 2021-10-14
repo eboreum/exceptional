@@ -4,6 +4,7 @@ Eboreum/Exceptional: Create and format PHP exceptions easily
 ![License](https://img.shields.io/packagist/l/eboreum/exceptional.svg)
 ![Build Status](https://app.travis-ci.com/eboreum/exceptional.svg?branch=main)
 ![codecov](https://codecov.io/gh/eboreum/exceptional/branch/main/graph/badge.svg)
+![PHPStan](https://img.shields.io/badge/PHPStan-Level%207-brightgreen.svg?style=flat)
 
 Create and format PHP exceptions easily. Automatically unravel method arguments. Ensure that sensitive strings like passwords, tokens, PHPSESSID, etc. are being masked and thus will instead appear as e.g. "******" in the resulting text.
 
@@ -553,6 +554,7 @@ echo $result;
 
 ```json
 "doctrine/annotations": "^1.13",
+"nette/neon": "^3.2",
 "phpstan/phpstan": "0.12.99",
 "phpunit/phpunit": "^9.5",
 "sebastian/diff": "^4.0"
