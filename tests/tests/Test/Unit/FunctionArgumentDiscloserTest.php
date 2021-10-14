@@ -8,22 +8,31 @@ use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\FunctionArgumentDiscloser;
 use PHPUnit\Framework\TestCase;
-
-define(
-    "EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892",
-    sprintf(
-        "A global constant utilized in unit test %s\\FunctionArgumentDiscloserTest->testBasics",
-        __NAMESPACE__,
-    ),
-);
-
-define(
-    __NAMESPACE__ . "\\EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f",
-    sprintf(
-        "A namespaced constant utilized in unit test %s\\FunctionArgumentDiscloserTest->testBasics",
-        __NAMESPACE__,
-    ),
-);
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_0632691243674084af85b52269f0d4d2;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1318db58f81f45c8a955f860c371ae5c;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1863be0363a14f498ae9e8368267db83;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1a8f697a50e54529a1096ca99ed1b8c6;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1ca3717f657946cc8ea73a9c10d25a15;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_26670d45e52341889d9dd9d9a2026810;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_273f629332064648a935524ecf024cc9;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_37704407c9d04b5dbf2ce6de4ffbbfbd;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_42fb127ea64c4bc39f6d0ce58df1b9a6;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_445cb914ff6f48a0a039e4eedd0f4ff0;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_4d2650269a324a3788f827ee739afee1;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_534d34186ec84bd5baf195e141284d36;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_55f325c24dc64ff4bb9df02b6f51de6d;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_5d337039b3b747738ecfaf56520a5450;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_85366d3d2de04a969f58caf818a35590;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_8ff1bec0e2734ff5b74e095ae01cd3da;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_912de21dd0fd454f8cdb0b71ac45a9e3;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_a822fb8b9ffd444b923b71185d41ad57;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_b50e80c0945c44e98bd73f356410e342;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_d89b416e02504e34812c70ae20083403;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_d9d24ee6520f4a2792f07471f77eaf45;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_e1508b2e20334bd5a4de82855086873e;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_f169b74a249c47f28543063439f58f4d;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_fb4c857d2c2b422da8d8e8fc6ed7da1c;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_fe25fbdda555464f982783f37b43ade9;
 
 class FunctionArgumentDiscloserTest extends TestCase
 {
@@ -32,18 +41,15 @@ class FunctionArgumentDiscloserTest extends TestCase
      */
     public function testBasics(
         string $message,
-        \Closure $functionDeclarationCallback,
         \Closure $valueFactoryCallback,
         \Closure $assertionsCallback
     ): void
     {
-        $anonymousFunction = $functionDeclarationCallback();
-
         [
             $reflectionFunction,
             $functionArgumentValues,
             $functionArgumentDiscloser
-        ] = $valueFactoryCallback($anonymousFunction);
+        ] = $valueFactoryCallback();
 
         $this->assertSame($reflectionFunction, $functionArgumentDiscloser->getReflectionFunction(), $message);
         $this->assertSame($functionArgumentValues, $functionArgumentDiscloser->getFunctionArgumentValues(), $message);
@@ -57,33 +63,13 @@ class FunctionArgumentDiscloserTest extends TestCase
     }
 
     /**
-     * @return array<array{0: string, 1: \Closure, 2: \Closure, 3: \Closure}>
+     * @return array<array{string, \Closure, \Closure}>
      */
     public function dataProvider_testBasics(): array
     {
         return [
             [
                 "0 named parameters. 0 passed argument values.",
-                function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_a822fb8b9ffd444b923b71185d41ad57(): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
                 function(){
                     return foo_a822fb8b9ffd444b923b71185d41ad57();
                 },
@@ -109,26 +95,6 @@ class FunctionArgumentDiscloserTest extends TestCase
             ],
             [
                 "1 named parameter. \$a is optional with default value 42. 0 passed argument values.",
-                function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_8ff1bec0e2734ff5b74e095ae01cd3da(int $a = 42): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
                 function(){
                     return foo_8ff1bec0e2734ff5b74e095ae01cd3da();
                 },
@@ -159,26 +125,6 @@ class FunctionArgumentDiscloserTest extends TestCase
             [
                 "1 named parameter. \$a is optional with default value 42. 1 passed argument value.",
                 function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_f169b74a249c47f28543063439f58f4d(int $a = 42): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
-                function(){
                     return foo_f169b74a249c47f28543063439f58f4d(64);
                 },
                 function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
@@ -207,26 +153,6 @@ class FunctionArgumentDiscloserTest extends TestCase
             ],
             [
                 "3 named parameters. All required. 3 passed argument values.",
-                function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_d89b416e02504e34812c70ae20083403(int $a, string $b, float $c): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
                 function(){
                     return foo_d89b416e02504e34812c70ae20083403(42, "bar", 3.14);
                 },
@@ -263,26 +189,6 @@ class FunctionArgumentDiscloserTest extends TestCase
             [
                 "3 named parameters. All required. 4 passed argument values.",
                 function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_26670d45e52341889d9dd9d9a2026810(int $a, string $b, float $c): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
-                function(){
                     return foo_26670d45e52341889d9dd9d9a2026810(42, "bar", 3.14, true);
                 },
                 function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
@@ -318,26 +224,6 @@ class FunctionArgumentDiscloserTest extends TestCase
             ],
             [
                 "3 named parameters. \$c is optional with default value being null. 2 passed argument values.",
-                function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_1863be0363a14f498ae9e8368267db83(int $a, string $b, ?float $c = null): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
                 function(){
                     return foo_1863be0363a14f498ae9e8368267db83(42, "bar");
                 },
@@ -377,26 +263,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     ", EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892. 2 passed argument values.",
                 ]),
                 function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_0632691243674084af85b52269f0d4d2(int $a, string $b, string $c = \EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
-                function(){
                     return foo_0632691243674084af85b52269f0d4d2(42, "bar");
                 },
                 function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
@@ -434,26 +300,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a global constant",
                     ", EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892. 3 passed argument values.",
                 ]),
-                function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_273f629332064648a935524ecf024cc9(int $a, string $b, string $c = \EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
                 function(){
                     return foo_273f629332064648a935524ecf024cc9(42, "bar", "baz");
                 },
@@ -493,26 +339,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     ", EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f. 2 passed argument values.",
                 ]),
                 function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_5d337039b3b747738ecfaf56520a5450(int $a, string $b, string $c = EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
-                function(){
                     return foo_5d337039b3b747738ecfaf56520a5450(42, "bar");
                 },
                 function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
@@ -522,7 +348,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         [
                             42,
                             "bar",
-                            EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f,
+                            \TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -550,26 +376,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a namespaced constant",
                     ", EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f. 3 passed argument values.",
                 ]),
-                function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_b50e80c0945c44e98bd73f356410e342(int $a, string $b, string $c = EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
                 function(){
                     return foo_b50e80c0945c44e98bd73f356410e342(42, "bar", "baz");
                 },
@@ -608,26 +414,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being \DateTimeInterface::ATOM.",
                     " 2 passed argument values.",
                 ]),
-                function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_fb4c857d2c2b422da8d8e8fc6ed7da1c(int $a, string $b, string $c = \DateTimeInterface::ATOM): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
                 function(){
                     return foo_fb4c857d2c2b422da8d8e8fc6ed7da1c(42, "bar");
                 },
@@ -668,26 +454,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     " Notice: \DateTimeImmutable - not \DateTimeInterface - is used here.",
                 ]),
                 function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_85366d3d2de04a969f58caf818a35590(int $a, string $b, string $c = \DateTimeImmutable::ATOM): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
-                function(){
                     return foo_85366d3d2de04a969f58caf818a35590(42, "bar");
                 },
                 function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
@@ -726,26 +492,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     " 3 passed argument values.",
                 ]),
                 function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_1ca3717f657946cc8ea73a9c10d25a15(int $a, string $b, string $c = \DateTimeInterface::ATOM): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
-                function(){
                     return foo_1ca3717f657946cc8ea73a9c10d25a15(42, "bar", "baz");
                 },
                 function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
@@ -783,26 +529,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     "1 named parameters. \$a is variadic. 0 passed argument values.",
                 ]),
                 function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_1318db58f81f45c8a955f860c371ae5c(int ...$a): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
-                function(){
                     return foo_1318db58f81f45c8a955f860c371ae5c();
                 },
                 function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
@@ -834,26 +560,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     "1 named parameters. \$a is variadic. 1 passed argument values.",
                 ]),
                 function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_e1508b2e20334bd5a4de82855086873e(int ...$a): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
-                function(){
                     return foo_e1508b2e20334bd5a4de82855086873e(...[1,2,3]);
                 },
                 function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
@@ -884,26 +590,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                 implode("", [
                     "3 named parameters. \$c is variadic. 0 passed argument values.",
                 ]),
-                function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_534d34186ec84bd5baf195e141284d36(int $a = 42, string $b = "baz", float ...$c): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
                 function(){
                     return foo_534d34186ec84bd5baf195e141284d36();
                 },
@@ -943,26 +629,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is variadic. 2 passed argument values.",
                 ]),
                 function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_37704407c9d04b5dbf2ce6de4ffbbfbd(int $a = 42, string $b = "baz", float ...$c): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
-                function(){
                     return foo_37704407c9d04b5dbf2ce6de4ffbbfbd(43, "bim");
                 },
                 function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
@@ -1001,26 +667,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is variadic. 3 passed argument values.",
                 ]),
                 function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_42fb127ea64c4bc39f6d0ce58df1b9a6(int $a = 42, string $b = "baz", float ...$c): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
-                function(){
                     return foo_42fb127ea64c4bc39f6d0ce58df1b9a6(43, "bim", ...[1.0,2.0,3.0]);
                 },
                 function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
@@ -1058,26 +704,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                 implode("", [
                     "3 named parameters. \$b has default value, but \$a and \$c do not. 3 passed argument values.",
                 ]),
-                function(){
-                    /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
-                     */
-                    function foo_1a8f697a50e54529a1096ca99ed1b8c6(int $a, string $b = "baz", float $c): array
-                    {
-                        $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-                        $functionArgumentValues = func_get_args();
-
-                        return [
-                            $reflectionFunction,
-                            $functionArgumentValues,
-                            new FunctionArgumentDiscloser(
-                                Caster::getInstance(),
-                                $reflectionFunction,
-                                $functionArgumentValues
-                            ),
-                        ];
-                    }
-                },
                 function(){
                     return foo_1a8f697a50e54529a1096ca99ed1b8c6(43, "bim", 3.14);
                 },
@@ -1136,9 +762,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                         ];
                     };
 
-                    return $foo_ec59a7b7151f481fa3c3b97b1d0e84f1;
-                },
-                function(\Closure $foo_ec59a7b7151f481fa3c3b97b1d0e84f1){
                     return $foo_ec59a7b7151f481fa3c3b97b1d0e84f1(43, "bim", 3.14);
                 },
                 function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
@@ -1255,11 +878,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                 "(array(0)) []",
                 [],
                 function(){
-                    function foo_4d2650269a324a3788f827ee739afee1(int $a): void
-                    {
-                    }
-
-                    return new \ReflectionFunction(__NAMESPACE__ . "\\foo_4d2650269a324a3788f827ee739afee1");
+                    return new \ReflectionFunction('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_4d2650269a324a3788f827ee739afee1');
                 },
             ],
             [
@@ -1268,11 +887,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                 "(array(2)) [(int) 0 => (int) 42, (int) 1 => (int) 43]",
                 [42, 43],
                 function(){
-                    function foo_fe25fbdda555464f982783f37b43ade9(int $a, int $b, int $c, int $d): void
-                    {
-                    }
-
-                    return new \ReflectionFunction(__NAMESPACE__ . "\\foo_fe25fbdda555464f982783f37b43ade9");
+                    return new \ReflectionFunction('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_fe25fbdda555464f982783f37b43ade9');
                 },
             ],
         ];
@@ -1280,13 +895,6 @@ class FunctionArgumentDiscloserTest extends TestCase
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenNoDefaultValueIsAvailableOnReflectionParameter(): void
     {
-        function foo_912de21dd0fd454f8cdb0b71ac45a9e3(int $a): FunctionArgumentDiscloser
-        {
-            $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-
-            return new FunctionArgumentDiscloser(Caster::getInstance(), $reflectionFunction, [42]);
-        }
-
         $functionArgumentDiscloser = foo_912de21dd0fd454f8cdb0b71ac45a9e3(42);
 
         try {
@@ -1322,13 +930,6 @@ class FunctionArgumentDiscloserTest extends TestCase
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpression(): void
     {
-        function foo_55f325c24dc64ff4bb9df02b6f51de6d(int $a): FunctionArgumentDiscloser
-        {
-            $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-
-            return new FunctionArgumentDiscloser(Caster::getInstance(), $reflectionFunction, [42]);
-        }
-
         $functionArgumentDiscloser = foo_55f325c24dc64ff4bb9df02b6f51de6d(42);
 
         $reflectionParameter = $this
@@ -1381,7 +982,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(__NAMESPACE__, "/"),
+                    preg_quote('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist', "/"),
                 ),
                 $currentException->getMessage(),
             );
@@ -1411,13 +1012,6 @@ class FunctionArgumentDiscloserTest extends TestCase
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedGlobalConstantDoesNotExist(): void
     {
-        function foo_445cb914ff6f48a0a039e4eedd0f4ff0(int $a): FunctionArgumentDiscloser
-        {
-            $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-
-            return new FunctionArgumentDiscloser(Caster::getInstance(), $reflectionFunction, [42]);
-        }
-
         $functionArgumentDiscloser = foo_445cb914ff6f48a0a039e4eedd0f4ff0(42);
 
         $reflectionParameter = $this
@@ -1470,7 +1064,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(__NAMESPACE__, "/"),
+                    preg_quote('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist', "/"),
                 ),
                 $currentException->getMessage(),
             );
@@ -1499,13 +1093,6 @@ class FunctionArgumentDiscloserTest extends TestCase
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist(): void
     {
-        function foo_d9d24ee6520f4a2792f07471f77eaf45(int $a): FunctionArgumentDiscloser
-        {
-            $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-
-            return new FunctionArgumentDiscloser(Caster::getInstance(), $reflectionFunction, [42]);
-        }
-
         $functionArgumentDiscloser = foo_d9d24ee6520f4a2792f07471f77eaf45(42);
 
         $reflectionParameter = $this
@@ -1553,12 +1140,13 @@ class FunctionArgumentDiscloserTest extends TestCase
                     implode("", [
                         '/',
                         '^',
-                        'Parameter \$foo in function \\\\%s\\\\foo_d9d24ee6520f4a2792f07471f77eaf45',
+                        'Parameter \$foo in function (\\\\\w+)+\\\\%s\\\\%s\\\\foo_d9d24ee6520f4a2792f07471f77eaf45',
                         ' has a default value, which is a constant, but a problem with this constant was encountered',
                         '$',
                         '/',
                     ]),
-                    preg_quote(__NAMESPACE__, "/"),
+                    preg_quote((new \ReflectionObject($this))->getShortName(), "/"),
+                    preg_quote(__FUNCTION__, "/"),
                 ),
                 $currentException->getMessage(),
             );

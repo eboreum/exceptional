@@ -40,6 +40,8 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         $object = $objectFactory();
 
+        $this->assertTrue(is_object($object));
+
         [
             $reflectionMethod,
             $methodArgumentValues,
@@ -58,18 +60,19 @@ class MethodArgumentDiscloserTest extends TestCase
     }
 
     /**
-     * @return array<array{0: string, 1: \Closure, 2: \Closure, 3: \Closure}>
+     * @return array<array{string, \Closure(): object, \Closure, \Closure(string, MethodArgumentDiscloser, object): void}>
      */
     public function dataProvider_testBasics(): array
     {
         return [
             [
                 "0 named parameters. 0 passed argument values.",
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(): array
                         {
@@ -88,10 +91,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo();
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(-1, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(0, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -113,11 +123,12 @@ class MethodArgumentDiscloserTest extends TestCase
             ],
             [
                 "1 named parameter. \$a is optional with default value 42. 0 passed argument values.",
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a = 42): array
                         {
@@ -136,10 +147,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo();
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -165,11 +183,16 @@ class MethodArgumentDiscloserTest extends TestCase
             ],
             [
                 "1 named parameter. \$a is optional with default value 42. 1 passed argument value.",
-                function(){
-                    return new class
+                function(): object
+                {
+                    /**
+                     * phpstan seems buggy, because if we just do "return new class" here, it get confused and mixes up
+                     * the lines, taking the closure from a completely different test case.
+                     */
+                    $object = new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a = 42): array
                         {
@@ -187,11 +210,20 @@ class MethodArgumentDiscloserTest extends TestCase
                             ];
                         }
                     };
+
+                    return $object;
                 },
-                function(object $object){
-                    return $object->foo(64); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(64);
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -217,11 +249,12 @@ class MethodArgumentDiscloserTest extends TestCase
             ],
             [
                 "3 named parameters. All required. 3 passed argument values.",
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, float $c): array
                         {
@@ -240,10 +273,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar", 3.14); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar", 3.14);
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -275,11 +315,12 @@ class MethodArgumentDiscloserTest extends TestCase
             ],
             [
                 "3 named parameters. All required. 4 passed argument values.",
-                function(){
-                    return new class
+                function(): object
+                {
+                    $object = new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, float $c): array
                         {
@@ -297,11 +338,20 @@ class MethodArgumentDiscloserTest extends TestCase
                             ];
                         }
                     };
+
+                    return $object;
                 },
-                function(object $object){
-                    return $object->foo(42, "bar", 3.14, true); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar", 3.14, true);
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -334,11 +384,12 @@ class MethodArgumentDiscloserTest extends TestCase
             ],
             [
                 "3 named parameters. \$c is optional with default value being null. 2 passed argument values.",
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, ?float $c = null): array
                         {
@@ -357,10 +408,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -395,11 +453,12 @@ class MethodArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a global constant",
                     ", EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226. 2 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, string $c = \EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226): array
                         {
@@ -418,10 +477,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -456,11 +522,12 @@ class MethodArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a global constant",
                     ", EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226. 3 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, string $c = \EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226): array
                         {
@@ -479,10 +546,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar", "baz"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar", "baz");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -517,11 +591,12 @@ class MethodArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a namespaced constant",
                     ", EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a. 2 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, string $c = EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a): array
                         {
@@ -540,10 +615,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -578,11 +660,12 @@ class MethodArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a namespaced constant",
                     ", EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a. 3 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, string $c = EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a): array
                         {
@@ -601,10 +684,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar", "baz"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar", "baz");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -639,13 +729,14 @@ class MethodArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a same-class constant, self::BAR.",
                     " being public. 2 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         public const BAR = 3.14;
 
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, ?float $c = self::BAR): array
                         {
@@ -664,10 +755,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -702,13 +800,14 @@ class MethodArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a same-class constant, self::BAR.",
                     " being private. 2 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         private const BAR = 3.14;
 
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, ?float $c = self::BAR): array
                         {
@@ -727,10 +826,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -765,13 +871,14 @@ class MethodArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a same-class constant, self::BAR.",
                     " 3 passed argument values, overriding \$c.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         public const BAR = 3.14;
 
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, ?float $c = self::BAR): array
                         {
@@ -790,10 +897,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar", 2.72); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar", 2.72);
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -828,11 +942,12 @@ class MethodArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a parent class constant",
                     ", using parent binding, parent::ATOM. 2 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class extends \DateTimeImmutable
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, string $c = parent::ATOM): array
                         {
@@ -851,10 +966,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -889,11 +1011,12 @@ class MethodArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a parent class constant",
                     ", using parent binding, parent::ATOM. 3 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class extends \DateTimeImmutable
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, string $c = parent::ATOM): array
                         {
@@ -912,10 +1035,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar", "baz"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar", "baz");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -950,11 +1080,12 @@ class MethodArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a parent class constant",
                     ", using parent binding, \DateTimeInterface::ATOM. 2 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class extends \DateTimeImmutable
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, string $c = \DateTimeInterface::ATOM): array
                         {
@@ -973,10 +1104,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -1012,11 +1150,12 @@ class MethodArgumentDiscloserTest extends TestCase
                     ", using parent binding, \DateTimeImmutable::ATOM. 2 passed argument values.",
                     " Notice: \DateTimeImmutable - not \DateTimeInterface - is used here.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class extends \DateTimeImmutable
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, string $c = \DateTimeImmutable::ATOM): array
                         {
@@ -1035,10 +1174,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -1073,11 +1219,12 @@ class MethodArgumentDiscloserTest extends TestCase
                     "3 named parameters. \$c is optional and default value being a parent class constant",
                     ", using parent binding, \DateTimeInterface::ATOM. 3 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, string $c = \DateTimeInterface::ATOM): array
                         {
@@ -1096,10 +1243,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(42, "bar", "baz"); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(42, "bar", "baz");
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -1133,11 +1287,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 implode("", [
                     "1 named parameters. \$a is variadic. 0 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int ...$a): array
                         {
@@ -1156,10 +1311,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo();
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -1187,11 +1349,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 implode("", [
                     "1 named parameters. \$a is variadic. 1 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int ...$a): array
                         {
@@ -1210,10 +1373,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(...[1,2,3]); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo(...[1,2,3]);
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -1241,11 +1411,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 implode("", [
                     "3 named parameters. \$c is variadic. 0 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a = 42, string $b = "baz", float ...$c): array
                         {
@@ -1264,10 +1435,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(); /** @phpstan-ignore-line */
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
+
+                    return $object->foo();
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
 
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
@@ -1302,11 +1480,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 implode("", [
                     "3 named parameters. \$c is variadic. 2 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a = 42, string $b = "baz", float ...$c): array
                         {
@@ -1325,11 +1504,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(43, "bim"); /** @phpstan-ignore-line */
-                },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
 
+                    return $object->foo(43, "bim");
+                },
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -1363,11 +1548,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 implode("", [
                     "3 named parameters. \$c is variadic. 3 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a = 42, string $b = "baz", float ...$c): array
                         {
@@ -1386,11 +1572,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(43, "bim", ...[1.0,2.0,3.0]); /** @phpstan-ignore-line */
-                },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
 
+                    return $object->foo(43, "bim", ...[1.0,2.0,3.0]);
+                },
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -1424,11 +1616,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 implode("", [
                     "3 named parameters. \$b has default value, but \$a and \$c do not. 3 passed argument values.",
                 ]),
-                function(){
+                function(): object
+                {
                     return new class
                     {
                         /**
-                         * @return array{0: \ReflectionMethod, 1: array<int, mixed>, 2: MethodArgumentDiscloser}
+                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b = "baz", float $c): array
                         {
@@ -1447,11 +1640,17 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                function(object $object){
-                    return $object->foo(43, "bim", 3.14); /** @phpstan-ignore-line */
-                },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object){
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                function(object $object): array
+                {
+                    assert(method_exists($object, "foo"));
 
+                    return $object->foo(43, "bim", 3.14);
+                },
+                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
+                {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -1639,7 +1838,10 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         $object = new class
         {
-            public function foo(int $a = self::BAR): void
+            public function foo(
+                /** @phpstan-ignore-next-line */
+                int $a = self::BAR
+            ): void
             {
             }
         };
@@ -1695,7 +1897,10 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         $object = new class
         {
-            public function foo(int $a = parent::BAR): void
+            public function foo(
+                /** @phpstan-ignore-next-line */
+                int $a = parent::BAR
+            ): void
             {
             }
         };
@@ -1751,7 +1956,10 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         $object = new class extends \DateTimeImmutable
         {
-            public function foo(int $a = parent::I_DONT_EXIST_836a6cf1a90749d0831ebcb8cb7776a4): void
+            public function foo(
+                /** @phpstan-ignore-next-line */
+                int $a = parent::I_DONT_EXIST_836a6cf1a90749d0831ebcb8cb7776a4
+            ): void
             {
             }
         };
@@ -1808,7 +2016,10 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         $object = new class
         {
-            public function foo(int $a = \IDontExista8728361d30f42bfb9a954abfac4ccab::BAR): void
+            public function foo(
+                /** @phpstan-ignore-next-line */
+                int $a = \IDontExista8728361d30f42bfb9a954abfac4ccab::BAR
+            ): void
             {
 
             }
@@ -1885,7 +2096,10 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         $object = new class
         {
-            public function foo(int $a = \IDontExist2da718442a7547e2b970aed55a2324b0::BAR): void
+            public function foo(
+                /** @phpstan-ignore-next-line */
+                int $a = \IDontExist2da718442a7547e2b970aed55a2324b0::BAR
+            ): void
             {
             }
         };
