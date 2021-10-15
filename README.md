@@ -334,7 +334,7 @@ Failure in \Foo31eda25b57e8456fb2b3e8158232b5e5->bar($a = (int) 7) inside (objec
 
 ```
 
-Notice how we now get useful information from the above object, its ID being 42 (and argument `$b` is 7).
+Notice how we now get useful information from the above object, its ID being 42 (and argument `$a` is 7).
 
 You must use `$this` as the argument in the `makeFailureInMethodMessage` call (and **not** `static::class`) for the above to work.
 
