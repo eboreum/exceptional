@@ -29,14 +29,14 @@ class OnelineFormatter extends AbstractFormatter
         ));
 
         if ($this->isProvidingTimestamp()) {
-            $result .= " (" . $this->normalizeString(date("c")) . ")";
+            $result .= ' (' . $this->normalizeString(date('c')) . ')';
         }
 
-        $result .= ". Message: " . $this->maskString($this->normalizeString($throwable->getMessage()));
-        $result .= ". File: " . $this->normalizeString($this->normalizeFilePath($throwable->getFile()));
-        $result .= ". Line: " . $throwable->getLine();
-        $result .= ". Code: " . $throwable->getCode();
-        $result .= ". Stacktrace: " . $this->normalizeString($this->maskString($throwable->getTraceAsString()));
+        $result .= '. Message: ' . $this->maskString($this->normalizeString($throwable->getMessage()));
+        $result .= '. File: ' . $this->normalizeString($this->normalizeFilePath($throwable->getFile()));
+        $result .= '. Line: ' . $throwable->getLine();
+        $result .= '. Code: ' . $throwable->getCode();
+        $result .= '. Stacktrace: ' . $this->normalizeString($this->maskString($throwable->getTraceAsString()));
 
         if ($throwable->getPrevious()) {
             $maximumPreviousDepth = $this->getMaximumPreviousDepth();
@@ -44,20 +44,20 @@ class OnelineFormatter extends AbstractFormatter
 
             if (is_int($maximumPreviousDepth) && $this->getPreviousThrowableLevel() >= $maximumPreviousDepth) {
                 $result .= sprintf(
-                    ". Previous: (%d more) (omitted)",
+                    '. Previous: (%d more) (omitted)',
                     $previousCount,
                 );
             } else {
                 $child = $this->withPreviousThrowableLevel($this->getPreviousThrowableLevel() + 1);
 
                 $result .= sprintf(
-                    ". Previous: (%d more) %s",
+                    '. Previous: (%d more) %s',
                     $previousCount,
                     $this->normalizeString($child->format($throwable->getPrevious())),
                 );
             }
         } else {
-            $result .= ". Previous: (None)";
+            $result .= '. Previous: (None)';
         }
 
         return $result;
@@ -67,7 +67,7 @@ class OnelineFormatter extends AbstractFormatter
     {
         return preg_replace(
             '/(\r\n|\r|\n)/',
-            " ",
+            ' ',
             $str,
         );
     }

@@ -1,24 +1,26 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
 use Eboreum\Caster\Contract\CasterInterface;
-use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\Formatting\AbstractFormatter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class AbstractFormatterTest extends TestCase
 {
     public function testBasics(): void
     {
         $caster = $this->_mockCasterInterface();
 
-        $object = new class($caster) extends AbstractFormatter
-        {
+        $object = new class($caster) extends AbstractFormatter {
             public function __construct(CasterInterface $caster)
             {
                 $this->caster = $caster;
@@ -26,7 +28,7 @@ class AbstractFormatterTest extends TestCase
 
             public function format(\Throwable $throwable): string
             {
-                return "";
+                return '';
             }
         };
 
@@ -42,18 +44,17 @@ class AbstractFormatterTest extends TestCase
     public function testMaskStringWorks(
         string $expected,
         string $maskedString
-    ): void
-    {
+    ): void {
         $caster = $this->_mockCasterInterface();
 
         $caster
             ->expects($this->exactly(1))
-            ->method("maskString")
+            ->method('maskString')
             ->with()
-            ->willReturn($maskedString);
+            ->willReturn($maskedString)
+        ;
 
-        $object = new class($caster) extends AbstractFormatter
-        {
+        $object = new class($caster) extends AbstractFormatter {
             public function __construct(CasterInterface $caster)
             {
                 $this->caster = $caster;
@@ -61,11 +62,11 @@ class AbstractFormatterTest extends TestCase
 
             public function format(\Throwable $throwable): string
             {
-                return "";
+                return '';
             }
         };
 
-        $this->assertSame($expected, $object->maskString("foo"));
+        $this->assertSame($expected, $object->maskString('foo'));
     }
 
     /**
@@ -75,12 +76,12 @@ class AbstractFormatterTest extends TestCase
     {
         return [
             [
-                "",
-                "",
+                '',
+                '',
             ],
             [
-                "mellon",
-                "mellon",
+                'mellon',
+                'mellon',
             ],
         ];
     }
@@ -91,12 +92,10 @@ class AbstractFormatterTest extends TestCase
     public function testNormalizeFilePathWorks(
         string $expected,
         string $filePath
-    ): void
-    {
+    ): void {
         $caster = $this->_mockCasterInterface();
 
-        $object = new class($caster) extends AbstractFormatter
-        {
+        $object = new class($caster) extends AbstractFormatter {
             public function __construct(CasterInterface $caster)
             {
                 $this->caster = $caster;
@@ -104,7 +103,7 @@ class AbstractFormatterTest extends TestCase
 
             public function format(\Throwable $throwable): string
             {
-                return "";
+                return '';
             }
         };
 
@@ -118,20 +117,20 @@ class AbstractFormatterTest extends TestCase
     {
         return [
             [
-                "",
-                "",
+                '',
+                '',
             ],
             [
-                "/foo/bar/baz",
-                "/foo/bar/baz",
+                '/foo/bar/baz',
+                '/foo/bar/baz',
             ],
             [
-                "/foo/bar/baz",
-                "\\foo\\bar\\baz",
+                '/foo/bar/baz',
+                '\\foo\\bar\\baz',
             ],
             [
-                "/foo/bar/baz",
-                "\\foo/bar\\baz",
+                '/foo/bar/baz',
+                '\\foo/bar\\baz',
             ],
         ];
     }
@@ -142,8 +141,7 @@ class AbstractFormatterTest extends TestCase
         $casterB = $this->_mockCasterInterface();
         $casterC = $this->_mockCasterInterface();
 
-        $objectA = new class($casterA) extends AbstractFormatter
-        {
+        $objectA = new class($casterA) extends AbstractFormatter {
             public function __construct(CasterInterface $caster)
             {
                 $this->caster = $caster;
@@ -151,7 +149,7 @@ class AbstractFormatterTest extends TestCase
 
             public function format(\Throwable $throwable): string
             {
-                return "";
+                return '';
             }
         };
 
@@ -170,8 +168,7 @@ class AbstractFormatterTest extends TestCase
     {
         $caster = $this->_mockCasterInterface();
 
-        $objectA = new class($caster) extends AbstractFormatter
-        {
+        $objectA = new class($caster) extends AbstractFormatter {
             public function __construct(CasterInterface $caster)
             {
                 $this->caster = $caster;
@@ -179,7 +176,7 @@ class AbstractFormatterTest extends TestCase
 
             public function format(\Throwable $throwable): string
             {
-                return "";
+                return '';
             }
         };
 
@@ -198,8 +195,7 @@ class AbstractFormatterTest extends TestCase
     {
         $caster = $this->_mockCasterInterface();
 
-        $objectA = new class($caster) extends AbstractFormatter
-        {
+        $objectA = new class($caster) extends AbstractFormatter {
             public function __construct(CasterInterface $caster)
             {
                 $this->caster = $caster;
@@ -207,7 +203,7 @@ class AbstractFormatterTest extends TestCase
 
             public function format(\Throwable $throwable): string
             {
-                return "";
+                return '';
             }
         };
 
@@ -226,8 +222,7 @@ class AbstractFormatterTest extends TestCase
     {
         $caster = $this->_mockCasterInterface();
 
-        $objectA = new class($caster) extends AbstractFormatter
-        {
+        $objectA = new class($caster) extends AbstractFormatter {
             public function __construct(CasterInterface $caster)
             {
                 $this->caster = $caster;
@@ -235,7 +230,7 @@ class AbstractFormatterTest extends TestCase
 
             public function format(\Throwable $throwable): string
             {
-                return "";
+                return '';
             }
         };
 
@@ -254,8 +249,7 @@ class AbstractFormatterTest extends TestCase
     {
         $caster = $this->_mockCasterInterface();
 
-        $object = new class($caster) extends AbstractFormatter
-        {
+        $object = new class($caster) extends AbstractFormatter {
             public function __construct(CasterInterface $caster)
             {
                 $this->caster = $caster;
@@ -263,7 +257,7 @@ class AbstractFormatterTest extends TestCase
 
             public function format(\Throwable $throwable): string
             {
-                return "";
+                return '';
             }
         };
 
@@ -274,26 +268,26 @@ class AbstractFormatterTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Failure in class@anonymous\/in\/.+\/%s:\d+-\>withPreviousThrowableLevel\(',
-                            '\$previousThrowableLevel = \(int\) \-1',
+                        '\$previousThrowableLevel = \(int\) \-1',
                         '\) inside \(object\) class@anonymous\/in\/.+\/%s:\d+ \{',
-                            '\\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
-                            ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
-                            ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
-                            ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
+                        '\\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
+                        ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
+                        ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
+                        ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
                         '\}',
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(AbstractFormatter::class, "/"),
-                    preg_quote(AbstractFormatter::class, "/"),
-                    preg_quote(AbstractFormatter::class, "/"),
-                    preg_quote(AbstractFormatter::class, "/"),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(AbstractFormatter::class, '/'),
+                    preg_quote(AbstractFormatter::class, '/'),
+                    preg_quote(AbstractFormatter::class, '/'),
+                    preg_quote(AbstractFormatter::class, '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -302,7 +296,7 @@ class AbstractFormatterTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Expects argument \$previousThrowableLevel to be \<\= 0, but it is not\.',
@@ -310,29 +304,29 @@ class AbstractFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     /**
      * @dataProvider dataProvider_testSplitTextLinesToArrayWorks
+     *
      * @param array<int, string> $expected
      */
     public function testSplitTextLinesToArrayWorks(
         array $expected,
         string $str
-    ): void
-    {
+    ): void {
         $this->assertSame($expected, AbstractFormatter::splitTextLinesToArray($str));
     }
 
@@ -344,31 +338,31 @@ class AbstractFormatterTest extends TestCase
         return [
             [
                 [
-                    "",
+                    '',
                 ],
-                "",
+                '',
             ],
             [
                 [
-                    "foo",
+                    'foo',
                 ],
-                "foo",
+                'foo',
             ],
             [
                 [
-                    "foo",
-                    "bar",
+                    'foo',
+                    'bar',
                 ],
                 "foo\nbar",
             ],
             [
                 [
-                    "foo",
-                    "bar",
-                    "baz",
-                    "bim",
-                    "",
-                    "bum",
+                    'foo',
+                    'bar',
+                    'baz',
+                    'bim',
+                    '',
+                    'bum',
                 ],
                 "foo\nbar\rbaz\r\nbim\n\rbum",
             ],
@@ -383,6 +377,7 @@ class AbstractFormatterTest extends TestCase
         return $this
             ->getMockBuilder(CasterInterface::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
     }
 }

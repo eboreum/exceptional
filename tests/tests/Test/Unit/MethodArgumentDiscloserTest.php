@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional;
 
@@ -11,21 +11,25 @@ use Eboreum\Exceptional\MethodArgumentDiscloser;
 use PHPUnit\Framework\TestCase;
 
 define(
-    "EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226",
+    'EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226',
     sprintf(
-        "A global constant utilized in unit test %s\\MethodArgumentDiscloserTest->testBasics",
+        'A global constant utilized in unit test %s\\MethodArgumentDiscloserTest->testBasics',
         __NAMESPACE__,
     ),
 );
 
 define(
-    __NAMESPACE__ . "\\EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a",
+    __NAMESPACE__ . '\\EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a',
     sprintf(
-        "A namespaced constant utilized in unit test %s\\MethodArgumentDiscloserTest->testBasics",
+        'A namespaced constant utilized in unit test %s\\MethodArgumentDiscloserTest->testBasics',
         __NAMESPACE__,
     ),
 );
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class MethodArgumentDiscloserTest extends TestCase
 {
     /**
@@ -36,8 +40,7 @@ class MethodArgumentDiscloserTest extends TestCase
         \Closure $objectFactory,
         \Closure $objectValueFactoryCallback,
         \Closure $assertionsCallback
-    ): void
-    {
+    ): void {
         $object = $objectFactory();
 
         $this->assertTrue(is_object($object));
@@ -66,11 +69,9 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         return [
             [
-                "0 named parameters. 0 passed argument values.",
-                function(): object
-                {
-                    return new class
-                    {
+                '0 named parameters. 0 passed argument values.',
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -94,14 +95,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
                     return $object->foo();
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(-1, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(0, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -122,11 +121,9 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                "1 named parameter. \$a is optional with default value 42. 0 passed argument values.",
-                function(): object
-                {
-                    return new class
-                    {
+                '1 named parameter. $a is optional with default value 42. 0 passed argument values.',
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -150,14 +147,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
                     return $object->foo();
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -171,7 +166,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     $this->assertSame(
                         0,
@@ -182,15 +177,13 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                "1 named parameter. \$a is optional with default value 42. 1 passed argument value.",
-                function(): object
-                {
+                '1 named parameter. $a is optional with default value 42. 1 passed argument value.',
+                function (): object {
                     /**
                      * phpstan seems buggy, because if we just do "return new class" here, it get confused and mixes up
                      * the lines, taking the closure from a completely different test case.
                      */
-                    $object = new class
-                    {
+                    $object = new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -216,14 +209,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
                     return $object->foo(64);
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -237,7 +228,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     $this->assertSame(
                         0,
@@ -248,11 +239,9 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                "3 named parameters. All required. 3 passed argument values.",
-                function(): object
-                {
-                    return new class
-                    {
+                '3 named parameters. All required. 3 passed argument values.',
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -276,20 +265,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar", 3.14);
+                    return $object->foo(42, 'bar', 3.14);
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             3.14,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -299,11 +286,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(0, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         3,
@@ -314,11 +301,9 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                "3 named parameters. All required. 4 passed argument values.",
-                function(): object
-                {
-                    $object = new class
-                    {
+                '3 named parameters. All required. 4 passed argument values.',
+                function (): object {
+                    $object = new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -344,20 +329,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar", 3.14, true);
+                    return $object->foo(42, 'bar', 3.14, true);
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             3.14,
                             true,
                         ],
@@ -368,11 +351,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(0, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         3,
@@ -383,11 +366,9 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                "3 named parameters. \$c is optional with default value being null. 2 passed argument values.",
-                function(): object
-                {
-                    return new class
-                    {
+                '3 named parameters. $c is optional with default value being null. 2 passed argument values.',
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -411,20 +392,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar");
+                    return $object->foo(42, 'bar');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             null,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -434,11 +413,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -449,14 +428,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a global constant",
-                    ", EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226. 2 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a global constant',
+                    ', EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226. 2 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -480,20 +457,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar");
+                    return $object->foo(42, 'bar');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             \EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -503,11 +478,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -518,14 +493,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a global constant",
-                    ", EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226. 3 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a global constant',
+                    ', EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226. 3 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -549,21 +522,19 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar", "baz");
+                    return $object->foo(42, 'bar', 'baz');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
-                            "baz",
+                            'bar',
+                            'baz',
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -572,11 +543,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -587,14 +558,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a namespaced constant",
-                    ", EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a. 2 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a namespaced constant',
+                    ', EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a. 2 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -618,20 +587,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar");
+                    return $object->foo(42, 'bar');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -641,11 +608,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -656,14 +623,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a namespaced constant",
-                    ", EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a. 3 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a namespaced constant',
+                    ', EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a. 3 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -687,21 +652,19 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar", "baz");
+                    return $object->foo(42, 'bar', 'baz');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
-                            "baz",
+                            'bar',
+                            'baz',
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -710,11 +673,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -725,14 +688,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a same-class constant, self::BAR.",
-                    " being public. 2 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a same-class constant, self::BAR.',
+                    ' being public. 2 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         public const BAR = 3.14;
 
                         /**
@@ -758,20 +719,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar");
+                    return $object->foo(42, 'bar');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             3.14,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -781,11 +740,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -796,14 +755,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a same-class constant, self::BAR.",
-                    " being private. 2 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a same-class constant, self::BAR.',
+                    ' being private. 2 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         private const BAR = 3.14;
 
                         /**
@@ -829,20 +786,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar");
+                    return $object->foo(42, 'bar');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             3.14,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -852,11 +807,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -867,14 +822,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a same-class constant, self::BAR.",
-                    " 3 passed argument values, overriding \$c.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a same-class constant, self::BAR.',
+                    ' 3 passed argument values, overriding $c.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         public const BAR = 3.14;
 
                         /**
@@ -900,20 +853,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar", 2.72);
+                    return $object->foo(42, 'bar', 2.72);
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             2.72,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -923,11 +874,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -938,14 +889,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a parent class constant",
-                    ", using parent binding, parent::ATOM. 2 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a parent class constant',
+                    ', using parent binding, parent::ATOM. 2 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class extends \DateTimeImmutable
-                    {
+                function (): object {
+                    return new class() extends \DateTimeImmutable {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -969,20 +918,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar");
+                    return $object->foo(42, 'bar');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             \DateTimeInterface::ATOM,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -992,11 +939,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -1007,14 +954,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a parent class constant",
-                    ", using parent binding, parent::ATOM. 3 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a parent class constant',
+                    ', using parent binding, parent::ATOM. 3 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class extends \DateTimeImmutable
-                    {
+                function (): object {
+                    return new class() extends \DateTimeImmutable {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -1038,21 +983,19 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar", "baz");
+                    return $object->foo(42, 'bar', 'baz');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
-                            "baz",
+                            'bar',
+                            'baz',
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -1061,11 +1004,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -1076,14 +1019,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a parent class constant",
-                    ", using parent binding, \DateTimeInterface::ATOM. 2 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a parent class constant',
+                    ', using parent binding, \\DateTimeInterface::ATOM. 2 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class extends \DateTimeImmutable
-                    {
+                function (): object {
+                    return new class() extends \DateTimeImmutable {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -1107,20 +1048,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar");
+                    return $object->foo(42, 'bar');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             \DateTimeInterface::ATOM,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -1130,11 +1069,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -1145,15 +1084,13 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a parent class constant",
-                    ", using parent binding, \DateTimeImmutable::ATOM. 2 passed argument values.",
-                    " Notice: \DateTimeImmutable - not \DateTimeInterface - is used here.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a parent class constant',
+                    ', using parent binding, \\DateTimeImmutable::ATOM. 2 passed argument values.',
+                    ' Notice: \\DateTimeImmutable - not \\DateTimeInterface - is used here.',
                 ]),
-                function(): object
-                {
-                    return new class extends \DateTimeImmutable
-                    {
+                function (): object {
+                    return new class() extends \DateTimeImmutable {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -1177,20 +1114,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar");
+                    return $object->foo(42, 'bar');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             \DateTimeInterface::ATOM,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -1200,11 +1135,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -1215,14 +1150,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a parent class constant",
-                    ", using parent binding, \DateTimeInterface::ATOM. 3 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a parent class constant',
+                    ', using parent binding, \\DateTimeInterface::ATOM. 3 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -1246,21 +1179,19 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, "bar", "baz");
+                    return $object->foo(42, 'bar', 'baz');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
-                            "baz",
+                            'bar',
+                            'baz',
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -1269,11 +1200,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -1284,13 +1215,11 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "1 named parameters. \$a is variadic. 0 passed argument values.",
+                implode('', [
+                    '1 named parameters. $a is variadic. 0 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -1314,14 +1243,12 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
                     return $object->foo();
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -1335,7 +1262,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     $this->assertSame(
                         0,
@@ -1346,13 +1273,11 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "1 named parameters. \$a is variadic. 1 passed argument values.",
+                implode('', [
+                    '1 named parameters. $a is variadic. 1 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
@@ -1376,19 +1301,17 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(...[1,2,3]);
+                    return $object->foo(...[1, 2, 3]);
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
-                            [1,2,3],
+                            [1, 2, 3],
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -1397,7 +1320,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     $this->assertSame(
                         0,
@@ -1408,17 +1331,15 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is variadic. 0 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is variadic. 0 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
-                        public function foo(int $a = 42, string $b = "baz", float ...$c): array
+                        public function foo(int $a = 42, string $b = 'baz', float ...$c): array
                         {
                             $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
@@ -1438,21 +1359,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
                     return $object->foo();
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
-
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "baz",
+                            'baz',
                             [],
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -1462,11 +1380,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(3, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         0,
@@ -1477,17 +1395,15 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is variadic. 2 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is variadic. 2 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
-                        public function foo(int $a = 42, string $b = "baz", float ...$c): array
+                        public function foo(int $a = 42, string $b = 'baz', float ...$c): array
                         {
                             $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
@@ -1507,20 +1423,18 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(43, "bim");
+                    return $object->foo(43, 'bim');
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             43,
-                            "bim",
+                            'bim',
                             [],
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -1530,11 +1444,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(3, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         0,
@@ -1545,17 +1459,15 @@ class MethodArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is variadic. 3 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is variadic. 3 passed argument values.',
                 ]),
-                function(): object
-                {
-                    return new class
-                    {
+                function (): object {
+                    return new class() {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
-                        public function foo(int $a = 42, string $b = "baz", float ...$c): array
+                        public function foo(int $a = 42, string $b = 'baz', float ...$c): array
                         {
                             $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
@@ -1575,21 +1487,19 @@ class MethodArgumentDiscloserTest extends TestCase
                 /**
                  * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
-                function(object $object): array
-                {
-                    assert(method_exists($object, "foo"));
+                function (object $object): array {
+                    assert(method_exists($object, 'foo'));
 
-                    return $object->foo(43, "bim", ...[1.0,2.0,3.0]);
+                    return $object->foo(43, 'bim', ...[1.0, 2.0, 3.0]);
                 },
-                function(string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void
-                {
+                function (string $message, MethodArgumentDiscloser $methodArgumentDiscloser, object $object): void {
                     $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             43,
-                            "bim",
-                            [1.0,2.0,3.0],
+                            'bim',
+                            [1.0, 2.0, 3.0],
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -1598,11 +1508,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(3, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         0,
@@ -1622,8 +1532,7 @@ class MethodArgumentDiscloserTest extends TestCase
         string $message,
         string $glue,
         \ReflectionMethod $reflectionMethod
-    ): void
-    {
+    ): void {
         try {
             new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
         } catch (\Exception $e) {
@@ -1631,19 +1540,19 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Failed to construct \\\\%s with arguments \{',
-                            '\$caster = \(object\) \\\\%s',
-                            ', \$reflectionMethod = \(object\) \\\\ReflectionMethod',
-                            ', \$methodArgumentValues = \(array\(0\)\) \[\]',
+                        '\$caster = \(object\) \\\\%s',
+                        ', \$reflectionMethod = \(object\) \\\\ReflectionMethod',
+                        ', \$methodArgumentValues = \(array\(0\)\) \[\]',
                         '\}',
                         '$',
                         '/',
                     ]),
-                    preg_quote(MethodArgumentDiscloser::class, "/"),
-                    preg_quote(Caster::class, "/"),
+                    preg_quote(MethodArgumentDiscloser::class, '/'),
+                    preg_quote(Caster::class, '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -1652,30 +1561,30 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Argument \$methodArgumentValues = \(array\(0\)\) \[\] contains fewer elements \(0\)',
                         ' than the required number of parameters \(1\) in argument',
                         ' \$reflectionMethod = \(object\) \\\\ReflectionMethod \(',
-                            'class@anonymous\/in\/.+\/%s:\d+%sfoo',
+                        'class@anonymous\/in\/.+\/%s:\d+%sfoo',
                         '\), which is bogus',
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote($glue, "/"),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote($glue, '/'),
                 ),
                 $currentException->getMessage(),
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     /**
@@ -1685,16 +1594,13 @@ class MethodArgumentDiscloserTest extends TestCase
     {
         return [
             [
-                "Non-static",
-                "->",
-                (function(){
-                    $object = new class
-                    {
+                'Non-static',
+                '->',
+                (function () {
+                    $object = new class() {
                         public function foo(int $a): \ReflectionMethod
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
-
-                            return $reflectionMethod;
+                            return new \ReflectionMethod($this, __FUNCTION__);
                         }
                     };
 
@@ -1702,11 +1608,10 @@ class MethodArgumentDiscloserTest extends TestCase
                 })(),
             ],
             [
-                "Static",
-                "::",
-                (function(){
-                    $object = new class
-                    {
+                'Static',
+                '::',
+                (function () {
+                    $object = new class() {
                         public static function foo(int $a): \ReflectionMethod
                         {
                             $reflectionMethod = new \ReflectionMethod(static::class, __FUNCTION__);
@@ -1723,8 +1628,7 @@ class MethodArgumentDiscloserTest extends TestCase
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenNoDefaultValueIsAvailableOnReflectionParameter(): void
     {
-        $object = new class
-        {
+        $object = new class() {
             public function foo(int $a): MethodArgumentDiscloser
             {
                 $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
@@ -1744,7 +1648,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Expects argument \$reflectionParameter \(name: "a"\) to have a default value available',
@@ -1752,34 +1656,32 @@ class MethodArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(MethodArgumentDiscloser::class, "/"),
+                    preg_quote(MethodArgumentDiscloser::class, '/'),
                 ),
                 $currentException->getMessage(),
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToANonExistingClassConstant(): void
     {
-        $object = new class
-        {
+        $object = new class() {
             public function foo(
-                /** @phpstan-ignore-next-line */
+                // @phpstan-ignore-next-line
                 int $a = self::BAR
-            ): void
-            {
+            ): void {
             }
         };
 
         $reflectionObject = new \ReflectionObject($object);
-        $reflectionMethod = $reflectionObject->getMethod("foo");
+        $reflectionMethod = $reflectionObject->getMethod('foo');
         $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
         $reflectionParameter = $reflectionMethod->getParameters()[0];
 
@@ -1790,7 +1692,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
@@ -1798,7 +1700,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -1806,7 +1708,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'Unable to locate the constant self\:\:BAR',
@@ -1817,28 +1719,26 @@ class MethodArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToAConstantOnANonExistingParentClass(): void
     {
-        $object = new class
-        {
+        $object = new class() {
             public function foo(
-                /** @phpstan-ignore-next-line */
+                // @phpstan-ignore-next-line
                 int $a = parent::BAR
-            ): void
-            {
+            ): void {
             }
         };
 
         $reflectionObject = new \ReflectionObject($object);
-        $reflectionMethod = $reflectionObject->getMethod("foo");
+        $reflectionMethod = $reflectionObject->getMethod('foo');
         $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
         $reflectionParameter = $reflectionMethod->getParameters()[0];
 
@@ -1849,7 +1749,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
@@ -1857,7 +1757,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -1865,7 +1765,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'Unable to locate the constant parent\:\:BAR',
@@ -1876,28 +1776,26 @@ class MethodArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToAConstantWhichDoesNotExistOnTheParentClass(): void
     {
-        $object = new class extends \DateTimeImmutable
-        {
+        $object = new class() extends \DateTimeImmutable {
             public function foo(
-                /** @phpstan-ignore-next-line */
+                // @phpstan-ignore-next-line
                 int $a = parent::I_DONT_EXIST_836a6cf1a90749d0831ebcb8cb7776a4
-            ): void
-            {
+            ): void {
             }
         };
 
         $reflectionObject = new \ReflectionObject($object);
-        $reflectionMethod = $reflectionObject->getMethod("foo");
+        $reflectionMethod = $reflectionObject->getMethod('foo');
         $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
         $reflectionParameter = $reflectionMethod->getParameters()[0];
 
@@ -1908,7 +1806,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
@@ -1916,7 +1814,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -1924,7 +1822,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'Unable to locate the constant parent\:\:I_DONT_EXIST_836a6cf1a90749d0831ebcb8cb7776a4',
@@ -1936,36 +1834,31 @@ class MethodArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenCaseForScopeIsUncovered(): void
     {
-        $object = new class
-        {
+        $object = new class() {
             public function foo(
-                /** @phpstan-ignore-next-line */
+                // @phpstan-ignore-next-line
                 int $a = \IDontExista8728361d30f42bfb9a954abfac4ccab::BAR
-            ): void
-            {
-
+            ): void {
             }
         };
 
-        $reflectionMethod = new \ReflectionMethod($object, "foo");
+        $reflectionMethod = new \ReflectionMethod($object, 'foo');
 
-        $discloser = new class(Caster::getInstance(), $reflectionMethod) extends AbstractFunctionArgumentDiscloser
-        {
+        $discloser = new class(Caster::getInstance(), $reflectionMethod) extends AbstractFunctionArgumentDiscloser {
             public function __construct(
                 Caster $caster,
                 \ReflectionMethod $reflectionMethod
-            )
-            {
+            ) {
                 $this->caster = $caster;
                 $this->reflectionFunction = $reflectionMethod;
             }
@@ -1988,7 +1881,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
@@ -1996,7 +1889,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -2004,7 +1897,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'Uncovered case for \$match\["scope"\] \=',
@@ -2016,28 +1909,26 @@ class MethodArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToANonExistingFullyQuantifiedClassConstant(): void
     {
-        $object = new class
-        {
+        $object = new class() {
             public function foo(
-                /** @phpstan-ignore-next-line */
+                // @phpstan-ignore-next-line
                 int $a = \IDontExist2da718442a7547e2b970aed55a2324b0::BAR
-            ): void
-            {
+            ): void {
             }
         };
 
         $reflectionObject = new \ReflectionObject($object);
-        $reflectionMethod = $reflectionObject->getMethod("foo");
+        $reflectionMethod = $reflectionObject->getMethod('foo');
         $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
         $reflectionParameter = $reflectionMethod->getParameters()[0];
 
@@ -2048,7 +1939,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
@@ -2056,7 +1947,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -2064,7 +1955,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'Class constant "IDontExist2da718442a7547e2b970aed55a2324b0\:\:BAR" is not defined',
@@ -2075,18 +1966,17 @@ class MethodArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpressionForNonStaticMethod(): void
     {
-        $object = new class
-        {
+        $object = new class() {
             public function foo(int $a): MethodArgumentDiscloser
             {
                 $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
@@ -2098,45 +1988,52 @@ class MethodArgumentDiscloserTest extends TestCase
         $methodArgumentDiscloser = $object->foo(42);
 
         $reflectionParameter = $this
-            ->getMockBuilder("ReflectionParameter")
+            ->getMockBuilder('ReflectionParameter')
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueAvailable")
+            ->method('isDefaultValueAvailable')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueConstant")
+            ->method('isDefaultValueConstant')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getDefaultValueConstantName")
+            ->method('getDefaultValueConstantName')
             ->with()
-            ->willReturn("  I don't work as a constant name  ");
+            ->willReturn("  I don't work as a constant name  ")
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getName")
+            ->method('getName')
             ->with()
-            ->willReturn("foo");
+            ->willReturn('foo')
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getDeclaringClass")
+            ->method('getDeclaringClass')
             ->with()
-            ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass());
+            ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass())
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(4))
-            ->method("getDeclaringFunction")
+            ->method('getDeclaringFunction')
             ->with()
-            ->willReturn($methodArgumentDiscloser->getReflectionFunction());
+            ->willReturn($methodArgumentDiscloser->getReflectionFunction())
+        ;
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
@@ -2145,7 +2042,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$foo in method class@anonymous\/in\/.+\/%s:\d+->foo',
@@ -2153,7 +2050,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -2161,7 +2058,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'Expects default value of parameter \$foo - a constant - to match regular expression \'.+\'',
@@ -2173,18 +2070,17 @@ class MethodArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpressionForStaticMethod(): void
     {
-        $object = new class
-        {
+        $object = new class() {
             public static function foo(int $a): MethodArgumentDiscloser
             {
                 $reflectionMethod = new \ReflectionMethod(static::class, __FUNCTION__);
@@ -2196,45 +2092,52 @@ class MethodArgumentDiscloserTest extends TestCase
         $methodArgumentDiscloser = $object->foo(42);
 
         $reflectionParameter = $this
-            ->getMockBuilder("ReflectionParameter")
+            ->getMockBuilder('ReflectionParameter')
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueAvailable")
+            ->method('isDefaultValueAvailable')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueConstant")
+            ->method('isDefaultValueConstant')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getDefaultValueConstantName")
+            ->method('getDefaultValueConstantName')
             ->with()
-            ->willReturn("  I don't work as a constant name  ");
+            ->willReturn("  I don't work as a constant name  ")
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getName")
+            ->method('getName')
             ->with()
-            ->willReturn("foo");
+            ->willReturn('foo')
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getDeclaringClass")
+            ->method('getDeclaringClass')
             ->with()
-            ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass());
+            ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass())
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(4))
-            ->method("getDeclaringFunction")
+            ->method('getDeclaringFunction')
             ->with()
-            ->willReturn($methodArgumentDiscloser->getReflectionFunction());
+            ->willReturn($methodArgumentDiscloser->getReflectionFunction())
+        ;
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
@@ -2243,7 +2146,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$foo in method class@anonymous\/in\/.+\/%s:\d+\:\:foo',
@@ -2251,7 +2154,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -2259,7 +2162,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'Expects default value of parameter \$foo - a constant - to match regular expression \'.+\'',
@@ -2271,18 +2174,17 @@ class MethodArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedGlobalConstantDoesNotExist(): void
     {
-        $object = new class
-        {
+        $object = new class() {
             public function foo(int $a): MethodArgumentDiscloser
             {
                 $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
@@ -2294,45 +2196,52 @@ class MethodArgumentDiscloserTest extends TestCase
         $methodArgumentDiscloser = $object->foo(42);
 
         $reflectionParameter = $this
-            ->getMockBuilder("ReflectionParameter")
+            ->getMockBuilder('ReflectionParameter')
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueAvailable")
+            ->method('isDefaultValueAvailable')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueConstant")
+            ->method('isDefaultValueConstant')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("getDefaultValueConstantName")
+            ->method('getDefaultValueConstantName')
             ->with()
-            ->willReturn("NONEXSITING_CONSTANT_1aedab95b22c45afbdd0e5cf93af5ee9");
+            ->willReturn('NONEXSITING_CONSTANT_1aedab95b22c45afbdd0e5cf93af5ee9')
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("getName")
+            ->method('getName')
             ->with()
-            ->willReturn("foo");
+            ->willReturn('foo')
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getDeclaringClass")
+            ->method('getDeclaringClass')
             ->with()
-            ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass());
+            ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass())
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(4))
-            ->method("getDeclaringFunction")
+            ->method('getDeclaringFunction')
             ->with()
-            ->willReturn($methodArgumentDiscloser->getReflectionFunction());
+            ->willReturn($methodArgumentDiscloser->getReflectionFunction())
+        ;
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
@@ -2341,7 +2250,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$foo in method class@anonymous\/in\/.+\/%s:\d+->foo',
@@ -2349,7 +2258,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -2357,7 +2266,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'The global constant "NONEXSITING_CONSTANT_1aedab95b22c45afbdd0e5cf93af5ee9" is not defined',
@@ -2368,18 +2277,17 @@ class MethodArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist(): void
     {
-        $object = new class
-        {
+        $object = new class() {
             public function foo(int $a): MethodArgumentDiscloser
             {
                 $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
@@ -2391,45 +2299,52 @@ class MethodArgumentDiscloserTest extends TestCase
         $methodArgumentDiscloser = $object->foo(42);
 
         $reflectionParameter = $this
-            ->getMockBuilder("ReflectionParameter")
+            ->getMockBuilder('ReflectionParameter')
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueAvailable")
+            ->method('isDefaultValueAvailable')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueConstant")
+            ->method('isDefaultValueConstant')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("getDefaultValueConstantName")
+            ->method('getDefaultValueConstantName')
             ->with()
-            ->willReturn("Foo\\Bar\\NONEXSITING_CONSTANT_e68ff2bd2d214c59abb3ad374163871f");
+            ->willReturn('Foo\\Bar\\NONEXSITING_CONSTANT_e68ff2bd2d214c59abb3ad374163871f')
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("getName")
+            ->method('getName')
             ->with()
-            ->willReturn("foo");
+            ->willReturn('foo')
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getDeclaringClass")
+            ->method('getDeclaringClass')
             ->with()
-            ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass());
+            ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass())
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(4))
-            ->method("getDeclaringFunction")
+            ->method('getDeclaringFunction')
             ->with()
-            ->willReturn($methodArgumentDiscloser->getReflectionFunction());
+            ->willReturn($methodArgumentDiscloser->getReflectionFunction())
+        ;
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
@@ -2438,7 +2353,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$foo in method class@anonymous\/in\/.+\/%s:\d+->foo',
@@ -2446,7 +2361,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -2454,7 +2369,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'The namespaced constant',
@@ -2467,35 +2382,31 @@ class MethodArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterHandlesUncoveredCaseGracefully(): void
     {
-        $object = new class
-        {
-            CONST BAR = 42;
+        $object = new class() {
+            public const BAR = 42;
 
             public function foo(int $a = self::BAR): void
             {
-
             }
         };
 
-        $reflectionMethod = new \ReflectionMethod($object, "foo");
+        $reflectionMethod = new \ReflectionMethod($object, 'foo');
 
-        $discloser = new class(Caster::getInstance(), $reflectionMethod) extends AbstractFunctionArgumentDiscloser
-        {
+        $discloser = new class(Caster::getInstance(), $reflectionMethod) extends AbstractFunctionArgumentDiscloser {
             public function __construct(
                 Caster $caster,
                 \ReflectionMethod $reflectionMethod
-            )
-            {
+            ) {
                 $this->caster = $caster;
                 $this->reflectionFunction = $reflectionMethod;
             }
@@ -2518,7 +2429,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
@@ -2526,7 +2437,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -2534,7 +2445,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'Uncovered case for constant name "self\:\:BAR"',
@@ -2546,11 +2457,11 @@ class MethodArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 }

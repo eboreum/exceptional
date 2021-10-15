@@ -1,12 +1,16 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional;
 
 use Eboreum\Exceptional\Caster;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class CasterTest extends TestCase
 {
     public function testCreateInstanceWorks(): void

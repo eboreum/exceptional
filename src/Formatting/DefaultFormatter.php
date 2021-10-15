@@ -20,7 +20,7 @@ class DefaultFormatter extends AbstractFormatter
      *
      * @DebugIdentifier
      */
-    protected string $indentationCharacters = "    ";
+    protected string $indentationCharacters = '    ';
 
     public function __construct(CasterInterface $caster)
     {
@@ -38,7 +38,7 @@ class DefaultFormatter extends AbstractFormatter
             $this->isProvidingTimestamp()
             && 0 === $this->getPreviousThrowableLevel()
         ) {
-            $result .= " (" . date("c") . ")";
+            $result .= ' (' . date('c') . ')';
         }
 
         $indentation = $this->makeIndentation($this->getPreviousThrowableLevel());
@@ -51,7 +51,7 @@ class DefaultFormatter extends AbstractFormatter
 
         $result .= "\n{$indentation}Message:";
         $result .= "\n" . implode("\n", array_map(
-            function(string $line) use ($indentationNextLevel){
+            function (string $line) use ($indentationNextLevel) {
                 return $indentationNextLevel . $this->maskString($line);
             },
             $messageLines,
@@ -60,7 +60,7 @@ class DefaultFormatter extends AbstractFormatter
         $result .= "\n{$indentation}Line: " . $throwable->getLine();
         $result .= "\n{$indentation}Code: " . $throwable->getCode();
         $result .= "\n{$indentation}Stacktrace:\n" . implode("\n", array_map(
-            function(string $line) use ($indentationNextLevel){
+            function (string $line) use ($indentationNextLevel) {
                 return $indentationNextLevel . $this->maskString($line);
             },
             $stacktraceLines,

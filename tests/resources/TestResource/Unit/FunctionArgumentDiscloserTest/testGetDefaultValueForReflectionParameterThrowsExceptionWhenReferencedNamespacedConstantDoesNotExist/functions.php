@@ -14,8 +14,7 @@ function foo_0632691243674084af85b52269f0d4d2(
     int $a,
     string $b,
     string $c = \EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892
-): array
-{
+): array {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();
 
@@ -75,8 +74,7 @@ function foo_1ca3717f657946cc8ea73a9c10d25a15(
     int $a,
     string $b,
     string $c = \DateTimeInterface::ATOM
-): array
-{
+): array {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();
 
@@ -117,7 +115,25 @@ function foo_273f629332064648a935524ecf024cc9(
     int $a,
     string $b,
     string $c = \EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892
-): array
+): array {
+    $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
+    $functionArgumentValues = func_get_args();
+
+    return [
+        $reflectionFunction,
+        $functionArgumentValues,
+        new FunctionArgumentDiscloser(
+            Caster::getInstance(),
+            $reflectionFunction,
+            $functionArgumentValues
+        ),
+    ];
+}
+
+/**
+ * @return array{\ReflectionFunction, array<int, mixed>, FunctionArgumentDiscloser}
+ */
+function foo_37704407c9d04b5dbf2ce6de4ffbbfbd(int $a = 42, string $b = 'baz', float ...$c): array
 {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();
@@ -136,26 +152,7 @@ function foo_273f629332064648a935524ecf024cc9(
 /**
  * @return array{\ReflectionFunction, array<int, mixed>, FunctionArgumentDiscloser}
  */
-function foo_37704407c9d04b5dbf2ce6de4ffbbfbd(int $a = 42, string $b = "baz", float ...$c): array
-{
-    $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
-    $functionArgumentValues = func_get_args();
-
-    return [
-        $reflectionFunction,
-        $functionArgumentValues,
-        new FunctionArgumentDiscloser(
-            Caster::getInstance(),
-            $reflectionFunction,
-            $functionArgumentValues
-        ),
-    ];
-}
-
-/**
- * @return array{\ReflectionFunction, array<int, mixed>, FunctionArgumentDiscloser}
- */
-function foo_42fb127ea64c4bc39f6d0ce58df1b9a6(int $a = 42, string $b = "baz", float ...$c): array
+function foo_42fb127ea64c4bc39f6d0ce58df1b9a6(int $a = 42, string $b = 'baz', float ...$c): array
 {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();
@@ -185,7 +182,7 @@ function foo_4d2650269a324a3788f827ee739afee1(int $a): void
 /**
  * @return array{\ReflectionFunction, array<int, mixed>, FunctionArgumentDiscloser}
  */
-function foo_534d34186ec84bd5baf195e141284d36(int $a = 42, string $b = "baz", float ...$c): array
+function foo_534d34186ec84bd5baf195e141284d36(int $a = 42, string $b = 'baz', float ...$c): array
 {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();
@@ -215,8 +212,7 @@ function foo_5d337039b3b747738ecfaf56520a5450(
     int $a,
     string $b,
     string $c = EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f
-): array
-{
+): array {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();
 
@@ -238,8 +234,7 @@ function foo_85366d3d2de04a969f58caf818a35590(
     int $a,
     string $b,
     string $c = \DateTimeImmutable::ATOM
-): array
-{
+): array {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();
 
@@ -306,8 +301,7 @@ function foo_b50e80c0945c44e98bd73f356410e342(
     int $a,
     string $b,
     string $c = EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f
-): array
-{
+): array {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();
 
@@ -393,8 +387,7 @@ function foo_fb4c857d2c2b422da8d8e8fc6ed7da1c(
     int $a,
     string $b,
     string $c = \DateTimeInterface::ATOM
-): array
-{
+): array {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();
 

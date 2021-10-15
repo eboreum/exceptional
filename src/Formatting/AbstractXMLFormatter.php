@@ -5,10 +5,6 @@ declare(strict_types=1);
 namespace Eboreum\Exceptional\Formatting;
 
 use Eboreum\Caster\Annotation\DebugIdentifier;
-use Eboreum\Caster\CharacterEncoding;
-use Eboreum\Exceptional\Caster;
-use Eboreum\Exceptional\Exception\RuntimeException;
-use Eboreum\Exceptional\ExceptionMessageGenerator;
 
 /**
  * {@inheritDoc}

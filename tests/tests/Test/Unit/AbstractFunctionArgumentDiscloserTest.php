@@ -1,16 +1,18 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional;
 
 use Eboreum\Caster\Contract\CasterInterface;
-use Eboreum\Exceptional\Caster;
-use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\AbstractFunctionArgumentDiscloser;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class AbstractFunctionArgumentDiscloserTest extends TestCase
 {
     public function testBasics(): void
@@ -18,8 +20,7 @@ class AbstractFunctionArgumentDiscloserTest extends TestCase
         $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
         $caster = $this->_mockCasterInterface();
 
-        $object = new class($caster, $reflectionMethod, []) extends AbstractFunctionArgumentDiscloser
-        {
+        $object = new class($caster, $reflectionMethod, []) extends AbstractFunctionArgumentDiscloser {
             /**
              * @param array<mixed> $functionArgumentValues
              */
@@ -27,8 +28,7 @@ class AbstractFunctionArgumentDiscloserTest extends TestCase
                 CasterInterface $caster,
                 \ReflectionMethod $reflectionMethod,
                 array $functionArgumentValues
-            )
-            {
+            ) {
                 $this->caster = $caster;
                 $this->reflectionFunction = $reflectionMethod;
                 $this->functionArgumentValues = $functionArgumentValues;
@@ -51,6 +51,7 @@ class AbstractFunctionArgumentDiscloserTest extends TestCase
         return $this
             ->getMockBuilder(CasterInterface::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
     }
 }

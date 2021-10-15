@@ -33,7 +33,7 @@ class Caster extends OriginalCaster
 
         $caster = new self($characterEncoding);
 
-        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection(...[
+        return $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection(...[
             new TextuallyIdentifiableInterfaceFormatter(),
             new DebugIdentifierAnnotationInterfaceFormatter(),
             new ClosureFormatter(),
@@ -41,8 +41,7 @@ class Caster extends OriginalCaster
             new DateTimeInterfaceFormatter(),
             new ThrowableFormatter(),
         ]));
-
-        return $caster; /** @phpstan-ignore-line */
+        // @phpstan-ignore-line
     }
 
     public static function getInstance(): Caster

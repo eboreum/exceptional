@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional;
 
@@ -17,7 +17,6 @@ use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_37704407c9d04b5dbf2ce6de4ffbbfbd;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_42fb127ea64c4bc39f6d0ce58df1b9a6;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_445cb914ff6f48a0a039e4eedd0f4ff0;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_4d2650269a324a3788f827ee739afee1;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_534d34186ec84bd5baf195e141284d36;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_55f325c24dc64ff4bb9df02b6f51de6d;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_5d337039b3b747738ecfaf56520a5450;
@@ -31,8 +30,11 @@ use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_e1508b2e20334bd5a4de82855086873e;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_f169b74a249c47f28543063439f58f4d;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_fb4c857d2c2b422da8d8e8fc6ed7da1c;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_fe25fbdda555464f982783f37b43ade9;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class FunctionArgumentDiscloserTest extends TestCase
 {
     /**
@@ -42,8 +44,7 @@ class FunctionArgumentDiscloserTest extends TestCase
         string $message,
         \Closure $valueFactoryCallback,
         \Closure $assertionsCallback
-    ): void
-    {
+    ): void {
         [
             $reflectionFunction,
             $functionArgumentValues,
@@ -68,11 +69,11 @@ class FunctionArgumentDiscloserTest extends TestCase
     {
         return [
             [
-                "0 named parameters. 0 passed argument values.",
-                function(){
+                '0 named parameters. 0 passed argument values.',
+                function () {
                     return foo_a822fb8b9ffd444b923b71185d41ad57();
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(-1, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(0, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -93,11 +94,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                "1 named parameter. \$a is optional with default value 42. 0 passed argument values.",
-                function(){
+                '1 named parameter. $a is optional with default value 42. 0 passed argument values.',
+                function () {
                     return foo_8ff1bec0e2734ff5b74e095ae01cd3da();
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(0, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -111,7 +112,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     $this->assertSame(
                         0,
@@ -122,11 +123,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                "1 named parameter. \$a is optional with default value 42. 1 passed argument value.",
-                function(){
+                '1 named parameter. $a is optional with default value 42. 1 passed argument value.',
+                function () {
                     return foo_f169b74a249c47f28543063439f58f4d(64);
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(0, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -140,7 +141,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     $this->assertSame(
                         0,
@@ -151,17 +152,17 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                "3 named parameters. All required. 3 passed argument values.",
-                function(){
-                    return foo_d89b416e02504e34812c70ae20083403(42, "bar", 3.14);
+                '3 named parameters. All required. 3 passed argument values.',
+                function () {
+                    return foo_d89b416e02504e34812c70ae20083403(42, 'bar', 3.14);
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             3.14,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -171,11 +172,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(0, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         3,
@@ -186,17 +187,17 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                "3 named parameters. All required. 4 passed argument values.",
-                function(){
-                    return foo_26670d45e52341889d9dd9d9a2026810(42, "bar", 3.14, true);
+                '3 named parameters. All required. 4 passed argument values.',
+                function () {
+                    return foo_26670d45e52341889d9dd9d9a2026810(42, 'bar', 3.14, true);
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             3.14,
                             true,
                         ],
@@ -207,11 +208,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(0, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         3,
@@ -222,17 +223,17 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                "3 named parameters. \$c is optional with default value being null. 2 passed argument values.",
-                function(){
-                    return foo_1863be0363a14f498ae9e8368267db83(42, "bar");
+                '3 named parameters. $c is optional with default value being null. 2 passed argument values.',
+                function () {
+                    return foo_1863be0363a14f498ae9e8368267db83(42, 'bar');
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             null,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -242,11 +243,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -257,20 +258,20 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a global constant",
-                    ", EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892. 2 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a global constant',
+                    ', EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892. 2 passed argument values.',
                 ]),
-                function(){
-                    return foo_0632691243674084af85b52269f0d4d2(42, "bar");
+                function () {
+                    return foo_0632691243674084af85b52269f0d4d2(42, 'bar');
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             \EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -280,11 +281,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -295,21 +296,21 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a global constant",
-                    ", EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892. 3 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a global constant',
+                    ', EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892. 3 passed argument values.',
                 ]),
-                function(){
-                    return foo_273f629332064648a935524ecf024cc9(42, "bar", "baz");
+                function () {
+                    return foo_273f629332064648a935524ecf024cc9(42, 'bar', 'baz');
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
-                            "baz",
+                            'bar',
+                            'baz',
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -318,11 +319,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -333,20 +334,20 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a namespaced constant",
-                    ", EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f. 2 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a namespaced constant',
+                    ', EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f. 2 passed argument values.',
                 ]),
-                function(){
-                    return foo_5d337039b3b747738ecfaf56520a5450(42, "bar");
+                function () {
+                    return foo_5d337039b3b747738ecfaf56520a5450(42, 'bar');
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             \TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -356,11 +357,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -371,21 +372,21 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being a namespaced constant",
-                    ", EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f. 3 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being a namespaced constant',
+                    ', EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f. 3 passed argument values.',
                 ]),
-                function(){
-                    return foo_b50e80c0945c44e98bd73f356410e342(42, "bar", "baz");
+                function () {
+                    return foo_b50e80c0945c44e98bd73f356410e342(42, 'bar', 'baz');
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
-                            "baz",
+                            'bar',
+                            'baz',
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -394,11 +395,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -409,20 +410,20 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being \DateTimeInterface::ATOM.",
-                    " 2 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being \\DateTimeInterface::ATOM.',
+                    ' 2 passed argument values.',
                 ]),
-                function(){
-                    return foo_fb4c857d2c2b422da8d8e8fc6ed7da1c(42, "bar");
+                function () {
+                    return foo_fb4c857d2c2b422da8d8e8fc6ed7da1c(42, 'bar');
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             \DateTimeInterface::ATOM,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -432,11 +433,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -447,21 +448,21 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being  \DateTimeImmutable::ATOM. 2 passed",
-                    " argument values.",
-                    " Notice: \DateTimeImmutable - not \DateTimeInterface - is used here.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being  \\DateTimeImmutable::ATOM. 2 passed',
+                    ' argument values.',
+                    ' Notice: \\DateTimeImmutable - not \\DateTimeInterface - is used here.',
                 ]),
-                function(){
-                    return foo_85366d3d2de04a969f58caf818a35590(42, "bar");
+                function () {
+                    return foo_85366d3d2de04a969f58caf818a35590(42, 'bar');
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
+                            'bar',
                             \DateTimeInterface::ATOM,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -471,11 +472,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -486,21 +487,21 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is optional and default value being  \DateTimeInterface::ATOM.",
-                    " 3 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is optional and default value being  \\DateTimeInterface::ATOM.',
+                    ' 3 passed argument values.',
                 ]),
-                function(){
-                    return foo_1ca3717f657946cc8ea73a9c10d25a15(42, "bar", "baz");
+                function () {
+                    return foo_1ca3717f657946cc8ea73a9c10d25a15(42, 'bar', 'baz');
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "bar",
-                            "baz",
+                            'bar',
+                            'baz',
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -509,11 +510,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         2,
@@ -524,13 +525,13 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "1 named parameters. \$a is variadic. 0 passed argument values.",
+                implode('', [
+                    '1 named parameters. $a is variadic. 0 passed argument values.',
                 ]),
-                function(){
+                function () {
                     return foo_1318db58f81f45c8a955f860c371ae5c();
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(0, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
@@ -544,7 +545,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     $this->assertSame(
                         0,
@@ -555,18 +556,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "1 named parameters. \$a is variadic. 1 passed argument values.",
+                implode('', [
+                    '1 named parameters. $a is variadic. 1 passed argument values.',
                 ]),
-                function(){
-                    return foo_e1508b2e20334bd5a4de82855086873e(...[1,2,3]);
+                function () {
+                    return foo_e1508b2e20334bd5a4de82855086873e(...[1, 2, 3]);
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(0, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(1, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
-                            [1,2,3],
+                            [1, 2, 3],
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -575,7 +576,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     $this->assertSame(
                         0,
@@ -586,20 +587,19 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is variadic. 0 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is variadic. 0 passed argument values.',
                 ]),
-                function(){
+                function () {
                     return foo_534d34186ec84bd5baf195e141284d36();
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
-
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             42,
-                            "baz",
+                            'baz',
                             [],
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -609,11 +609,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(3, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         0,
@@ -624,20 +624,19 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is variadic. 2 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is variadic. 2 passed argument values.',
                 ]),
-                function(){
-                    return foo_37704407c9d04b5dbf2ce6de4ffbbfbd(43, "bim");
+                function () {
+                    return foo_37704407c9d04b5dbf2ce6de4ffbbfbd(43, 'bim');
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
-
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             43,
-                            "bim",
+                            'bim',
                             [],
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -647,11 +646,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(3, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         0,
@@ -662,21 +661,20 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "3 named parameters. \$c is variadic. 3 passed argument values.",
+                implode('', [
+                    '3 named parameters. $c is variadic. 3 passed argument values.',
                 ]),
-                function(){
-                    return foo_42fb127ea64c4bc39f6d0ce58df1b9a6(43, "bim", ...[1.0,2.0,3.0]);
+                function () {
+                    return foo_42fb127ea64c4bc39f6d0ce58df1b9a6(43, 'bim', ...[1.0, 2.0, 3.0]);
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
-
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             43,
-                            "bim",
-                            [1.0,2.0,3.0],
+                            'bim',
+                            [1.0, 2.0, 3.0],
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -685,11 +683,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(3, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         0,
@@ -700,15 +698,14 @@ class FunctionArgumentDiscloserTest extends TestCase
                 },
             ],
             [
-                implode("", [
-                    "An anonymous function. 3 named parameters. 3 passed argument values.",
+                implode('', [
+                    'An anonymous function. 3 named parameters. 3 passed argument values.',
                 ]),
-                function(){
+                function () {
                     /**
                      * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
                      */
-                    $foo_ec59a7b7151f481fa3c3b97b1d0e84f1 = function(int $a, string $b, float $c) use (&$foo_ec59a7b7151f481fa3c3b97b1d0e84f1)
-                    {
+                    $foo_ec59a7b7151f481fa3c3b97b1d0e84f1 = function (int $a, string $b, float $c) use (&$foo_ec59a7b7151f481fa3c3b97b1d0e84f1) {
                         $reflectionFunction = new \ReflectionFunction($foo_ec59a7b7151f481fa3c3b97b1d0e84f1);
                         $functionArgumentValues = func_get_args();
 
@@ -723,16 +720,15 @@ class FunctionArgumentDiscloserTest extends TestCase
                         ];
                     };
 
-                    return $foo_ec59a7b7151f481fa3c3b97b1d0e84f1(43, "bim", 3.14);
+                    return $foo_ec59a7b7151f481fa3c3b97b1d0e84f1(43, 'bim', 3.14);
                 },
-                function(string $message, FunctionArgumentDiscloser $functionArgumentDiscloser){
-
+                function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser) {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
                     $this->assertSame(3, $functionArgumentDiscloser->getNamedParameterCount(), $message);
                     $this->assertSame(
                         [
                             43,
-                            "bim",
+                            'bim',
                             3.14,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
@@ -742,11 +738,11 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $this->assertSame(0, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame("a", $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
+                    $this->assertSame('a', $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame("b", $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
+                    $this->assertSame('b', $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(), $message);
                     $this->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    $this->assertSame("c", $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
+                    $this->assertSame('c', $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(), $message);
                     $this->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(3), $message);
                     $this->assertSame(
                         3,
@@ -761,6 +757,7 @@ class FunctionArgumentDiscloserTest extends TestCase
 
     /**
      * @dataProvider dataProvider_testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction
+     *
      * @param array<int, int> $functionArgumentValues
      */
     public function testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction(
@@ -769,8 +766,7 @@ class FunctionArgumentDiscloserTest extends TestCase
         string $expectedFunctionArgumentValuesStr,
         array $functionArgumentValues,
         \Closure $callback
-    ): void
-    {
+    ): void {
         $reflectionFunction = $callback();
 
         try {
@@ -780,20 +776,20 @@ class FunctionArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Failed to construct \\\\%s with arguments \{',
-                            '\$caster = \(object\) \\\\%s',
-                            ', \$reflectionFunction = \(object\) \\\\ReflectionFunction',
-                            ', \$functionArgumentValues = %s',
+                        '\$caster = \(object\) \\\\%s',
+                        ', \$reflectionFunction = \(object\) \\\\ReflectionFunction',
+                        ', \$functionArgumentValues = %s',
                         '\}',
                         '$',
                         '/',
                     ]),
-                    preg_quote(FunctionArgumentDiscloser::class, "/"),
-                    preg_quote(Caster::class, "/"),
-                    preg_quote($expectedFunctionArgumentValuesStr, "/"),
+                    preg_quote(FunctionArgumentDiscloser::class, '/'),
+                    preg_quote(Caster::class, '/'),
+                    preg_quote($expectedFunctionArgumentValuesStr, '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -802,7 +798,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Argument \$functionArgumentValues = %s contains fewer elements \(%d\) than',
@@ -811,7 +807,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote($expectedFunctionArgumentValuesStr, "/"),
+                    preg_quote($expectedFunctionArgumentValuesStr, '/'),
                     $expectedPassedArgumentCount,
                     $expectedNamedArgumentCount,
                 ),
@@ -819,12 +815,12 @@ class FunctionArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     /**
@@ -836,18 +832,18 @@ class FunctionArgumentDiscloserTest extends TestCase
             [
                 0,
                 1,
-                "(array(0)) []",
+                '(array(0)) []',
                 [],
-                function(){
+                function () {
                     return new \ReflectionFunction('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_4d2650269a324a3788f827ee739afee1');
                 },
             ],
             [
                 2,
                 4,
-                "(array(2)) [(int) 0 => (int) 42, (int) 1 => (int) 43]",
+                '(array(2)) [(int) 0 => (int) 42, (int) 1 => (int) 43]',
                 [42, 43],
-                function(){
+                function () {
                     return new \ReflectionFunction('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_fe25fbdda555464f982783f37b43ade9');
                 },
             ],
@@ -867,7 +863,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Expects argument \$reflectionParameter \(name: "a"\) to have a default value available',
@@ -875,18 +871,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(functionArgumentDiscloser::class, "/"),
+                    preg_quote(functionArgumentDiscloser::class, '/'),
                 ),
                 $currentException->getMessage(),
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpression(): void
@@ -894,39 +890,45 @@ class FunctionArgumentDiscloserTest extends TestCase
         $functionArgumentDiscloser = foo_55f325c24dc64ff4bb9df02b6f51de6d(42);
 
         $reflectionParameter = $this
-            ->getMockBuilder("ReflectionParameter")
+            ->getMockBuilder('ReflectionParameter')
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueAvailable")
+            ->method('isDefaultValueAvailable')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueConstant")
+            ->method('isDefaultValueConstant')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getDefaultValueConstantName")
+            ->method('getDefaultValueConstantName')
             ->with()
-            ->willReturn("  I don't work as a constant name  ");
+            ->willReturn("  I don't work as a constant name  ")
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getName")
+            ->method('getName')
             ->with()
-            ->willReturn("foo");
+            ->willReturn('foo')
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getDeclaringFunction")
+            ->method('getDeclaringFunction')
             ->with()
-            ->willReturn($functionArgumentDiscloser->getReflectionFunction());
+            ->willReturn($functionArgumentDiscloser->getReflectionFunction())
+        ;
 
         try {
             $functionArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
@@ -935,7 +937,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$foo in function \\\\%s\\\\foo_55f325c24dc64ff4bb9df02b6f51de6d',
@@ -943,7 +945,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist', "/"),
+                    preg_quote('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist', '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -951,7 +953,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'Expects default value of parameter \$foo - a constant - to match regular expression \'.+\'',
@@ -963,12 +965,12 @@ class FunctionArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedGlobalConstantDoesNotExist(): void
@@ -976,39 +978,45 @@ class FunctionArgumentDiscloserTest extends TestCase
         $functionArgumentDiscloser = foo_445cb914ff6f48a0a039e4eedd0f4ff0(42);
 
         $reflectionParameter = $this
-            ->getMockBuilder("ReflectionParameter")
+            ->getMockBuilder('ReflectionParameter')
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueAvailable")
+            ->method('isDefaultValueAvailable')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueConstant")
+            ->method('isDefaultValueConstant')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("getDefaultValueConstantName")
+            ->method('getDefaultValueConstantName')
             ->with()
-            ->willReturn("NONEXSITING_CONSTANT_1aedab95b22c45afbdd0e5cf93af5ee9");
+            ->willReturn('NONEXSITING_CONSTANT_1aedab95b22c45afbdd0e5cf93af5ee9')
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("getName")
+            ->method('getName')
             ->with()
-            ->willReturn("foo");
+            ->willReturn('foo')
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getDeclaringFunction")
+            ->method('getDeclaringFunction')
             ->with()
-            ->willReturn($functionArgumentDiscloser->getReflectionFunction());
+            ->willReturn($functionArgumentDiscloser->getReflectionFunction())
+        ;
 
         try {
             $functionArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
@@ -1017,7 +1025,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$foo in function \\\\%s\\\\foo_445cb914ff6f48a0a039e4eedd0f4ff0',
@@ -1025,7 +1033,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist', "/"),
+                    preg_quote('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist', '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -1033,7 +1041,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'The global constant "NONEXSITING_CONSTANT_1aedab95b22c45afbdd0e5cf93af5ee9" is not defined',
@@ -1044,12 +1052,12 @@ class FunctionArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist(): void
@@ -1057,39 +1065,45 @@ class FunctionArgumentDiscloserTest extends TestCase
         $functionArgumentDiscloser = foo_d9d24ee6520f4a2792f07471f77eaf45(42);
 
         $reflectionParameter = $this
-            ->getMockBuilder("ReflectionParameter")
+            ->getMockBuilder('ReflectionParameter')
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueAvailable")
+            ->method('isDefaultValueAvailable')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("isDefaultValueConstant")
+            ->method('isDefaultValueConstant')
             ->with()
-            ->willReturn(true);
+            ->willReturn(true)
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("getDefaultValueConstantName")
+            ->method('getDefaultValueConstantName')
             ->with()
-            ->willReturn("Foo\\Bar\\NONEXSITING_CONSTANT_e68ff2bd2d214c59abb3ad374163871f");
+            ->willReturn('Foo\\Bar\\NONEXSITING_CONSTANT_e68ff2bd2d214c59abb3ad374163871f')
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(1))
-            ->method("getName")
+            ->method('getName')
             ->with()
-            ->willReturn("foo");
+            ->willReturn('foo')
+        ;
 
         $reflectionParameter
             ->expects($this->exactly(2))
-            ->method("getDeclaringFunction")
+            ->method('getDeclaringFunction')
             ->with()
-            ->willReturn($functionArgumentDiscloser->getReflectionFunction());
+            ->willReturn($functionArgumentDiscloser->getReflectionFunction())
+        ;
 
         try {
             $functionArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
@@ -1098,7 +1112,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Parameter \$foo in function (\\\\\w+)+\\\\%s\\\\%s\\\\foo_d9d24ee6520f4a2792f07471f77eaf45',
@@ -1106,8 +1120,8 @@ class FunctionArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote((new \ReflectionObject($this))->getShortName(), "/"),
-                    preg_quote(__FUNCTION__, "/"),
+                    preg_quote((new \ReflectionObject($this))->getShortName(), '/'),
+                    preg_quote(__FUNCTION__, '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -1115,7 +1129,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'The namespaced constant',
@@ -1128,11 +1142,11 @@ class FunctionArgumentDiscloserTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 }

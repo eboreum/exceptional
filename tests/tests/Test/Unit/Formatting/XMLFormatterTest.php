@@ -1,11 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
-use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Caster\CharacterEncoding;
+use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\Factory\PHPCore\SimpleXMLElement\SimpleXMLElementFactory;
 use Eboreum\Exceptional\Formatting\AbstractFormatter;
@@ -14,6 +14,10 @@ use Eboreum\Exceptional\Formatting\XMLFormatter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class XMLFormatterTest extends TestCase
 {
     public function testBasics(): void
@@ -35,8 +39,7 @@ class XMLFormatterTest extends TestCase
         string $expectedXMLRegex,
         XMLFormatter $xmlFormatter,
         \Throwable $throwable
-    ): void
-    {
+    ): void {
         $this->assertMatchesRegularExpression($expectedXMLRegex, $xmlFormatter->format($throwable));
     }
 
@@ -48,111 +51,111 @@ class XMLFormatterTest extends TestCase
         return [
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\<\?xml version\="1\.0" encoding\="UTF\-8"\?\>\n',
                         '\<exception\>',
-                            '\<class\>\\\\Exception\<\/class\>',
-                            '\<file\>.+\/[^\/]+\/%s\<\/file\>',
-                            '\<line\>\d+\<\/line\>',
-                            '\<code\>0\<\/code\>',
-                            '\<message\>foo\<\/message\>',
-                            '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
-                            '\<previous\/\>',
+                        '\<class\>\\\\Exception\<\/class\>',
+                        '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                        '\<line\>\d+\<\/line\>',
+                        '\<code\>0\<\/code\>',
+                        '\<message\>foo\<\/message\>',
+                        '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
+                        '\<previous\/\>',
                         '\<\/exception\>',
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
+                (function () {
                     $caster = $this->_mockCasterInterface();
                     $characterEncoding = $this->_mockCharacterEncoding();
 
                     $characterEncoding
                         ->expects($this->any())
-                        ->method("__toString")
+                        ->method('__toString')
                         ->with()
-                        ->willReturn("UTF-8");
+                        ->willReturn('UTF-8')
+                    ;
 
                     $caster
                         ->expects($this->exactly(2))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
-                                    return (1 === preg_match('/^#0 /', $v));
+                                $this->callback(function (string $v) {
+                                    return 1 === preg_match('/^#0 /', $v);
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
-                            "#0 Lorem",
-                        );
+                            'foo',
+                            '#0 Lorem',
+                        )
+                    ;
 
-                    $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
-
-                    return $xmlFormatter;
+                    return new XMLFormatter($caster, $characterEncoding);
                 })(),
-                new \Exception("foo"),
+                new \Exception('foo'),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\<\?xml version\="1\.0" encoding\="UTF\-8"\?\>\n',
                         '\<error\>',
-                            '\<class\>\\\\Error\<\/class\>',
-                            '\<file\>.+\/[^\/]+\/%s\<\/file\>',
-                            '\<line\>\d+\<\/line\>',
-                            '\<code\>0\<\/code\>',
-                            '\<message\>foo\<\/message\>',
-                            '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
-                            '\<previous\/\>',
+                        '\<class\>\\\\Error\<\/class\>',
+                        '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                        '\<line\>\d+\<\/line\>',
+                        '\<code\>0\<\/code\>',
+                        '\<message\>foo\<\/message\>',
+                        '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
+                        '\<previous\/\>',
                         '\<\/error\>',
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
+                (function () {
                     $caster = $this->_mockCasterInterface();
                     $characterEncoding = $this->_mockCharacterEncoding();
 
                     $characterEncoding
                         ->expects($this->any())
-                        ->method("__toString")
+                        ->method('__toString')
                         ->with()
-                        ->willReturn("UTF-8");
+                        ->willReturn('UTF-8')
+                    ;
 
                     $caster
                         ->expects($this->exactly(2))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
-                                    return (1 === preg_match('/^#0 /', $v));
+                                $this->callback(function (string $v) {
+                                    return 1 === preg_match('/^#0 /', $v);
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
-                            "#0 Lorem",
-                        );
+                            'foo',
+                            '#0 Lorem',
+                        )
+                    ;
 
-                    $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
-
-                    return $xmlFormatter;
+                    return new XMLFormatter($caster, $characterEncoding);
                 })(),
-                new \Error("foo"),
+                new \Error('foo'),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\<\?xml version\="1\.0" encoding\="UTF\-8"\?\>',
@@ -168,390 +171,383 @@ class XMLFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
+                (function () {
                     $caster = $this->_mockCasterInterface();
                     $characterEncoding = $this->_mockCharacterEncoding();
 
                     $characterEncoding
                         ->expects($this->any())
-                        ->method("__toString")
+                        ->method('__toString')
                         ->with()
-                        ->willReturn("UTF-8");
+                        ->willReturn('UTF-8')
+                    ;
 
                     $caster
                         ->expects($this->exactly(2))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
-                                    return (1 === preg_match('/^#0 /', $v));
+                                $this->callback(function (string $v) {
+                                    return 1 === preg_match('/^#0 /', $v);
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
-                            "#0 Lorem",
-                        );
+                            'foo',
+                            '#0 Lorem',
+                        )
+                    ;
 
                     $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
-                    /**
-                     * @var XMLFormatter
-                     */
-                    $xmlFormatter = $xmlFormatter->withIsPrettyPrinting(true);
-
-                    return $xmlFormatter;
+                    // @var XMLFormatter
+                    return $xmlFormatter->withIsPrettyPrinting(true);
                 })(),
-                new \Exception("foo"),
+                new \Exception('foo'),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\<\?xml version\="1\.0" encoding\="UTF\-8"\?\>\n',
                         '\<exception\>',
-                            '\<class\>\\\\Exception\<\/class\>',
-                            '\<time\>\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}[\+\-]\d{2}\:\d{2}\<\/time\>',
-                            '\<file\>.+\/[^\/]+\/%s\<\/file\>',
-                            '\<line\>\d+\<\/line\>',
-                            '\<code\>0\<\/code\>',
-                            '\<message\>foo\<\/message\>',
-                            '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
-                            '\<previous\/\>',
+                        '\<class\>\\\\Exception\<\/class\>',
+                        '\<time\>\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}[\+\-]\d{2}\:\d{2}\<\/time\>',
+                        '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                        '\<line\>\d+\<\/line\>',
+                        '\<code\>0\<\/code\>',
+                        '\<message\>foo\<\/message\>',
+                        '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
+                        '\<previous\/\>',
                         '\<\/exception\>',
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
+                (function () {
                     $caster = $this->_mockCasterInterface();
                     $characterEncoding = $this->_mockCharacterEncoding();
 
                     $characterEncoding
                         ->expects($this->any())
-                        ->method("__toString")
+                        ->method('__toString')
                         ->with()
-                        ->willReturn("UTF-8");
+                        ->willReturn('UTF-8')
+                    ;
 
                     $caster
                         ->expects($this->exactly(2))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
-                                    return (1 === preg_match('/^#0 /', $v));
+                                $this->callback(function (string $v) {
+                                    return 1 === preg_match('/^#0 /', $v);
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
-                            "#0 Lorem",
-                        );
+                            'foo',
+                            '#0 Lorem',
+                        )
+                    ;
 
                     $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
-                    /**
-                     * @var XMLFormatter
-                     */
-                    $xmlFormatter = $xmlFormatter->withIsProvidingTimestamp(true);
-
-                    return $xmlFormatter;
+                    // @var XMLFormatter
+                    return $xmlFormatter->withIsProvidingTimestamp(true);
                 })(),
-                new \Exception("foo"),
+                new \Exception('foo'),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\<\?xml version\="1\.0" encoding\="UTF\-8"\?\>\n',
                         '\<exception\>',
-                            '\<class\>\\\\Exception\<\/class\>',
-                            '\<file\>.+\/[^\/]+\/%s\<\/file\>',
-                            '\<line\>\d+\<\/line\>',
-                            '\<code\>0\<\/code\>',
-                            '\<message\>foo\<\/message\>',
-                            '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
-                            '\<previous\>',
-                                '\<class\>\\\\RuntimeException\<\/class\>',
-                                '\<file\>.+\/[^\/]+\/%s\<\/file\>',
-                                '\<line\>\d+\<\/line\>',
-                                '\<code\>1\<\/code\>',
-                                '\<message\>bar\<\/message\>',
-                                '\<stacktrace\>#0 .+\<\/stacktrace\>',
-                                '\<previous\>',
-                                    '\<class\>\\\\LogicException\<\/class\>',
-                                    '\<file\>.+\/[^\/]+\/%s\<\/file\>',
-                                    '\<line\>\d+\<\/line\>',
-                                    '\<code\>2\<\/code\>',
-                                    '\<message\>baz\<\/message\>',
-                                    '\<stacktrace\>#0 .+\<\/stacktrace\>',
-                                    '\<previous\/\>',
-                                '\<\/previous\>',
-                            '\<\/previous\>',
+                        '\<class\>\\\\Exception\<\/class\>',
+                        '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                        '\<line\>\d+\<\/line\>',
+                        '\<code\>0\<\/code\>',
+                        '\<message\>foo\<\/message\>',
+                        '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
+                        '\<previous\>',
+                        '\<class\>\\\\RuntimeException\<\/class\>',
+                        '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                        '\<line\>\d+\<\/line\>',
+                        '\<code\>1\<\/code\>',
+                        '\<message\>bar\<\/message\>',
+                        '\<stacktrace\>#0 .+\<\/stacktrace\>',
+                        '\<previous\>',
+                        '\<class\>\\\\LogicException\<\/class\>',
+                        '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                        '\<line\>\d+\<\/line\>',
+                        '\<code\>2\<\/code\>',
+                        '\<message\>baz\<\/message\>',
+                        '\<stacktrace\>#0 .+\<\/stacktrace\>',
+                        '\<previous\/\>',
+                        '\<\/previous\>',
+                        '\<\/previous\>',
                         '\<\/exception\>',
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
+                (function () {
                     $caster = $this->_mockCasterInterface();
                     $characterEncoding = $this->_mockCharacterEncoding();
 
                     $characterEncoding
                         ->expects($this->any())
-                        ->method("__toString")
+                        ->method('__toString')
                         ->with()
-                        ->willReturn("UTF-8");
+                        ->willReturn('UTF-8')
+                    ;
 
                     $caster
                         ->expects($this->exactly(6))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
-                                    return (1 === preg_match('/^#0 /', $v));
+                                $this->callback(function (string $v) {
+                                    return 1 === preg_match('/^#0 /', $v);
                                 }),
                             ],
-                            ["bar"],
+                            ['bar'],
                             [
-                                $this->callback(function(string $v){
-                                    return (1 === preg_match('/^#0 /', $v));
+                                $this->callback(function (string $v) {
+                                    return 1 === preg_match('/^#0 /', $v);
                                 }),
                             ],
-                            ["baz"],
+                            ['baz'],
                             [
-                                $this->callback(function(string $v){
-                                    return (1 === preg_match('/^#0 /', $v));
+                                $this->callback(function (string $v) {
+                                    return 1 === preg_match('/^#0 /', $v);
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
-                            "#0 Lorem",
-                            "bar",
-                            "#0 Ipsum",
-                            "baz",
-                            "#0 Dolor",
-                        );
+                            'foo',
+                            '#0 Lorem',
+                            'bar',
+                            '#0 Ipsum',
+                            'baz',
+                            '#0 Dolor',
+                        )
+                    ;
 
-                    $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
-
-                    return $xmlFormatter;
+                    return new XMLFormatter($caster, $characterEncoding);
                 })(),
-                (function(){
-                    $baz = new \LogicException("baz", 2);
-                    $bar = new \RuntimeException("bar", 1, $baz);
+                (function () {
+                    $baz = new \LogicException('baz', 2);
+                    $bar = new \RuntimeException('bar', 1, $baz);
 
-                    return new \Exception("foo", 0, $bar);
+                    return new \Exception('foo', 0, $bar);
                 })(),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\<\?xml version\="1\.0" encoding\="UTF\-8"\?\>\n',
                         '\<exception\>',
-                            '\<class\>\\\\Exception\<\/class\>',
-                            '\<file\>.+\/[^\/]+\/%s\<\/file\>',
-                            '\<line\>\d+\<\/line\>',
-                            '\<code\>0\<\/code\>',
-                            '\<message\>foo\<\/message\>',
-                            '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
-                            '\<previous\>',
-                                '\<class\>\\\\RuntimeException\<\/class\>',
-                                '\<file\>.+\/[^\/]+\/%s\<\/file\>',
-                                '\<line\>\d+\<\/line\>',
-                                '\<code\>1\<\/code\>',
-                                '\<message\>bar\<\/message\>',
-                                '\<stacktrace\>#0 .+\<\/stacktrace\>',
-                                '\<previous\>2 more \(omitted\)\<\/previous\>',
-                            '\<\/previous\>',
+                        '\<class\>\\\\Exception\<\/class\>',
+                        '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                        '\<line\>\d+\<\/line\>',
+                        '\<code\>0\<\/code\>',
+                        '\<message\>foo\<\/message\>',
+                        '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
+                        '\<previous\>',
+                        '\<class\>\\\\RuntimeException\<\/class\>',
+                        '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                        '\<line\>\d+\<\/line\>',
+                        '\<code\>1\<\/code\>',
+                        '\<message\>bar\<\/message\>',
+                        '\<stacktrace\>#0 .+\<\/stacktrace\>',
+                        '\<previous\>2 more \(omitted\)\<\/previous\>',
+                        '\<\/previous\>',
                         '\<\/exception\>',
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
+                (function () {
                     $caster = $this->_mockCasterInterface();
                     $characterEncoding = $this->_mockCharacterEncoding();
 
                     $characterEncoding
                         ->expects($this->any())
-                        ->method("__toString")
+                        ->method('__toString')
                         ->with()
-                        ->willReturn("UTF-8");
+                        ->willReturn('UTF-8')
+                    ;
 
                     $caster
                         ->expects($this->exactly(4))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
-                                    return (1 === preg_match('/^#0 /', $v));
+                                $this->callback(function (string $v) {
+                                    return 1 === preg_match('/^#0 /', $v);
                                 }),
                             ],
-                            ["bar"],
+                            ['bar'],
                             [
-                                $this->callback(function(string $v){
-                                    return (1 === preg_match('/^#0 /', $v));
+                                $this->callback(function (string $v) {
+                                    return 1 === preg_match('/^#0 /', $v);
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
-                            "#0 Lorem",
-                            "bar",
-                            "#0 Ipsum",
-                        );
+                            'foo',
+                            '#0 Lorem',
+                            'bar',
+                            '#0 Ipsum',
+                        )
+                    ;
 
                     $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
-                    /**
-                     * @var XMLFormatter
-                     */
-                    $xmlFormatter = $xmlFormatter->withMaximumPreviousDepth(1);
-
-                    return $xmlFormatter;
+                    // @var XMLFormatter
+                    return $xmlFormatter->withMaximumPreviousDepth(1);
                 })(),
-                (function(){
-                    $bim = new \LogicException("bim", 3);
-                    $baz = new \LogicException("baz", 2, $bim);
-                    $bar = new \RuntimeException("bar", 1, $baz);
+                (function () {
+                    $bim = new \LogicException('bim', 3);
+                    $baz = new \LogicException('baz', 2, $bim);
+                    $bar = new \RuntimeException('bar', 1, $baz);
 
-                    return new \Exception("foo", 0, $bar);
+                    return new \Exception('foo', 0, $bar);
                 })(),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\<\?xml version\="1\.0" encoding\="UTF\-8"\?\>\n',
                         '\<exception\>',
-                            '\<class\>\\\\Exception\<\/class\>',
-                            '\<file\>.+\/[^\/]+\/%s\<\/file\>',
-                            '\<line\>\d+\<\/line\>',
-                            '\<code\>0\<\/code\>',
-                            '\<message\>æøå\<\/message\>',
-                            '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
-                            '\<previous\/\>',
+                        '\<class\>\\\\Exception\<\/class\>',
+                        '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                        '\<line\>\d+\<\/line\>',
+                        '\<code\>0\<\/code\>',
+                        '\<message\>æøå\<\/message\>',
+                        '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
+                        '\<previous\/\>',
                         '\<\/exception\>',
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
+                (function () {
                     $caster = $this->_mockCasterInterface();
                     $characterEncoding = $this->_mockCharacterEncoding();
 
                     $characterEncoding
                         ->expects($this->any())
-                        ->method("__toString")
+                        ->method('__toString')
                         ->with()
-                        ->willReturn("UTF-8");
+                        ->willReturn('UTF-8')
+                    ;
 
                     $caster
                         ->expects($this->exactly(2))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["æøå"],
+                            ['æøå'],
                             [
-                                $this->callback(function(string $v){
-                                    return (1 === preg_match('/^#0 /', $v));
+                                $this->callback(function (string $v) {
+                                    return 1 === preg_match('/^#0 /', $v);
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "æøå",
-                            "#0 Lorem",
-                        );
+                            'æøå',
+                            '#0 Lorem',
+                        )
+                    ;
 
-                    $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
-
-                    return $xmlFormatter;
+                    return new XMLFormatter($caster, $characterEncoding);
                 })(),
-                new \Exception("æøå"),
+                new \Exception('æøå'),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\<\?xml version\="1\.0" encoding\="UTF\-8"\?\>\n',
                         '\<lorem\>',
-                            '\<class\>\\\\Exception\<\/class\>',
-                            '\<file\>.+\/[^\/]+\/%s\<\/file\>',
-                            '\<line\>\d+\<\/line\>',
-                            '\<code\>0\<\/code\>',
-                            '\<message\>foo\<\/message\>',
-                            '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
-                            '\<previous\/\>',
+                        '\<class\>\\\\Exception\<\/class\>',
+                        '\<file\>.+\/[^\/]+\/%s\<\/file\>',
+                        '\<line\>\d+\<\/line\>',
+                        '\<code\>0\<\/code\>',
+                        '\<message\>foo\<\/message\>',
+                        '\<stacktrace\>#0 Lorem\<\/stacktrace\>',
+                        '\<previous\/\>',
                         '\<\/lorem\>',
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
+                (function () {
                     $caster = $this->_mockCasterInterface();
                     $characterEncoding = $this->_mockCharacterEncoding();
                     $simpleXMLElementFactory = $this->_mockSimpleXMLElementFactory();
 
                     $characterEncoding
                         ->expects($this->any())
-                        ->method("__toString")
+                        ->method('__toString')
                         ->with()
-                        ->willReturn("UTF-8");
+                        ->willReturn('UTF-8')
+                    ;
 
                     $caster
                         ->expects($this->exactly(2))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
-                                    return (1 === preg_match('/^#0 /', $v));
+                                $this->callback(function (string $v) {
+                                    return 1 === preg_match('/^#0 /', $v);
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
-                            "#0 Lorem",
-                        );
+                            'foo',
+                            '#0 Lorem',
+                        )
+                    ;
 
                     $simpleXMLElementFactory
                         ->expects($this->exactly(1))
-                        ->method("createSimpleXMLElement")
-                        ->with("exception")
-                        ->willReturn(new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><lorem></lorem>'));
+                        ->method('createSimpleXMLElement')
+                        ->with('exception')
+                        ->willReturn(new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><lorem></lorem>'))
+                    ;
 
                     $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
-                    /**
-                     * @var XMLFormatter
-                     */
-                    $xmlFormatter = $xmlFormatter->withSimpleXMLElementFactory($simpleXMLElementFactory);
-
-                    return $xmlFormatter;
+                    // @var XMLFormatter
+                    return $xmlFormatter->withSimpleXMLElementFactory($simpleXMLElementFactory);
                 })(),
-                new \Exception("foo"),
+                new \Exception('foo'),
             ],
         ];
     }
@@ -563,42 +559,43 @@ class XMLFormatterTest extends TestCase
 
         $characterEncoding
             ->expects($this->any())
-            ->method("__toString")
+            ->method('__toString')
             ->with()
-            ->willReturn("");
+            ->willReturn('')
+        ;
 
         $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
         try {
-            $xmlFormatter->format(new \Exception("foo"));
+            $xmlFormatter->format(new \Exception('foo'));
         } catch (\Exception $e) {
             $currentException = $e;
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         'Failure in \\\\%s-\>format\(',
-                            '\$throwable = \(object\) \\\\Exception \{.+\}',
+                        '\$throwable = \(object\) \\\\Exception \{.+\}',
                         '\) inside \(object\) \\\\%s \{',
-                            '\$characterEncoding = \(object\) \\\\Mock_CharacterEncoding_[0-9a-f]{8}',
-                            ', \\\\%s\-\>\$isPrettyPrinting = \(bool\) false',
-                            ', \\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
-                            ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
-                            ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
-                            ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
+                        '\$characterEncoding = \(object\) \\\\Mock_CharacterEncoding_[0-9a-f]{8}',
+                        ', \\\\%s\-\>\$isPrettyPrinting = \(bool\) false',
+                        ', \\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
+                        ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
+                        ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
+                        ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
                         '\}',
                         '$',
                         '/',
                     ]),
-                    preg_quote(XMLFormatter::class, "/"),
-                    preg_quote(XMLFormatter::class, "/"),
-                    preg_quote(AbstractXMLFormatter::class, "/"),
-                    preg_quote(AbstractFormatter::class, "/"),
-                    preg_quote(AbstractFormatter::class, "/"),
-                    preg_quote(AbstractFormatter::class, "/"),
-                    preg_quote(AbstractFormatter::class, "/"),
+                    preg_quote(XMLFormatter::class, '/'),
+                    preg_quote(XMLFormatter::class, '/'),
+                    preg_quote(AbstractXMLFormatter::class, '/'),
+                    preg_quote(AbstractFormatter::class, '/'),
+                    preg_quote(AbstractFormatter::class, '/'),
+                    preg_quote(AbstractFormatter::class, '/'),
+                    preg_quote(AbstractFormatter::class, '/'),
                 ),
                 $currentException->getMessage(),
             );
@@ -606,7 +603,7 @@ class XMLFormatterTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertSame(\Exception::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'String could not be parsed as XML',
@@ -618,7 +615,7 @@ class XMLFormatterTest extends TestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertMatchesRegularExpression(
-                implode("", [
+                implode('', [
                     '/',
                     '^',
                     'SimpleXMLElement\:\:__construct\(\)\: Entity: line 1\: parser error \: Invalid XML encoding name',
@@ -629,12 +626,12 @@ class XMLFormatterTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertTrue(is_null($currentException));
+            $this->assertTrue(null === $currentException);
 
             return;
         }
 
-        $this->fail("Exception was never thrown.");
+        $this->fail('Exception was never thrown.');
     }
 
     public function testWithSimpleXMLElementFactoryWorks(): void
@@ -665,7 +662,8 @@ class XMLFormatterTest extends TestCase
         return $this
             ->getMockBuilder(CasterInterface::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
     }
 
     /**
@@ -676,7 +674,8 @@ class XMLFormatterTest extends TestCase
         return $this
             ->getMockBuilder(CharacterEncoding::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
     }
 
     /**
@@ -687,6 +686,7 @@ class XMLFormatterTest extends TestCase
         return $this
             ->getMockBuilder(SimpleXMLElementFactory::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
     }
 }

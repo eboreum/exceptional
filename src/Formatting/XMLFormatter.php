@@ -44,8 +44,8 @@ class XMLFormatter extends AbstractXMLFormatter
         try {
             $rootElementName = (
                 $throwable instanceof \Error
-                ? "error"
-                : "exception"
+                ? 'error'
+                : 'exception'
             );
 
             $simpleXMLElement = null;
@@ -70,7 +70,7 @@ class XMLFormatter extends AbstractXMLFormatter
             $simpleXMLElement = $this->formatInner($throwable, $simpleXMLElement);
 
             if ($this->isPrettyPrinting()) {
-                $domDocument = new \DOMDocument("1.0", (string)$this->getCharacterEncoding());
+                $domDocument = new \DOMDocument('1.0', (string)$this->getCharacterEncoding());
                 $domDocument->preserveWhiteSpace = false;
                 $domDocument->formatOutput = true;
                 $xml = $simpleXMLElement->asXML();
@@ -97,7 +97,7 @@ class XMLFormatter extends AbstractXMLFormatter
 
     public function withIsPrettyPrinting(bool $isPrettyPrinting): XMLFormatter
     {
-        return parent::withIsPrettyPrinting($isPrettyPrinting); /** @phpstan-ignore-line */
+        return parent::withIsPrettyPrinting($isPrettyPrinting); // @phpstan-ignore-line
     }
 
     /**
@@ -105,7 +105,7 @@ class XMLFormatter extends AbstractXMLFormatter
      */
     public function withPreviousThrowableLevel(int $previousThrowableLevel): XMLFormatter
     {
-        return parent::withPreviousThrowableLevel($previousThrowableLevel); /** @phpstan-ignore-line */
+        return parent::withPreviousThrowableLevel($previousThrowableLevel); // @phpstan-ignore-line
     }
 
     /**
@@ -131,17 +131,17 @@ class XMLFormatter extends AbstractXMLFormatter
 
     protected function formatInner(\Throwable $throwable, \SimpleXMLElement $simpleXMLElement): \SimpleXMLElement
     {
-        $simpleXMLElement->addChild("class", Caster::makeNormalizedClassName(new \ReflectionObject($throwable)));
+        $simpleXMLElement->addChild('class', Caster::makeNormalizedClassName(new \ReflectionObject($throwable)));
 
         if ($this->isProvidingTimestamp()) {
-            $simpleXMLElement->addChild("time", date("c"));
+            $simpleXMLElement->addChild('time', date('c'));
         }
 
-        $simpleXMLElement->addChild("file", $this->normalizeFilePath($throwable->getFile()));
-        $simpleXMLElement->addChild("line", strval($throwable->getLine()));
-        $simpleXMLElement->addChild("code", strval($throwable->getCode()));
-        $simpleXMLElement->addChild("message", $this->maskString($throwable->getMessage()));
-        $simpleXMLElement->addChild("stacktrace", $this->maskString($throwable->getTraceAsString()));
+        $simpleXMLElement->addChild('file', $this->normalizeFilePath($throwable->getFile()));
+        $simpleXMLElement->addChild('line', strval($throwable->getLine()));
+        $simpleXMLElement->addChild('code', strval($throwable->getCode()));
+        $simpleXMLElement->addChild('message', $this->maskString($throwable->getMessage()));
+        $simpleXMLElement->addChild('stacktrace', $this->maskString($throwable->getTraceAsString()));
 
         if ($throwable->getPrevious()) {
             $maximumPreviousDepth = $this->getMaximumPreviousDepth();
@@ -149,19 +149,19 @@ class XMLFormatter extends AbstractXMLFormatter
 
             if (is_int($maximumPreviousDepth) && $this->getPreviousThrowableLevel() >= $maximumPreviousDepth) {
                 $simpleXMLElement->addChild(
-                    "previous",
+                    'previous',
                     sprintf(
-                        "%d more (omitted)",
+                        '%d more (omitted)',
                         $previousCount,
                     ),
                 );
             } else {
                 $child = $this->withPreviousThrowableLevel($this->getPreviousThrowableLevel() + 1);
-                $previous = $simpleXMLElement->addChild("previous");
+                $previous = $simpleXMLElement->addChild('previous');
                 $child->formatInner($throwable->getPrevious(), $previous);
             }
         } else {
-            $simpleXMLElement->addChild("previous");
+            $simpleXMLElement->addChild('previous');
         }
 
         return $simpleXMLElement;
