@@ -17,7 +17,7 @@ When a method is called, and somehow that leads to an exception/throwable being 
 # Requirements
 
 ```json
-"php": ">=7.4",
+"php": "^7.4 || ^8.0",
 "eboreum/caster": "^0.0.2"
 ```
 
