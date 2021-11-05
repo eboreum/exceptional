@@ -136,7 +136,7 @@ function foo_273f629332064648a935524ecf024cc9(
 /**
  * @return array{\ReflectionFunction, array<int, mixed>, FunctionArgumentDiscloser}
  */
-function foo_37704407c9d04b5dbf2ce6de4ffbbfbd(int $a = 42, string $b = "baz", float ...$c): array
+function foo_37704407c9d04b5dbf2ce6de4ffbbfbd(int $a = 42, string $b = 'baz', float ...$c): array
 {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();
@@ -155,7 +155,7 @@ function foo_37704407c9d04b5dbf2ce6de4ffbbfbd(int $a = 42, string $b = "baz", fl
 /**
  * @return array{\ReflectionFunction, array<int, mixed>, FunctionArgumentDiscloser}
  */
-function foo_42fb127ea64c4bc39f6d0ce58df1b9a6(int $a = 42, string $b = "baz", float ...$c): array
+function foo_42fb127ea64c4bc39f6d0ce58df1b9a6(int $a = 42, string $b = 'baz', float ...$c): array
 {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();
@@ -185,7 +185,7 @@ function foo_4d2650269a324a3788f827ee739afee1(int $a): void
 /**
  * @return array{\ReflectionFunction, array<int, mixed>, FunctionArgumentDiscloser}
  */
-function foo_534d34186ec84bd5baf195e141284d36(int $a = 42, string $b = "baz", float ...$c): array
+function foo_534d34186ec84bd5baf195e141284d36(int $a = 42, string $b = 'baz', float ...$c): array
 {
     $reflectionFunction = new \ReflectionFunction(__FUNCTION__);
     $functionArgumentValues = func_get_args();

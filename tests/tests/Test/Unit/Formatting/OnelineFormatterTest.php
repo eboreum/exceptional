@@ -1,12 +1,10 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
 use Eboreum\Caster\Contract\CasterInterface;
-use Eboreum\Exceptional\Exception\RuntimeException;
-use Eboreum\Exceptional\Formatting\AbstractFormatter;
 use Eboreum\Exceptional\Formatting\OnelineFormatter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -15,7 +13,7 @@ class OnelineFormatterTest extends TestCase
 {
     public function testBasics(): void
     {
-        $caster = $this->_mockCasterInterface();
+        $caster = $this->mockCasterInterface();
 
         $onelineFormatter = new OnelineFormatter($caster);
 
@@ -30,8 +28,7 @@ class OnelineFormatterTest extends TestCase
         string $expectedJSONRegex,
         OnelineFormatter $onelineFormatter,
         \Throwable $throwable
-    ): void
-    {
+    ): void {
         $this->assertMatchesRegularExpression($expectedJSONRegex, $onelineFormatter->format($throwable));
     }
 
@@ -43,7 +40,7 @@ class OnelineFormatterTest extends TestCase
         return [
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\\\\Exception',
@@ -56,36 +53,34 @@ class OnelineFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
-                    $caster = $this->_mockCasterInterface();
+                (function () {
+                    $caster = $this->mockCasterInterface();
 
                     $caster
                         ->expects($this->exactly(2))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
+                                $this->callback(static function (string $v) {
                                     return (1 === preg_match('/^#\d+ /', $v));
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
-                            "#0 Lorem"
+                            'foo',
+                            '#0 Lorem'
                         );
 
-                    $onelineFormatter = new OnelineFormatter($caster);
-
-                    return $onelineFormatter;
+                    return new OnelineFormatter($caster);
                 })(),
-                new \Exception("foo"),
+                new \Exception('foo'),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\\\\Exception \(\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}[\+\-]\d{2}\:\d{2}\)',
@@ -98,25 +93,25 @@ class OnelineFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
-                    $caster = $this->_mockCasterInterface();
+                (function () {
+                    $caster = $this->mockCasterInterface();
 
                     $caster
                         ->expects($this->exactly(2))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
+                                $this->callback(static function (string $v) {
                                     return (1 === preg_match('/^#\d+ /', $v));
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
-                            "#0 Lorem"
+                            'foo',
+                            '#0 Lorem'
                         );
 
                     $onelineFormatter = new OnelineFormatter($caster);
@@ -128,11 +123,11 @@ class OnelineFormatterTest extends TestCase
 
                     return $onelineFormatter;
                 })(),
-                new \Exception("foo"),
+                new \Exception('foo'),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\\\\Exception',
@@ -145,36 +140,34 @@ class OnelineFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
-                    $caster = $this->_mockCasterInterface();
+                (function () {
+                    $caster = $this->mockCasterInterface();
 
                     $caster
                         ->expects($this->exactly(2))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
+                                $this->callback(static function (string $v) {
                                     return (1 === preg_match('/^#\d+ /', $v));
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
+                            'foo',
                             "#0 Lorem\n#1 Ipsum\n#2 Dolor",
                         );
 
-                    $onelineFormatter = new OnelineFormatter($caster);
-
-                    return $onelineFormatter;
+                    return new OnelineFormatter($caster);
                 })(),
-                new \Exception("foo"),
+                new \Exception('foo'),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\\\\Exception',
@@ -201,59 +194,57 @@ class OnelineFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
-                    $caster = $this->_mockCasterInterface();
+                (function () {
+                    $caster = $this->mockCasterInterface();
 
                     $caster
                         ->expects($this->exactly(6))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
+                                $this->callback(static function (string $v) {
                                     return (1 === preg_match('/^#\d+ /', $v));
                                 }),
                             ],
-                            ["bar"],
+                            ['bar'],
                             [
-                                $this->callback(function(string $v){
+                                $this->callback(static function (string $v) {
                                     return (1 === preg_match('/^#\d+ /', $v));
                                 }),
                             ],
-                            ["baz"],
+                            ['baz'],
                             [
-                                $this->callback(function(string $v){
+                                $this->callback(static function (string $v) {
                                     return (1 === preg_match('/^#\d+ /', $v));
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
-                            "#0 Lorem",
-                            "bar",
-                            "#0 Ipsum",
-                            "baz",
-                            "#0 Dolor",
+                            'foo',
+                            '#0 Lorem',
+                            'bar',
+                            '#0 Ipsum',
+                            'baz',
+                            '#0 Dolor',
                         );
 
-                    $onelineFormatter = new OnelineFormatter($caster);
-
-                    return $onelineFormatter;
+                    return new OnelineFormatter($caster);
                 })(),
-                (function(){
-                    $baz = new \LogicException("baz", 2);
-                    $bar = new \RuntimeException("bar", 1, $baz);
+                (static function () {
+                    $baz = new \LogicException('baz', 2);
+                    $bar = new \RuntimeException('bar', 1, $baz);
 
-                    return new \Exception("foo", 0, $bar);
+                    return new \Exception('foo', 0, $bar);
                 })(),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\\\\Exception',
@@ -273,35 +264,35 @@ class OnelineFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
-                    $caster = $this->_mockCasterInterface();
+                (function () {
+                    $caster = $this->mockCasterInterface();
 
                     $caster
                         ->expects($this->exactly(4))
-                        ->method("maskString")
+                        ->method('maskString')
                         ->withConsecutive(
-                            ["foo"],
+                            ['foo'],
                             [
-                                $this->callback(function(string $v){
+                                $this->callback(static function (string $v) {
                                     return (1 === preg_match('/^#\d+ /', $v));
                                 }),
                             ],
-                            ["bar"],
+                            ['bar'],
                             [
-                                $this->callback(function(string $v){
+                                $this->callback(static function (string $v) {
                                     return (1 === preg_match('/^#\d+ /', $v));
                                 }),
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
-                            "foo",
-                            "#0 Lorem",
-                            "bar",
-                            "#0 Ipsum",
+                            'foo',
+                            '#0 Lorem',
+                            'bar',
+                            '#0 Ipsum',
                         );
 
                     $onelineFormatter = new OnelineFormatter($caster);
@@ -313,12 +304,12 @@ class OnelineFormatterTest extends TestCase
 
                     return $onelineFormatter;
                 })(),
-                (function(){
-                    $bim = new \LogicException("bim", 3);
-                    $baz = new \LogicException("baz", 2, $bim);
-                    $bar = new \RuntimeException("bar", 1, $baz);
+                (static function () {
+                    $bim = new \LogicException('bim', 3);
+                    $baz = new \LogicException('baz', 2, $bim);
+                    $bar = new \RuntimeException('bar', 1, $baz);
 
-                    return new \Exception("foo", 0, $bar);
+                    return new \Exception('foo', 0, $bar);
                 })(),
             ],
         ];
@@ -327,12 +318,9 @@ class OnelineFormatterTest extends TestCase
     /**
      * @dataProvider dataProvider_testNormalizeStringWorks
      */
-    public function testNormalizeStringWorks(
-        string $expected,
-        string $str
-    ): void
+    public function testNormalizeStringWorks(string $expected, string $str): void
     {
-        $caster = $this->_mockCasterInterface();
+        $caster = $this->mockCasterInterface();
 
         $onelineFormatter = new OnelineFormatter($caster);
 
@@ -346,19 +334,19 @@ class OnelineFormatterTest extends TestCase
     {
         return [
             [
-                "",
-                "",
+                '',
+                '',
             ],
             [
-                "foo",
-                "foo",
+                'foo',
+                'foo',
             ],
             [
-                "foo bar",
+                'foo bar',
                 "foo\nbar",
             ],
             [
-                "foo     bar",
+                'foo     bar',
                 "foo\n\n\n\n\nbar",
             ],
         ];
@@ -367,7 +355,7 @@ class OnelineFormatterTest extends TestCase
     /**
      * @return CasterInterface&MockObject
      */
-    private function _mockCasterInterface(): CasterInterface
+    private function mockCasterInterface(): CasterInterface
     {
         return $this
             ->getMockBuilder(CasterInterface::class)

@@ -1,12 +1,10 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
-use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Formatting\AbstractXMLFormatter;
-use Eboreum\Exceptional\Formatting\FormatterInterface;
 use PHPUnit\Framework\TestCase;
 
 class AbstractXMLFormatterTest extends TestCase
@@ -20,7 +18,7 @@ class AbstractXMLFormatterTest extends TestCase
              */
             public function format(\Throwable $throwable): string
             {
-                return "";
+                return '';
             }
         };
 
@@ -36,7 +34,7 @@ class AbstractXMLFormatterTest extends TestCase
              */
             public function format(\Throwable $throwable): string
             {
-                return "";
+                return '';
             }
         };
 

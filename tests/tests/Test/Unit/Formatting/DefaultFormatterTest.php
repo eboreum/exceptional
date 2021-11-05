@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
-use Eboreum\Exceptional\Exception\RuntimeException;
-use Eboreum\Exceptional\Formatting\AbstractFormatter;
 use Eboreum\Exceptional\Formatting\DefaultFormatter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -16,11 +14,11 @@ class DefaultFormatterTest extends TestCase
 {
     public function testBasics(): void
     {
-        $caster = $this->_mockCasterInterface();
+        $caster = $this->mockCasterInterface();
 
         $defaultFormatter = new DefaultFormatter($caster);
 
-        $this->assertSame("    ", $defaultFormatter->getIndentationCharacters());
+        $this->assertSame('    ', $defaultFormatter->getIndentationCharacters());
         $this->assertSame($caster, $defaultFormatter->getCaster());
     }
 
@@ -31,8 +29,7 @@ class DefaultFormatterTest extends TestCase
         string $expectedJSONRegex,
         DefaultFormatter $defaultFormatter,
         \Throwable $throwable
-    ): void
-    {
+    ): void {
         $this->assertMatchesRegularExpression($expectedJSONRegex, $defaultFormatter->format($throwable));
     }
 
@@ -44,7 +41,7 @@ class DefaultFormatterTest extends TestCase
         return [
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\\\\Exception',
@@ -59,44 +56,42 @@ class DefaultFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
-                    $caster = $this->_mockCasterInterface();
+                (function () {
+                    $caster = $this->mockCasterInterface();
 
                     $caster
                         ->expects($this->any())
-                        ->method("maskString")
-                        ->with($this->callback(function(string $v){
+                        ->method('maskString')
+                        ->with($this->callback(static function (string $v) {
                             return (
-                                "foo" === $v
+                                'foo' === $v
                                 || (1 === preg_match('/^#\d+ /', $v))
                             );
                         }))
-                        ->will($this->returnCallback(function(string $v){
-                            if ("foo" === $v) {
-                                return "foo";
+                        ->will($this->returnCallback(static function (string $v) {
+                            if ('foo' === $v) {
+                                return 'foo';
                             }
 
                             if (1 === preg_match('/^#\d+ /', $v)) {
-                                return "#0 Lorem";
+                                return '#0 Lorem';
                             }
 
                             throw new \Exception(sprintf(
-                                "Uncovered case for \$v = %s",
+                                'Uncovered case for $v = %s',
                                 Caster::getInstance()->castTyped($v),
                             ));
                         }));
 
-                    $defaultFormatter = new DefaultFormatter($caster);
-
-                    return $defaultFormatter;
+                    return new DefaultFormatter($caster);
                 })(),
-                new \Exception("foo"),
+                new \Exception('foo'),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\\\\Exception \(\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}[\+\-]\d{2}\:\d{2}\)',
@@ -111,31 +106,31 @@ class DefaultFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
-                    $caster = $this->_mockCasterInterface();
+                (function () {
+                    $caster = $this->mockCasterInterface();
 
                     $caster
                         ->expects($this->any())
-                        ->method("maskString")
-                        ->with($this->callback(function(string $v){
+                        ->method('maskString')
+                        ->with($this->callback(static function (string $v) {
                             return (
-                                "foo" === $v
+                                'foo' === $v
                                 || (1 === preg_match('/^#\d+ /', $v))
                             );
                         }))
-                        ->will($this->returnCallback(function(string $v){
-                            if ("foo" === $v) {
-                                return "foo";
+                        ->will($this->returnCallback(static function (string $v) {
+                            if ('foo' === $v) {
+                                return 'foo';
                             }
 
                             if (1 === preg_match('/^#\d+ /', $v)) {
-                                return "#0 Lorem";
+                                return '#0 Lorem';
                             }
 
                             throw new \Exception(sprintf(
-                                "Uncovered case for \$v = %s",
+                                'Uncovered case for $v = %s',
                                 Caster::getInstance()->castTyped($v),
                             ));
                         }));
@@ -149,11 +144,11 @@ class DefaultFormatterTest extends TestCase
 
                     return $defaultFormatter;
                 })(),
-                new \Exception("foo"),
+                new \Exception('foo'),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\\\\Exception',
@@ -186,51 +181,49 @@ class DefaultFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
-                    $caster = $this->_mockCasterInterface();
+                (function () {
+                    $caster = $this->mockCasterInterface();
 
                     $caster
                         ->expects($this->any())
-                        ->method("maskString")
-                        ->with($this->callback(function(string $v){
+                        ->method('maskString')
+                        ->with($this->callback(static function (string $v) {
                             return (
-                                in_array($v, ["foo", "bar", "baz"], true)
+                                in_array($v, ['foo', 'bar', 'baz'], true)
                                 || (1 === preg_match('/^#\d+ /', $v))
                             );
                         }))
-                        ->will($this->returnCallback(function(string $v){
-                            if (in_array($v, ["foo", "bar", "baz"], true)) {
+                        ->will($this->returnCallback(static function (string $v) {
+                            if (in_array($v, ['foo', 'bar', 'baz'], true)) {
                                 return $v;
                             }
 
                             if (1 === preg_match('/^#\d+ /', $v)) {
-                                return "#0 Lorem";
+                                return '#0 Lorem';
                             }
 
                             throw new \Exception(sprintf(
-                                "Uncovered case for \$v = %s",
+                                'Uncovered case for $v = %s',
                                 Caster::getInstance()->castTyped($v),
                             ));
                         }));
 
-                    $defaultFormatter = new DefaultFormatter($caster);
-
-                    return $defaultFormatter;
+                    return new DefaultFormatter($caster);
                 })(),
-                (function(){
-                    $baz = new \LogicException("baz", 2);
-                    $bar = new \RuntimeException("bar", 1, $baz);
+                (static function () {
+                    $baz = new \LogicException('baz', 2);
+                    $bar = new \RuntimeException('bar', 1, $baz);
 
-                    return new \Exception("foo", 0, $bar);
+                    return new \Exception('foo', 0, $bar);
                 })(),
             ],
             [
                 sprintf(
-                    implode("", [
+                    implode('', [
                         '/',
                         '^',
                         '\\\\Exception',
@@ -254,32 +247,32 @@ class DefaultFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), "/"),
-                    preg_quote(basename(__FILE__), "/"),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
                 ),
-                (function(){
-                    $caster = $this->_mockCasterInterface();
+                (function () {
+                    $caster = $this->mockCasterInterface();
 
                     $caster
                         ->expects($this->any())
-                        ->method("maskString")
-                        ->with($this->callback(function(string $v){
+                        ->method('maskString')
+                        ->with($this->callback(static function (string $v) {
                             return (
-                                in_array($v, ["foo", "bar", "baz", "bim"], true)
+                                in_array($v, ['foo', 'bar', 'baz', 'bim'], true)
                                 || (1 === preg_match('/^#\d+ /', $v))
                             );
                         }))
-                        ->will($this->returnCallback(function(string $v){
-                            if (in_array($v, ["foo", "bar", "baz", "bim"], true)) {
+                        ->will($this->returnCallback(static function (string $v) {
+                            if (in_array($v, ['foo', 'bar', 'baz', 'bim'], true)) {
                                 return $v;
                             }
 
                             if (1 === preg_match('/^#\d+ /', $v)) {
-                                return "#0 Lorem";
+                                return '#0 Lorem';
                             }
 
                             throw new \Exception(sprintf(
-                                "Uncovered case for \$v = %s",
+                                'Uncovered case for $v = %s',
                                 Caster::getInstance()->castTyped($v),
                             ));
                         }));
@@ -293,12 +286,12 @@ class DefaultFormatterTest extends TestCase
 
                     return $defaultFormatter;
                 })(),
-                (function(){
-                    $bim = new \LogicException("bim", 3);
-                    $baz = new \LogicException("baz", 2, $bim);
-                    $bar = new \RuntimeException("bar", 1, $baz);
+                (static function () {
+                    $bim = new \LogicException('bim', 3);
+                    $baz = new \LogicException('baz', 2, $bim);
+                    $bar = new \RuntimeException('bar', 1, $baz);
 
-                    return new \Exception("foo", 0, $bar);
+                    return new \Exception('foo', 0, $bar);
                 })(),
             ],
         ];
@@ -306,24 +299,24 @@ class DefaultFormatterTest extends TestCase
 
     public function testWithIndentationCharactersWorks(): void
     {
-        $caster = $this->_mockCasterInterface();
+        $caster = $this->mockCasterInterface();
 
         $defaultFormatterA = new DefaultFormatter($caster);
-        $defaultFormatterB = $defaultFormatterA->withIndentationCharacters("    ");
-        $defaultFormatterC = $defaultFormatterA->withIndentationCharacters("+?+");
+        $defaultFormatterB = $defaultFormatterA->withIndentationCharacters('    ');
+        $defaultFormatterC = $defaultFormatterA->withIndentationCharacters('+?+');
 
         $this->assertNotSame($defaultFormatterA, $defaultFormatterB);
         $this->assertNotSame($defaultFormatterA, $defaultFormatterC);
         $this->assertNotSame($defaultFormatterB, $defaultFormatterC);
-        $this->assertSame("    ", $defaultFormatterA->getIndentationCharacters());
-        $this->assertSame("    ", $defaultFormatterB->getIndentationCharacters());
-        $this->assertSame("+?+", $defaultFormatterC->getIndentationCharacters());
+        $this->assertSame('    ', $defaultFormatterA->getIndentationCharacters());
+        $this->assertSame('    ', $defaultFormatterB->getIndentationCharacters());
+        $this->assertSame('+?+', $defaultFormatterC->getIndentationCharacters());
     }
 
     /**
      * @return CasterInterface&MockObject
      */
-    private function _mockCasterInterface(): CasterInterface
+    private function mockCasterInterface(): CasterInterface
     {
         return $this
             ->getMockBuilder(CasterInterface::class)
