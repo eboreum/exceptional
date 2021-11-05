@@ -13,7 +13,7 @@ class SimpleXMLElementFactory implements SimpleXMLElementFactoryInterface
 {
     protected CharacterEncoding $characterEncoding;
 
-    protected string $xmlVersion = "1.0";
+    protected string $xmlVersion = '1.0';
 
     public function __construct(CharacterEncoding $characterEncoding)
     {

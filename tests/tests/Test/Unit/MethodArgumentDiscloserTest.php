@@ -2007,7 +2007,7 @@ class MethodArgumentDiscloserTest extends TestCase
                 implode("", [
                     '/',
                     '^',
-                    'Uncovered case for \$match\["scope"\] \=',
+                    'Uncovered case for \$match\[\'scope\'\] \=',
                     ' \(string\(42\)\) "IDontExista8728361d30f42bfb9a954abfac4ccab"',
                     '$',
                     '/',

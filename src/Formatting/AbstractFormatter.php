@@ -16,9 +16,7 @@ use Eboreum\Exceptional\ExceptionMessageGenerator;
  */
 abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierAnnotationInterface
 {
-    /**
-     * @DebugIdentifier
-     */
+    /** @DebugIdentifier */
     protected CasterInterface $caster;
 
     /**
@@ -72,8 +70,8 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
     public function normalizeFilePath(string $filePath): string
     {
         return str_replace(
-            "\\",
-            "/",
+            '\\',
+            '/',
             $filePath,
         );
     }
@@ -123,7 +121,7 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
         try {
             if (false === ($previousThrowableLevel >= 0)) {
                 throw new RuntimeException(sprintf(
-                    "Expects argument \$previousThrowableLevel to be <= 0, but it is not. Found: %s",
+                    'Expects argument $previousThrowableLevel to be <= 0, but it is not. Found: %s',
                     Caster::getInstance()->castTyped($previousThrowableLevel),
                 ));
             }

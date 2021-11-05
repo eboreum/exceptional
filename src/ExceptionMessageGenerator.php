@@ -6,9 +6,7 @@ namespace Eboreum\Exceptional;
 
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Caster\Contract\ImmutableObjectInterface;
-use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
-use Eboreum\Exceptional\MethodArgumentDiscloser;
 
 class ExceptionMessageGenerator implements ImmutableObjectInterface
 {
@@ -58,8 +56,7 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
     public function castFunctionArgumentsToString(
         \ReflectionFunctionAbstract $reflectionFunction,
         array $functionArgumentValues
-    ): string
-    {
+    ): string {
         try {
             $casterInner = $this->getCaster()->withDepthCurrent(
                 $this->getCaster()->getDepthCurrent()
@@ -83,7 +80,7 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
 
             if (null === $discloser) {
                 throw new RuntimeException(sprintf(
-                    "A \$discloser was not produced from \$reflectionFunction = %s",
+                    'A $discloser was not produced from $reflectionFunction = %s',
                     Caster::getInstance()->castTyped($reflectionFunction),
                 ));
             }
@@ -108,13 +105,13 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
 
                 if ($isAtLastNamedParameterAndLastParameterIsVariadic) {
                     $argumentsAsStrings[] = sprintf(
-                        "$%s = ...%s",
+                        '$%s = ...%s',
                         $reflectionParameter->getName(),
                         $casterInner->castTyped($normalizedMethodArgumentValues[$index] ?? []),
                     );
                 } else {
                     $argumentsAsStrings[] = sprintf(
-                        "$%s = %s",
+                        '$%s = %s',
                         $reflectionParameter->getName(),
                         $casterInner->castTyped($normalizedMethodArgumentValues[$index] ?? null),
                     );
@@ -133,9 +130,9 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                 $firstArgumentIndex = $handledParameterCount;
                 $lastArgumentIndex = $normalizedMethodArgumentValuesCount - 1;
 
-                for ($argumentIndex=$firstArgumentIndex; $argumentIndex<=$lastArgumentIndex; $argumentIndex++) {
+                for ($argumentIndex = $firstArgumentIndex; $argumentIndex <= $lastArgumentIndex; $argumentIndex++) {
                     $argumentsAsStrings[] = sprintf(
-                        "{%d} = %s",
+                        '{%d} = %s',
                         $argumentIndex,
                         $casterInner->castTyped(
                             $normalizedMethodArgumentValues[$argumentIndex]
@@ -144,23 +141,23 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                 }
             }
 
-            $str = implode(", ", $argumentsAsStrings);
+            $str = implode(', ', $argumentsAsStrings);
         } catch (\Throwable $t) {
-            $declaringClassText = "";
+            $declaringClassText = '';
 
             if ($reflectionFunction instanceof \ReflectionMethod) {
                 $declaringClassText = sprintf(
-                    " (declaring class: %s)",
+                    ' (declaring class: %s)',
                     Caster::makeNormalizedClassName($reflectionFunction->getDeclaringClass()),
                 );
             }
 
             throw new RuntimeException(sprintf(
-                implode("", [
-                    "Failure in \\%s->%s(",
-                        "\$reflectionFunction = (object) %s%s",
-                        ", \$functionArgumentValues = %s",
-                    ")",
+                implode('', [
+                    'Failure in \\%s->%s(',
+                        '$reflectionFunction = (object) %s%s',
+                        ', $functionArgumentValues = %s',
+                    ')',
                 ]),
                 static::class,
                 __FUNCTION__,
@@ -186,25 +183,24 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
     public function makeFailureInFunctionMessage(
         \ReflectionFunction $reflectionFunction,
         array $functionArgumentValues
-    ): string
-    {
+    ): string {
         $output = null;
 
         try {
             if ($reflectionFunction->isClosure()) {
                 $argumentCount = count($functionArgumentValues);
                 $output = sprintf(
-                    implode("", [
-                        "Failure in closure/anonymous function defined in %s:%d, called with %d %s and actually",
-                        " having arguments: (%s)",
+                    implode('', [
+                        'Failure in closure/anonymous function defined in %s:%d, called with %d %s and actually',
+                        ' having arguments: (%s)',
                     ]),
                     $reflectionFunction->getFileName(),
                     $reflectionFunction->getStartLine(),
                     $argumentCount,
                     (
                         1 === $argumentCount
-                        ? "argument"
-                        : "arguments"
+                        ? 'argument'
+                        : 'arguments'
                     ),
                     $this->castFunctionArgumentsToString($reflectionFunction, $functionArgumentValues),
                 );
@@ -212,7 +208,7 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
 
             if (!$output) {
                 $output = sprintf(
-                    "Failure in function \\%s(%s)",
+                    'Failure in function \\%s(%s)',
                     $reflectionFunction->getName(),
                     $this->castFunctionArgumentsToString($reflectionFunction, $functionArgumentValues),
                 );
@@ -220,19 +216,19 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
         } catch (\Throwable $t) {
             $argumentsAsStrings = [];
             $argumentsAsStrings[] = sprintf(
-                "\$reflectionFunction = %s",
+                '$reflectionFunction = %s',
                 $this->getCaster()->castTyped($reflectionFunction),
             );
             $argumentsAsStrings[] = sprintf(
-                "\$functionArgumentValues = %s",
+                '$functionArgumentValues = %s',
                 $this->getCaster()->castTyped($functionArgumentValues),
             );
 
             throw new RuntimeException(sprintf(
-                "Failure in \\%s->%s(%s)",
+                'Failure in \\%s->%s(%s)',
                 static::class,
                 __FUNCTION__,
-                implode(", ", $argumentsAsStrings),
+                implode(', ', $argumentsAsStrings),
             ), 0, $t);
         }
 
@@ -256,11 +252,10 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
         $objectOrClassName,
         \ReflectionMethod $reflectionMethod,
         array $methodArgumentValues
-    ): string
-    {
+    ): string {
         try {
             $errorMessages = [];
-            $className = "";
+            $className = '';
 
             if (is_object($objectOrClassName)) {
                 $reflectionObject = new \ReflectionObject($objectOrClassName);
@@ -278,12 +273,12 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                     );
                 }
 
-                if (false == $isClassAcceptable) {
+                if (false === $isClassAcceptable) { // @phpstan-ignore-line
                     $errorMessages[] = sprintf(
-                        implode("", [
-                            "Arguments \$objectOrClassName = %s and \$reflectionMethod = %s (declaring class name:",
-                            " %s) are problematic as they do not do not reference the same class or a child",
-                            " class hereof",
+                        implode('', [
+                            'Arguments $objectOrClassName = %s and $reflectionMethod = %s (declaring class name:',
+                            ' %s) are problematic as they do not do not reference the same class or a child',
+                            ' class hereof',
                         ]),
                         $this->getCaster()->castTyped($objectOrClassName),
                         $this->getCaster()->castTyped($reflectionMethod),
@@ -304,12 +299,12 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                         );
                     }
 
-                    if (false == $isClassAcceptable) {
+                    if (false === $isClassAcceptable) { // @phpstan-ignore-line
                         $errorMessages[] = sprintf(
-                            implode("", [
-                                "Arguments \$objectOrClassName = %s and \$reflectionMethod = %s (declaring class",
-                                " name: %s) are problematic as they do not do not reference the same class or a",
-                                " child class hereof",
+                            implode('', [
+                                'Arguments $objectOrClassName = %s and $reflectionMethod = %s (declaring class',
+                                ' name: %s) are problematic as they do not do not reference the same class or a',
+                                ' child class hereof',
                             ]),
                             $this->getCaster()->castTyped($objectOrClassName),
                             $this->getCaster()->castTyped($reflectionMethod),
@@ -318,7 +313,7 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                     }
                 } else {
                     $errorMessages[] = sprintf(
-                        "Argument \$objectOrClassName = %s refers to a non-existing class",
+                        'Argument $objectOrClassName = %s refers to a non-existing class',
                         $this->getCaster()->castTyped($objectOrClassName),
                     );
                 }
@@ -329,50 +324,50 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                 }
             } else {
                 $errorMessages[] = sprintf(
-                    "Expects argument \$objectOrClassName to be an object or a string, but it is not. Found: %s",
+                    'Expects argument $objectOrClassName to be an object or a string, but it is not. Found: %s',
                     $this->getCaster()->castTyped($objectOrClassName),
                 );
             }
 
             if ($errorMessages) {
-                throw new RuntimeException(implode(". ", $errorMessages));
+                throw new RuntimeException(implode('. ', $errorMessages));
             }
 
             $output = sprintf(
-                "Failure in %s%s%s(%s)",
+                'Failure in %s%s%s(%s)',
                 $className,
                 (
                     $reflectionMethod->isStatic()
-                    ? "::"
-                    : "->"
+                    ? '::'
+                    : '->'
                 ),
                 $reflectionMethod->getName(),
                 $this->castFunctionArgumentsToString($reflectionMethod, $methodArgumentValues),
             );
 
             if (is_object($objectOrClassName)) {
-                $output .= " inside " . $this->getCaster()->castTyped($objectOrClassName);
+                $output .= ' inside ' . $this->getCaster()->castTyped($objectOrClassName);
             }
         } catch (\Throwable $t) {
             $argumentsAsStrings = [];
             $argumentsAsStrings[] = sprintf(
-                "\$objectOrClassName = %s",
+                '$objectOrClassName = %s',
                 $this->getCaster()->castTyped($objectOrClassName),
             );
             $argumentsAsStrings[] = sprintf(
-                "\$reflectionMethod = %s",
+                '$reflectionMethod = %s',
                 $this->getCaster()->castTyped($reflectionMethod),
             );
             $argumentsAsStrings[] = sprintf(
-                "\$methodArgumentValues = %s",
+                '$methodArgumentValues = %s',
                 $this->getCaster()->castTyped($methodArgumentValues),
             );
 
             throw new RuntimeException(sprintf(
-                "Failure in \\%s->%s(%s)",
+                'Failure in \\%s->%s(%s)',
                 static::class,
                 __FUNCTION__,
-                implode(", ", $argumentsAsStrings),
+                implode(', ', $argumentsAsStrings),
             ), 0, $t);
         }
 
@@ -395,8 +390,7 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
     public function makeUninitializedPropertySafeToTextualIdentifierString(
         object $object,
         array $propertyNamesToBeShown
-    ): string
-    {
+    ): string {
         try {
             $reflectionObject = new \ReflectionObject($object);
             $errorMessages = [];
@@ -405,9 +399,9 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
             $propertyNameToReflectionPropertyMap = [];
 
             foreach ($propertyNamesToBeShown as $i => $propertyName) {
-                if (false == is_string($propertyName)) {
+                if (false === is_string($propertyName)) { // @phpstan-ignore-line
                     $invalids[] = sprintf(
-                        "Element is not a string: %s => %s",
+                        'Element is not a string: %s => %s',
                         $this->getCaster()->cast($i),
                         $this->getCaster()->castTyped($propertyName),
                     );
@@ -433,13 +427,13 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
 
                     if (false === $hasProperty) {
                         $invalids[] = sprintf(
-                            "Property %s does not exist on class %s%s",
+                            'Property %s does not exist on class %s%s',
                             $this->getCaster()->cast($propertyName),
                             Caster::makeNormalizedClassName($reflectionObject),
                             (
                                 $classHierarchyIndex > 0
-                                ? " or any of its parent classes"
-                                : ""
+                                ? ' or any of its parent classes'
+                                : ''
                             ),
                         );
                     }
@@ -448,15 +442,15 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
 
             if ($invalids) {
                 $errorMessages[] = sprintf(
-                    "In argument \$propertyNamesToBeShown, %d/%d elements are invalid, including: %s",
+                    'In argument $propertyNamesToBeShown, %d/%d elements are invalid, including: %s',
                     count($invalids),
                     count($propertyNamesToBeShown),
-                    implode(",", $invalids),
+                    implode(',', $invalids),
                 );
             }
 
             if ($errorMessages) {
-                throw new RuntimeException(implode(". ", $errorMessages));
+                throw new RuntimeException(implode('. ', $errorMessages));
             }
 
             $output = Caster::makeNormalizedClassName($reflectionObject);
@@ -468,13 +462,13 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
 
                 if ($reflectionProperty->isInitialized($object)) {
                     $propertiesStringified[] = sprintf(
-                        "$%s = %s",
+                        '$%s = %s',
                         $propertyName,
                         $this->getCaster()->castTyped($reflectionProperty->getValue($object)),
                     );
                 } else {
                     $propertiesStringified[] = sprintf(
-                        "$%s = (uninitialized)",
+                        '$%s = (uninitialized)',
                         $propertyName,
                     );
                 }
@@ -482,26 +476,26 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
 
             if ($propertiesStringified) {
                 $output .= sprintf(
-                    " {%s}",
-                    implode(", ", $propertiesStringified),
+                    ' {%s}',
+                    implode(', ', $propertiesStringified),
                 );
             }
         } catch (\Throwable $t) {
             $argumentSegments = [];
             $argumentSegments[] = sprintf(
-                "\$object = %s",
+                '$object = %s',
                 $this->getCaster()->castTyped($object),
             );
             $argumentSegments[] = sprintf(
-                "\$propertyNamesToBeShown = %s",
+                '$propertyNamesToBeShown = %s',
                 $this->getCaster()->castTyped($propertyNamesToBeShown),
             );
 
             throw new RuntimeException(sprintf(
-                "Failure in \\%s->%s(%s)",
+                'Failure in \\%s->%s(%s)',
                 static::class,
                 __FUNCTION__,
-                implode(", ", $argumentSegments),
+                implode(', ', $argumentSegments),
             ), 0, $t);
         }
 

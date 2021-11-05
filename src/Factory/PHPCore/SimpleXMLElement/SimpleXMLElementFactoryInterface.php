@@ -13,7 +13,7 @@ use Eboreum\Caster\Contract\ImmutableObjectInterface;
 interface SimpleXMLElementFactoryInterface extends ImmutableObjectInterface
 {
     /**
-     * @param string $rootElementName           A name for the outermost element in the XML tree.
+     * @param string $rootElementName A name for the outermost element in the XML tree.
      */
     public function createSimpleXMLElement(string $rootElementName): \SimpleXMLElement;
 

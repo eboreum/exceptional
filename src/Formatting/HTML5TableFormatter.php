@@ -16,9 +16,7 @@ use Eboreum\Exceptional\Caster;
  */
 class HTML5TableFormatter extends AbstractXMLFormatter
 {
-    /**
-     * @DebugIdentifier
-     */
+    /** @DebugIdentifier */
     protected CharacterEncoding $characterEncoding;
 
     public function __construct(CasterInterface $caster, CharacterEncoding $characterEncoding)
@@ -45,29 +43,29 @@ class HTML5TableFormatter extends AbstractXMLFormatter
 
         if ($this->isProvidingTimestamp()) {
             $trs[] = [
-                $this->htmlEncode("Time:"),
-                $this->htmlEncode(date("c")),
+                $this->htmlEncode('Time:'),
+                $this->htmlEncode(date('c')),
             ];
         }
 
         $trs[] = [
-            $this->htmlEncode("Message:"),
+            $this->htmlEncode('Message:'),
             $this->htmlEncodeWithLn2Br($this->maskString($throwable->getMessage())),
         ];
         $trs[] = [
-            $this->htmlEncode("File:"),
+            $this->htmlEncode('File:'),
             $this->htmlEncodeWithLn2Br($this->normalizeFilePath($throwable->getFile())),
         ];
         $trs[] = [
-            $this->htmlEncode("Line:"),
+            $this->htmlEncode('Line:'),
             $this->htmlEncodeWithLn2Br(strval($throwable->getLine())),
         ];
         $trs[] = [
-            $this->htmlEncode("Code:"),
+            $this->htmlEncode('Code:'),
             $this->htmlEncodeWithLn2Br(strval($throwable->getCode())),
         ];
         $trs[] = [
-            $this->htmlEncode("Stacktrace:"),
+            $this->htmlEncode('Stacktrace:'),
             '<pre>' . $this->htmlEncodeWithLn2Br($this->maskString($throwable->getTraceAsString())) . '</pre>',
         ];
 
@@ -77,9 +75,9 @@ class HTML5TableFormatter extends AbstractXMLFormatter
 
             if (is_int($maximumPreviousDepth) && $this->getPreviousThrowableLevel() >= $maximumPreviousDepth) {
                 $trs[] = [
-                    $this->htmlEncode("Previous:"),
+                    $this->htmlEncode('Previous:'),
                     $this->htmlEncode(sprintf(
-                        "(%d more) (omitted)",
+                        '(%d more) (omitted)',
                         $previousCount,
                     )),
                 ];
@@ -87,17 +85,17 @@ class HTML5TableFormatter extends AbstractXMLFormatter
                 $child = $this->withPreviousThrowableLevel($this->getPreviousThrowableLevel() + 1);
 
                 $trs[] = [
-                    $this->htmlEncode("Previous:"),
+                    $this->htmlEncode('Previous:'),
                     $this->htmlEncode(sprintf(
-                        "(%d more)",
+                        '(%d more)',
                         $previousCount,
                     )) . $child->format($throwable->getPrevious()),
                 ];
             }
         } else {
             $trs[] = [
-                $this->htmlEncode("Previous:"),
-                $this->htmlEncode("(None)"),
+                $this->htmlEncode('Previous:'),
+                $this->htmlEncode('(None)'),
             ];
         }
 
@@ -118,12 +116,12 @@ class HTML5TableFormatter extends AbstractXMLFormatter
         $html .= '</tbody></table>';
 
         if ($this->isPrettyPrinting()) {
-            $domDocument = new \DOMDocument("1.0", (string)$this->getCharacterEncoding());
+            $domDocument = new \DOMDocument('1.0', (string)$this->getCharacterEncoding());
             $domDocument->preserveWhiteSpace = false;
             $domDocument->formatOutput = true;
             $domDocument->loadHTML($html);
 
-            $tables = $domDocument->getElementsByTagName("table");
+            $tables = $domDocument->getElementsByTagName('table');
 
             assert($tables instanceof \DOMNodeList);
 
@@ -131,7 +129,7 @@ class HTML5TableFormatter extends AbstractXMLFormatter
 
             assert(is_object($table));
             assert($table instanceof \DOMElement);
-            assert($table->nodeName === "table");
+            assert($table->nodeName === 'table');
 
             $html = $domDocument->saveXML($table);
 
@@ -157,7 +155,7 @@ class HTML5TableFormatter extends AbstractXMLFormatter
     {
         $lines = static::splitTextLinesToArray($text);
 
-        array_walk($lines, function(string &$line){
+        array_walk($lines, function (string &$line): void {
             $line = $this->htmlEncode($line);
         });
 
@@ -166,7 +164,7 @@ class HTML5TableFormatter extends AbstractXMLFormatter
 
     public function withIsPrettyPrinting(bool $isPrettyPrinting): HTML5TableFormatter
     {
-        return parent::withIsPrettyPrinting($isPrettyPrinting); /** @phpstan-ignore-line */
+        return parent::withIsPrettyPrinting($isPrettyPrinting); // @phpstan-ignore-line
     }
 
     public function getCharacterEncoding(): CharacterEncoding

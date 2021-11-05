@@ -35,7 +35,7 @@ interface FormatterInterface
     /**
      * Must return a clone.
      *
-     * @param int $previousThrowableLevel       Must be >= 0. Otherwise, an exception must be thrown.
+     * @param int $previousThrowableLevel Must be >= 0. Otherwise, an exception must be thrown.
      * @throws RuntimeException
      */
     public function withPreviousThrowableLevel(int $previousThrowableLevel): FormatterInterface;

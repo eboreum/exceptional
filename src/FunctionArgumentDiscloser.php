@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Eboreum\Exceptional;
 
 use Eboreum\Caster\Contract\CasterInterface;
-use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 
 /**
@@ -14,26 +13,25 @@ use Eboreum\Exceptional\Exception\RuntimeException;
 class FunctionArgumentDiscloser extends AbstractFunctionArgumentDiscloser
 {
     /**
-     * @param array<int, mixed> $functionArgumentValues
-     *                                          The actual values which have been passed to the function referred to in
-     *                                          the $reflectionFunction argument. These values may/should be produced by
-     *                                          the function `func_get_args`.
-     *                                          @see https://www.php.net/manual/en/function.func-get-args.php
+     * @see https://www.php.net/manual/en/function.func-get-args.php
+     *
+     * @param array<int, mixed> $functionArgumentValues The actual values which have been passed to the function
+     *                                                  referred to in the $reflectionFunction argument. These values
+     *                                                  may/should be produced by the function `func_get_args`.
      */
     public function __construct(
         CasterInterface $caster,
         \ReflectionFunction $reflectionFunction,
         array $functionArgumentValues
-    )
-    {
+    ) {
         try {
             $errorMessages = [];
 
             if (count($functionArgumentValues) < $reflectionFunction->getNumberOfRequiredParameters()) {
                 $errorMessages[] = sprintf(
-                    implode("", [
-                        "Argument \$functionArgumentValues = %s contains fewer elements (%d) than the required number",
-                        " of parameters (%d) in argument \$reflectionFunction = (object) %s, which is bogus",
+                    implode('', [
+                        'Argument $functionArgumentValues = %s contains fewer elements (%d) than the required number',
+                        ' of parameters (%d) in argument $reflectionFunction = (object) %s, which is bogus',
                     ]),
                     Caster::getInstance()->castTyped($functionArgumentValues),
                     count($functionArgumentValues),
@@ -43,7 +41,7 @@ class FunctionArgumentDiscloser extends AbstractFunctionArgumentDiscloser
             }
 
             if ($errorMessages) {
-                throw new RuntimeException(implode(". ", $errorMessages));
+                throw new RuntimeException(implode('. ', $errorMessages));
             }
 
             $this->caster = $caster;
@@ -56,22 +54,22 @@ class FunctionArgumentDiscloser extends AbstractFunctionArgumentDiscloser
 
             $argumentsAsStrings = [];
             $argumentsAsStrings[] = sprintf(
-                "\$caster = %s",
+                '$caster = %s',
                 Caster::getInstance()->castTyped($caster),
             );
             $argumentsAsStrings[] = sprintf(
-                "\$reflectionFunction = %s",
+                '$reflectionFunction = %s',
                 Caster::getInstance()->castTyped($reflectionFunction),
             );
             $argumentsAsStrings[] = sprintf(
-                "\$functionArgumentValues = %s",
+                '$functionArgumentValues = %s',
                 Caster::getInstance()->castTyped($functionArgumentValues),
             );
 
             throw new RuntimeException(sprintf(
-                "Failed to construct %s with arguments {%s}",
+                'Failed to construct %s with arguments {%s}',
                 Caster::makeNormalizedClassName(new \ReflectionObject($this)),
-                implode(", ", $argumentsAsStrings),
+                implode(', ', $argumentsAsStrings),
             ), 0, $t);
         }
     }
@@ -85,7 +83,7 @@ class FunctionArgumentDiscloser extends AbstractFunctionArgumentDiscloser
 
     public static function getDefaultValueConstantRegex(): string
     {
-        return implode("", [
+        return implode('', [
             '/',
             '^',
             '(',
@@ -111,7 +109,7 @@ class FunctionArgumentDiscloser extends AbstractFunctionArgumentDiscloser
                     '(',
                         '?<classConstantName>([a-zA-Z_]\w*)',
                     ')',
-                ')',
+                    ')',
             ')',
             '$',
             '/',

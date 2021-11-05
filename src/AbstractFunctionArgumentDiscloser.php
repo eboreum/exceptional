@@ -6,7 +6,6 @@ namespace Eboreum\Exceptional;
 
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Caster\Contract\ImmutableObjectInterface;
-use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 
 /**
@@ -19,22 +18,18 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 {
     protected CasterInterface $caster;
 
-    /**
-     * @var \ReflectionFunction|\ReflectionMethod
-     */
+    /** @var \ReflectionFunction|\ReflectionMethod */
     protected $reflectionFunction;
 
-    /**
-     * @var array<int, mixed>
-     */
+    /** @var array<int, mixed> */
     protected array $functionArgumentValues;
 
-    /**
-     * @var null|array<int, mixed>
-     */
+    /** @var array<int, mixed>|null */
     protected ?array $normalizedFunctionArgumentValues = null;
 
     protected ?int $requiredParameterCount = null;
+
+    abstract public static function getDefaultValueConstantRegex(): string;
 
     public function getCaster(): CasterInterface
     {
@@ -51,7 +46,7 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
     {
         if (false === $reflectionParameter->isDefaultValueAvailable()) {
             throw new RuntimeException(sprintf(
-                "Expects argument \$reflectionParameter (name: %s) to have a default value available, but it does not",
+                'Expects argument $reflectionParameter (name: %s) to have a default value available, but it does not',
                 $this->getCaster()->cast($reflectionParameter->getName()),
             ));
         }
@@ -66,9 +61,9 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
                 if (!$match) {
                     throw new RuntimeException(sprintf(
-                        implode("", [
-                            "Expects default value of parameter \$%s - a constant - to match",
-                            " regular expression %s, but it does not. Found: %s",
+                        implode('', [
+                            'Expects default value of parameter $%s - a constant - to match',
+                            ' regular expression %s, but it does not. Found: %s',
                         ]),
                         $reflectionParameter->getName(),
                         escapeshellarg(static::getDefaultValueConstantRegex()),
@@ -76,15 +71,15 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                     ));
                 }
 
-                foreach (["globalName", "namespacedName"] as $key) {
+                foreach (['globalName', 'namespacedName'] as $key) {
                     if ($match[$key] ?? false) {
                         if (false === defined($match[$key])) {
                             throw new RuntimeException(sprintf(
-                                "The %s constant %s is not defined",
+                                'The %s constant %s is not defined',
                                 (
-                                    "namespacedName" === $key
-                                    ? "namespaced"
-                                    : "global"
+                                    'namespacedName' === $key
+                                    ? 'namespaced'
+                                    : 'global'
                                 ),
                                 $this->getCaster()->cast($match[$key]),
                             ));
@@ -94,22 +89,21 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                     }
                 }
 
-                if ($match["scopedName"] ?? false) {
-                    switch ($match["scope"] ?? "") {
-                        case "parent":
-                        case "self":
-                            $isParentTraversalAllowed = ($match["scope"] === ("parent"));
+                if ($match['scopedName'] ?? false) {
+                    switch ($match['scope'] ?? '') {
+                        case 'parent':
+                        case 'self':
+                            $isParentTraversalAllowed = ($match['scope'] === ('parent'));
 
                             $reflectionClassCurrent = $reflectionParameter->getDeclaringClass();
                             $currentClassLevelIndex = -1;
-                            $defaultValue = null;
 
                             while ($reflectionClassCurrent) {
                                 $currentClassLevelIndex++;
 
-                                if ($reflectionClassCurrent->hasConstant($match["scopedName"])) {
+                                if ($reflectionClassCurrent->hasConstant($match['scopedName'])) {
                                     $reflectionClassConstant = $reflectionClassCurrent->getReflectionConstant(
-                                        $match["scopedName"]
+                                        $match['scopedName']
                                     );
 
                                     assert(is_object($reflectionClassConstant));
@@ -132,9 +126,9 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                             }
 
                             $exceptionMessage = sprintf(
-                                "Unable to locate the constant %s::%s",
-                                $match["scope"],
-                                $match["scopedName"],
+                                'Unable to locate the constant %s::%s',
+                                $match['scope'],
+                                $match['scopedName'],
                             );
 
                             if (
@@ -142,7 +136,7 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                                 && $reflectionParameter->getDeclaringClass()
                                 && $reflectionParameter->getDeclaringClass()->getParentClass()
                             ) {
-                                $exceptionMessage .= " or at any parent class";
+                                $exceptionMessage .= ' or at any parent class';
                             }
 
                             throw new RuntimeException($exceptionMessage);
@@ -153,16 +147,16 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                     */
 
                     throw new RuntimeException(sprintf(
-                        "Uncovered case for \$match[\"scope\"] = %s",
-                        $this->getCaster()->castTyped($match["scope"]),
+                        'Uncovered case for $match[\'scope\'] = %s',
+                        $this->getCaster()->castTyped($match['scope']),
                     ));
                 }
 
-                if ($match["classConstantName"] ?? false) {
+                if ($match['classConstantName'] ?? false) {
                     $classConstantNameFullyQuantified = sprintf(
-                        "%s::%s",
-                        $match["className"],
-                        $match["classConstantName"],
+                        '%s::%s',
+                        $match['className'],
+                        $match['classConstantName'],
                     );
 
                     /**
@@ -172,7 +166,7 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
                     if (false === defined($classConstantNameFullyQuantified)) {
                         throw new RuntimeException(sprintf(
-                            "Class constant %s is not defined",
+                            'Class constant %s is not defined',
                             $this->getCaster()->cast($classConstantNameFullyQuantified),
                         ));
                     }
@@ -181,12 +175,12 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                 }
 
                 throw new RuntimeException(sprintf(
-                    "Uncovered case for constant name %s and \$match = %s",
+                    'Uncovered case for constant name %s and $match = %s',
                     $this->getCaster()->cast($reflectionParameter->getDefaultValueConstantName()),
                     $this->getCaster()->castTyped($match),
                 ));
             } catch (\Throwable $t) {
-                $functionText = "";
+                $functionText = '';
 
                 if ($reflectionParameter->getDeclaringClass()) {
                     $isStatic = false;
@@ -196,26 +190,26 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                     }
 
                     $functionText = sprintf(
-                        "method %s%s%s",
+                        'method %s%s%s',
                         Caster::makeNormalizedClassName($reflectionParameter->getDeclaringClass()),
                         (
                             $isStatic
-                            ? "::"
-                            : "->"
+                            ? '::'
+                            : '->'
                         ),
                         $reflectionParameter->getDeclaringFunction()->getName(),
                     );
                 } else {
                     $functionText = sprintf(
-                        "function \\%s",
+                        'function \\%s',
                         $reflectionParameter->getDeclaringFunction()->getName(),
                     );
                 }
 
                 throw new RuntimeException(sprintf(
-                    implode("", [
-                        "Parameter \$%s in %s has a default value, which is a constant, but",
-                        " a problem with this constant was encountered"
+                    implode('', [
+                        'Parameter $%s in %s has a default value, which is a constant, but',
+                        ' a problem with this constant was encountered',
                     ]),
                     $reflectionParameter->getName(),
                     $functionText,
@@ -270,7 +264,7 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
             );
             $indexLastNamedParameter = $this->getNamedParameterCount() - 1;
 
-            for ($index=0; $index<=$indexMax; $index++) {
+            for ($index = 0; $index <= $indexMax; $index++) {
                 if ($index <= $indexLastNamedParameter) {
                     $reflectionParameter = $this->getReflectionParameterByIndex($index);
 
@@ -341,6 +335,4 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
             && $this->getReflectionFunction()->getParameters()[$lastNamedParameterIndex]->isVariadic()
         );
     }
-
-    abstract public static function getDefaultValueConstantRegex(): string;
 }

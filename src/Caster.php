@@ -42,7 +42,7 @@ class Caster extends OriginalCaster
             new ThrowableFormatter(),
         ]));
 
-        return $caster; /** @phpstan-ignore-line */
+        return $caster; // @phpstan-ignore-line
     }
 
     public static function getInstance(): Caster

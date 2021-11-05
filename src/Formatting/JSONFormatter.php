@@ -18,9 +18,7 @@ use Eboreum\Exceptional\ExceptionMessageGenerator;
  */
 class JSONFormatter extends AbstractFormatter
 {
-    /**
-     * @DebugIdentifier
-     */
+    /** @DebugIdentifier */
     protected CharacterEncoding $characterEncoding;
 
     protected int $flags = 0;
@@ -49,7 +47,7 @@ class JSONFormatter extends AbstractFormatter
                 $json = json_encode($stdClass, $this->getFlags(), $this->getDepth());
             } catch (\Throwable $t) {
                 throw new RuntimeException(sprintf(
-                    "Failure when calling: json_encode(%s, %s, %s)",
+                    'Failure when calling: json_encode(%s, %s, %s)',
                     $this->getCaster()->castTyped($stdClass),
                     $this->getCaster()->castTyped($this->getFlags()),
                     $this->getCaster()->castTyped($this->getDepth()),
@@ -63,9 +61,9 @@ class JSONFormatter extends AbstractFormatter
                     $errorName = static::errorCodeToText($jsonErrorCode);
 
                     throw new RuntimeException(sprintf(
-                        "JSON encoding failed: (%s) %s",
-                        ($errorName ?? ""),
-                        (json_last_error_msg() ?: "(No error message available)")
+                        'JSON encoding failed: (%s) %s',
+                        ($errorName ?? ''),
+                        (json_last_error_msg() ?: '(No error message available)')
                     ));
                 }
             }
@@ -83,7 +81,7 @@ class JSONFormatter extends AbstractFormatter
     }
 
     /**
-     * @param int $depth                        Must be > 0. Otherwise, a RuntimeException is thrown.
+     * @param int $depth Must be > 0. Otherwise, a RuntimeException is thrown.
      * @throws RuntimeException
      */
     public function withDepth(int $depth): JSONFormatter
@@ -91,7 +89,7 @@ class JSONFormatter extends AbstractFormatter
         try {
             if (false === ($depth >= 1)) {
                 throw new RuntimeException(sprintf(
-                    "Expects argument \$depth to be >= 1, but it is not. Found: %s",
+                    'Expects argument $depth to be >= 1, but it is not. Found: %s',
                     Caster::getInstance()->castTyped($depth),
                 ));
             }
@@ -122,7 +120,7 @@ class JSONFormatter extends AbstractFormatter
      */
     public function withPreviousThrowableLevel(int $previousThrowableLevel): JSONFormatter
     {
-        return parent::withPreviousThrowableLevel($previousThrowableLevel); /** @phpstan-ignore-line */
+        return parent::withPreviousThrowableLevel($previousThrowableLevel); // @phpstan-ignore-line
     }
 
     public function getCharacterEncoding(): CharacterEncoding
@@ -143,26 +141,26 @@ class JSONFormatter extends AbstractFormatter
     protected function formatInner(\Throwable $throwable, JSONFormatter $topLevelJSONFormatter): \stdClass
     {
         $array = [
-            "class" => Caster::makeNormalizedClassName(new \ReflectionObject($throwable)),
+            'class' => Caster::makeNormalizedClassName(new \ReflectionObject($throwable)),
         ];
 
         if ($this->isProvidingTimestamp()) {
-            $array["time"] = date("c");
+            $array['time'] = date('c');
         }
 
-        $array["file"] = $this->normalizeFilePath($throwable->getFile());
-        $array["line"] = strval($throwable->getLine());
-        $array["code"] = strval($throwable->getCode());
-        $array["message"] = $this->maskString($throwable->getMessage());
-        $array["stacktrace"] = $this->maskString($throwable->getTraceAsString());
+        $array['file'] = $this->normalizeFilePath($throwable->getFile());
+        $array['line'] = strval($throwable->getLine());
+        $array['code'] = strval($throwable->getCode());
+        $array['message'] = $this->maskString($throwable->getMessage());
+        $array['stacktrace'] = $this->maskString($throwable->getTraceAsString());
 
         if ($throwable->getPrevious()) {
             $maximumPreviousDepth = $this->getMaximumPreviousDepth();
             $previousCount = $this->countPreviousThrowables($throwable);
 
             if (is_int($maximumPreviousDepth) && $this->getPreviousThrowableLevel() >= $maximumPreviousDepth) {
-                $array["previous"] = sprintf(
-                    "%d more (omitted)",
+                $array['previous'] = sprintf(
+                    '%d more (omitted)',
                     $previousCount,
                 );
             } else {
@@ -170,7 +168,7 @@ class JSONFormatter extends AbstractFormatter
 
                 if (false === ($childDepth > 0)) {
                     throw new RuntimeException(sprintf(
-                        "Maximum JSON depth of %d was reached; cannot produce JSON",
+                        'Maximum JSON depth of %d was reached; cannot produce JSON',
                         $topLevelJSONFormatter->getDepth(),
                     ));
                 }
@@ -178,17 +176,17 @@ class JSONFormatter extends AbstractFormatter
                 $child = $this->withDepth($childDepth);
                 $child = $child->withPreviousThrowableLevel($this->getPreviousThrowableLevel() + 1);
 
-                $array["previous"] = $child->formatInner($throwable->getPrevious(), $topLevelJSONFormatter);
+                $array['previous'] = $child->formatInner($throwable->getPrevious(), $topLevelJSONFormatter);
             }
         } else {
-            $array["previous"] = null;
+            $array['previous'] = null;
         }
 
         return (object)$array;
     }
 
     /**
-     * @param int $jsonErrorCode                Corresponds to value returned by 'json_last_error()'.
+     * @param int $jsonErrorCode Corresponds to value returned by 'json_last_error()'.
      */
     public static function errorCodeToText(int $jsonErrorCode): ?string
     {
@@ -201,17 +199,17 @@ class JSONFormatter extends AbstractFormatter
     public static function getErrorCodeToTextMap(): array
     {
         return [
-            JSON_ERROR_NONE => "JSON_ERROR_NONE",
-            JSON_ERROR_DEPTH => "JSON_ERROR_DEPTH",
-            JSON_ERROR_STATE_MISMATCH => "JSON_ERROR_STATE_MISMATCH",
-            JSON_ERROR_CTRL_CHAR => "JSON_ERROR_CTRL_CHAR",
-            JSON_ERROR_SYNTAX => "JSON_ERROR_SYNTAX",
-            JSON_ERROR_UTF8 => "JSON_ERROR_UTF8", // PHP 5.3.3
-            JSON_ERROR_RECURSION => "JSON_ERROR_RECURSION", // PHP 5.5.0
-            JSON_ERROR_INF_OR_NAN => "JSON_ERROR_INF_OR_NAN", // PHP 5.5.0
-            JSON_ERROR_UNSUPPORTED_TYPE => "JSON_ERROR_UNSUPPORTED_TYPE", // PHP 5.5.0
-            JSON_ERROR_INVALID_PROPERTY_NAME => "JSON_ERROR_INVALID_PROPERTY_NAME", // PHP 7.0.0
-            JSON_ERROR_UTF16 => "JSON_ERROR_UTF16", // PHP 7.0.0
+            JSON_ERROR_NONE => 'JSON_ERROR_NONE',
+            JSON_ERROR_DEPTH => 'JSON_ERROR_DEPTH',
+            JSON_ERROR_STATE_MISMATCH => 'JSON_ERROR_STATE_MISMATCH',
+            JSON_ERROR_CTRL_CHAR => 'JSON_ERROR_CTRL_CHAR',
+            JSON_ERROR_SYNTAX => 'JSON_ERROR_SYNTAX',
+            JSON_ERROR_UTF8 => 'JSON_ERROR_UTF8', // PHP 5.3.3
+            JSON_ERROR_RECURSION => 'JSON_ERROR_RECURSION', // PHP 5.5.0
+            JSON_ERROR_INF_OR_NAN => 'JSON_ERROR_INF_OR_NAN', // PHP 5.5.0
+            JSON_ERROR_UNSUPPORTED_TYPE => 'JSON_ERROR_UNSUPPORTED_TYPE', // PHP 5.5.0
+            JSON_ERROR_INVALID_PROPERTY_NAME => 'JSON_ERROR_INVALID_PROPERTY_NAME', // PHP 7.0.0
+            JSON_ERROR_UTF16 => 'JSON_ERROR_UTF16', // PHP 7.0.0
         ];
     }
 }

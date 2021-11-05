@@ -467,7 +467,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         ];
                     };
 
-                    return $anonymousFunction(42, "foo", 3.14); /** @phpstan-ignore-line */
+                    return $anonymousFunction(42, "foo", 3.14); // @phpstan-ignore-line
                 },
             ],
             [
@@ -1112,7 +1112,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         }
                     };
 
-                    return $class::foo("extra"); /** @phpstan-ignore-line */
+                    return $class::foo("extra"); // @phpstan-ignore-line
                 },
             ],
         ];
@@ -1252,7 +1252,7 @@ class ExceptionMessageGeneratorTest extends TestCase
 
         try {
             ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                42, /** @phpstan-ignore-line */
+                42, // @phpstan-ignore-line
                 $reflectionMethod,
                 [],
             );
@@ -1368,7 +1368,7 @@ class ExceptionMessageGeneratorTest extends TestCase
 
         try {
             ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                'IDoNotExist425393c93a7d435ea6e95b2d0a6ac670', /** @phpstan-ignore-line */
+                'IDoNotExist425393c93a7d435ea6e95b2d0a6ac670', // @phpstan-ignore-line
                 $reflectionMethod,
                 [],
             );
@@ -1539,7 +1539,7 @@ class ExceptionMessageGeneratorTest extends TestCase
         try {
             ExceptionMessageGenerator::getInstance()->makeUninitializedPropertySafeToTextualIdentifierString(
                 $object,
-                [ /** @phpstan-ignore-line */
+                [ // @phpstan-ignore-line
                     "foo",
                     42,
                 ],

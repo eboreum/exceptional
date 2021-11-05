@@ -20,7 +20,7 @@ class DefaultFormatter extends AbstractFormatter
      *
      * @DebugIdentifier
      */
-    protected string $indentationCharacters = "    ";
+    protected string $indentationCharacters = '    ';
 
     public function __construct(CasterInterface $caster)
     {
@@ -38,7 +38,7 @@ class DefaultFormatter extends AbstractFormatter
             $this->isProvidingTimestamp()
             && 0 === $this->getPreviousThrowableLevel()
         ) {
-            $result .= " (" . date("c") . ")";
+            $result .= ' (' . date('c') . ')';
         }
 
         $indentation = $this->makeIndentation($this->getPreviousThrowableLevel());
@@ -49,22 +49,41 @@ class DefaultFormatter extends AbstractFormatter
         assert(is_array($messageLines));
         assert(is_array($stacktraceLines));
 
-        $result .= "\n{$indentation}Message:";
+        $result .= sprintf(
+            "\n%sMessage:",
+            $indentation,
+        );
         $result .= "\n" . implode("\n", array_map(
-            function(string $line) use ($indentationNextLevel){
+            function (string $line) use ($indentationNextLevel) {
                 return $indentationNextLevel . $this->maskString($line);
             },
             $messageLines,
         ));
-        $result .= "\n{$indentation}File: " . $this->normalizeFilePath($throwable->getFile());
-        $result .= "\n{$indentation}Line: " . $throwable->getLine();
-        $result .= "\n{$indentation}Code: " . $throwable->getCode();
-        $result .= "\n{$indentation}Stacktrace:\n" . implode("\n", array_map(
-            function(string $line) use ($indentationNextLevel){
-                return $indentationNextLevel . $this->maskString($line);
-            },
-            $stacktraceLines,
-        ));
+        $result .= sprintf(
+            "\n%sFile: %s",
+            $indentation,
+            $this->normalizeFilePath($throwable->getFile()),
+        );
+        $result .= sprintf(
+            "\n%sLine: %s",
+            $indentation,
+            $throwable->getLine(),
+        );
+        $result .= sprintf(
+            "\n%sCode: %s",
+            $indentation,
+            $throwable->getCode(),
+        );
+        $result .= sprintf(
+            "\n%sStacktrace:\n%s",
+            $indentation,
+            implode("\n", array_map(
+                function (string $line) use ($indentationNextLevel) {
+                    return $indentationNextLevel . $this->maskString($line);
+                },
+                $stacktraceLines,
+            )),
+        );
 
         if ($throwable->getPrevious()) {
             $maximumPreviousDepth = $this->getMaximumPreviousDepth();
@@ -92,7 +111,10 @@ class DefaultFormatter extends AbstractFormatter
                 );
             }
         } else {
-            $result .= "\n{$indentation}Previous: (None)";
+            $result .= sprintf(
+                "\n%sPrevious: (None)",
+                $indentation,
+            );
         }
 
         return $result;
