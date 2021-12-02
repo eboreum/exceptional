@@ -81,55 +81,55 @@ class MethodArgumentDiscloser extends AbstractFunctionArgumentDiscloser
         }
     }
 
-    public function getReflectionFunction(): \ReflectionMethod
-    {
-        assert($this->reflectionFunction instanceof \ReflectionMethod); // Make phpstan happy
-
-        return $this->reflectionFunction;
-    }
-
     public static function getDefaultValueConstantRegex(): string
     {
         return implode('', [
             '/',
             '^',
             '(',
-                '(',
-                    '?<globalName>([a-zA-Z_]\w*)',
-                ')',
-                '|',
-                '(',
-                    '?<namespacedName>(',
-                        '[a-zA-Z_]\w*(',
-                            '\\\\[a-zA-Z_]\w*',
-                        ')*',
-                        '\\\\[a-zA-Z_]\w*',
-                    ')',
-                ')',
-                '|',
-                '(',
-                    '(',
-                        '?<scope>(parent|self)',
-                    ')',
-                    '::',
-                    '(',
-                        '?<scopedName>([a-zA-Z_]\w*)',
-                    ')',
-                ')',
-                '|',
-                '(',
-                    '\\\\?',
-                    '(',
-                        '?<className>([a-zA-Z_]\w*(\\\\[a-zA-Z_]\w*)*)',
-                    ')',
-                    '::',
-                    '(',
-                        '?<classConstantName>([a-zA-Z_]\w*)',
-                    ')',
-                ')',
+            '(',
+            '?<globalName>([a-zA-Z_]\w*)',
+            ')',
+            '|',
+            '(',
+            '?<namespacedName>(',
+            '[a-zA-Z_]\w*(',
+            '\\\\[a-zA-Z_]\w*',
+            ')*',
+            '\\\\[a-zA-Z_]\w*',
+            ')',
+            ')',
+            '|',
+            '(',
+            '(',
+            '?<scope>(parent|self)',
+            ')',
+            '::',
+            '(',
+            '?<scopedName>([a-zA-Z_]\w*)',
+            ')',
+            ')',
+            '|',
+            '(',
+            '\\\\?',
+            '(',
+            '?<className>([a-zA-Z_]\w*(\\\\[a-zA-Z_]\w*)*)',
+            ')',
+            '::',
+            '(',
+            '?<classConstantName>([a-zA-Z_]\w*)',
+            ')',
+            ')',
             ')',
             '$',
             '/',
         ]);
+    }
+
+    public function getReflectionFunction(): \ReflectionMethod
+    {
+        assert($this->reflectionFunction instanceof \ReflectionMethod); // Make phpstan happy
+
+        return $this->reflectionFunction;
     }
 }

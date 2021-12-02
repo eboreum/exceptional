@@ -10,13 +10,22 @@ use Eboreum\Exceptional\Exception\RuntimeException;
 
 class ExceptionMessageGenerator implements ImmutableObjectInterface
 {
-    private static ?ExceptionMessageGenerator $instance = null;
-
     protected CasterInterface $caster;
+
+    private static ?ExceptionMessageGenerator $instance = null;
 
     public function __construct(CasterInterface $caster)
     {
         $this->caster = $caster;
+    }
+
+    public static function getInstance(): ExceptionMessageGenerator
+    {
+        if (null === self::$instance) {
+            self::$instance = new self(Caster::getInstance());
+        }
+
+        return self::$instance;
     }
 
     /**
@@ -516,14 +525,5 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
     public function getCaster(): CasterInterface
     {
         return $this->caster;
-    }
-
-    public static function getInstance(): ExceptionMessageGenerator
-    {
-        if (null === self::$instance) {
-            self::$instance = new self(Caster::getInstance());
-        }
-
-        return self::$instance;
     }
 }
