@@ -930,6 +930,43 @@ class ExceptionMessageGeneratorTest extends TestCase
                 },
             ],
             [
+                'An anonymous class, 2 named argument, 2nd argument is nullable and null is passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (class@anonymous.+?\/%s:\d+)',
+                        '\-\>__construct\(',
+                            '\$a = \(int\) 42',
+                            ', \$b = \(null\) null',
+                        '\) inside \(object\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function () {
+                    return new class (42, null)
+                    {
+                        private string $message;
+
+                        public function __construct(int $a, ?string $b)
+                        {
+                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                $this,
+                                new \ReflectionMethod(static::class, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+
+                        public function __toString(): string
+                        {
+                            return $this->message;
+                        }
+                    };
+                },
+            ],
+            [
                 'A named class, 0 named arguments exist, 0 arguments are passed',
                 sprintf(
                     implode('', [
