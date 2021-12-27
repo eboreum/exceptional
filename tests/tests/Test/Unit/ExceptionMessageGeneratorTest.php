@@ -11,6 +11,8 @@ use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeFailureInMethodMessageWorks_ANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClasses_A;
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeFailureInMethodMessageWorks_ANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClasses_C;
 use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeFailureInMethodMessageWorks_ClassANoNamedArguments;
 use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeFailureInMethodMessageWorks_ClassB4NamedArguments;
 use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassA;
@@ -690,7 +692,41 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(static::class, __FUNCTION__),
+                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+
+                        public function __toString(): string
+                        {
+                            return $this->message;
+                        }
+                    };
+                },
+            ],
+            [
+                'An anonymous class, no named arguments exist, no arguments are passed, static::class used instead of $this',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
+                        '\-\>__construct\(\) inside \(object\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function () {
+                    return new class
+                    {
+                        private string $message;
+
+                        public function __construct()
+                        {
+                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                static::class,
+                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -727,7 +763,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(static::class, __FUNCTION__),
+                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -763,7 +799,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(static::class, __FUNCTION__),
+                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -802,7 +838,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(static::class, __FUNCTION__),
+                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -843,7 +879,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(static::class, __FUNCTION__),
+                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -879,7 +915,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(static::class, __FUNCTION__),
+                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -917,7 +953,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(static::class, __FUNCTION__),
+                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -954,7 +990,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(static::class, __FUNCTION__),
+                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -1056,6 +1092,29 @@ class ExceptionMessageGeneratorTest extends TestCase
                     );
                 },
             ],
+            [
+                'A named class, where method signature changes between uppermost class and parent classes',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s->__construct\(',
+                            '\$a = \(int\) 42',
+                            ', \$b = \(bool\) true',
+                            ', \$c = \(string\(3\)\) "foo"',
+                        '\) inside \(object\) \\\\%s',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(testMakeFailureInMethodMessageWorks_ANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClasses_C::class, '/'),
+                    preg_quote(testMakeFailureInMethodMessageWorks_ANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClasses_A::class, '/'),
+                ),
+                static function () {
+                    return new testMakeFailureInMethodMessageWorks_ANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClasses_A(
+                        42,
+                    );
+                },
+            ],
         ];
     }
 
@@ -1086,8 +1145,8 @@ class ExceptionMessageGeneratorTest extends TestCase
                     implode('', [
                         '/',
                         '^',
-                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
-                        '::foo\(\)',
+                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)::foo\(\)',
+                        ' inside \(class\) \1',
                         '$',
                         '/',
                     ]),
@@ -1115,10 +1174,10 @@ class ExceptionMessageGeneratorTest extends TestCase
                     implode('', [
                         '/',
                         '^',
-                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
-                        '::foo\(',
+                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)::foo\(',
                             '\{0\} = \(string\(5\)\) "extra"',
                         '\)',
+                        ' inside \(class\) \1',
                         '$',
                         '/',
                     ]),
@@ -1184,7 +1243,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 implode('', [
                     '/',
                     '^',
-                    'Failure in class@anonymous\/in\/.+\/%s:\d+->format\(',
+                    'Failure in \\\\DateTimeImmutable->format\(',
                         '\$format = \(string\(1\)\) "c"',
                     '\) inside \(object\) class@anonymous\/in\/.+\/%s:\d+ \(',
                         '"\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}[\+\-]\d{2}\:\d{2}"',

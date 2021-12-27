@@ -14,7 +14,7 @@ class testMakeFailureInMethodMessageWorks_ClassANoNamedArguments
     {
         $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(static::class, __FUNCTION__),
+            new \ReflectionMethod(__CLASS__, __FUNCTION__),
             func_get_args(),
         );
     }

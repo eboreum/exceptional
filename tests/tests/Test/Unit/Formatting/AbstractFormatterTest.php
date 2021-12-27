@@ -270,7 +270,7 @@ class AbstractFormatterTest extends TestCase
                     implode('', [
                         '/',
                         '^',
-                        'Failure in class@anonymous\/in\/.+\/%s:\d+-\>withPreviousThrowableLevel\(',
+                        'Failure in \\\\%s-\>withPreviousThrowableLevel\(',
                             '\$previousThrowableLevel = \(int\) \-1',
                         '\) inside \(object\) class@anonymous\/in\/.+\/%s:\d+ \{',
                             '\\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
@@ -281,7 +281,7 @@ class AbstractFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(AbstractFormatter::class, '/'),
                     preg_quote(basename(__FILE__), '/'),
                     preg_quote(AbstractFormatter::class, '/'),
                     preg_quote(AbstractFormatter::class, '/'),

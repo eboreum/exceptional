@@ -6,11 +6,11 @@ namespace TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest;
 
 use Eboreum\Exceptional\ExceptionMessageGenerator;
 
-class testMakeFailureInMethodMessageWorks_ClassB4NamedArguments
+abstract class testMakeFailureInMethodMessageWorks_ANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClasses_C
 {
     private string $message;
 
-    public function __construct(string $a, int $b, bool $c, float $d)
+    public function __construct(int $a, bool $b, string $c)
     {
         $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             $this,

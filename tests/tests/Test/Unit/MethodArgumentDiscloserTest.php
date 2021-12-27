@@ -2057,7 +2057,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     {
                         public static function foo(int $a): \ReflectionMethod
                         {
-                            return new \ReflectionMethod(static::class, __FUNCTION__);
+                            return new \ReflectionMethod(__CLASS__, __FUNCTION__);
                         }
                     };
 
@@ -2525,7 +2525,7 @@ class MethodArgumentDiscloserTest extends TestCase
         {
             public static function foo(int $a): MethodArgumentDiscloser
             {
-                $reflectionMethod = new \ReflectionMethod(static::class, __FUNCTION__);
+                $reflectionMethod = new \ReflectionMethod(__CLASS__, __FUNCTION__);
 
                 return new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, [42]);
             }

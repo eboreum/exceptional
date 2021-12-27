@@ -255,11 +255,9 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
     ): string {
         try {
             $errorMessages = [];
-            $className = '';
 
             if (is_object($objectOrClassName)) {
                 $reflectionObject = new \ReflectionObject($objectOrClassName);
-                $className = Caster::makeNormalizedClassName($reflectionObject);
 
                 $isClassAcceptable = (
                     $reflectionObject->getName() === $reflectionMethod->getDeclaringClass()->getName()
@@ -317,11 +315,6 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                         $this->getCaster()->castTyped($objectOrClassName),
                     );
                 }
-
-                if (!$errorMessages) {
-                    $reflectionClass = new \ReflectionClass($objectOrClassName);
-                    $className = Caster::makeNormalizedClassName($reflectionClass);
-                }
             } else {
                 $errorMessages[] = sprintf(
                     'Expects argument $objectOrClassName to be an object or a string, but it is not. Found: %s',
@@ -335,7 +328,7 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
 
             $output = sprintf(
                 'Failure in %s%s%s(%s)',
-                $className,
+                Caster::makeNormalizedClassName($reflectionMethod->getDeclaringClass()),
                 (
                     $reflectionMethod->isStatic()
                     ? '::'
@@ -347,6 +340,18 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
 
             if (is_object($objectOrClassName)) {
                 $output .= ' inside ' . $this->getCaster()->castTyped($objectOrClassName);
+            } else {
+                if ($reflectionMethod->isStatic()) {
+                    $output .= sprintf(
+                        ' inside (class) %s',
+                        Caster::makeNormalizedClassName(new \ReflectionClass($objectOrClassName)),
+                    );
+                } else {
+                    $output .= sprintf(
+                        ' inside (object) %s',
+                        Caster::makeNormalizedClassName(new \ReflectionClass($objectOrClassName)),
+                    );
+                }
             }
         } catch (\Throwable $t) {
             $argumentsAsStrings = [];

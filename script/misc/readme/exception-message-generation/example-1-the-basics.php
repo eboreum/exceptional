@@ -15,7 +15,7 @@ class Foo377464ece90d4b918254101d596d90a8
     {
         throw new \RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(static::class, __FUNCTION__),
+            new \ReflectionMethod(__CLASS__, __FUNCTION__),
             func_get_args(),
         ));
     }

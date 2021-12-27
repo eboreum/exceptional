@@ -131,7 +131,7 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
         } catch (\Throwable $t) {
             throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                 $this,
-                new \ReflectionMethod(static::class, __FUNCTION__),
+                new \ReflectionMethod(__CLASS__, __FUNCTION__),
                 func_get_args(),
             ), 0, $t);
         }
