@@ -592,6 +592,8 @@ class XMLFormatterTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
+            $this->assertIsObject($currentException);
+            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(\Exception::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -605,6 +607,8 @@ class XMLFormatterTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
+            $this->assertIsObject($currentException);
+            assert(is_object($currentException)); // Make phpstan happy
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',

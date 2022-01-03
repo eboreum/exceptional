@@ -65,10 +65,14 @@ class OnelineFormatter extends AbstractFormatter
 
     public function normalizeString(string $str): string
     {
-        return preg_replace(
+        $replaced = preg_replace(
             '/(\r\n|\r|\n)/',
             ' ',
             $str,
         );
+
+        assert(is_string($replaced)); // Make phpstan happy
+
+        return $replaced;
     }
 }

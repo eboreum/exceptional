@@ -53,6 +53,8 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
         if ($reflectionParameter->isDefaultValueConstant()) {
             try {
+                assert(is_string($reflectionParameter->getDefaultValueConstantName()));
+
                 preg_match(
                     static::getDefaultValueConstantRegex(),
                     $reflectionParameter->getDefaultValueConstantName(),
@@ -267,6 +269,8 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
             for ($index = 0; $index <= $indexMax; $index++) {
                 if ($index <= $indexLastNamedParameter) {
                     $reflectionParameter = $this->getReflectionParameterByIndex($index);
+
+                    assert(is_object($reflectionParameter));
 
                     if ($index === $indexLastNamedParameter) {
                         if ($reflectionParameter->isVariadic()) {

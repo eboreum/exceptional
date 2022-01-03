@@ -23,6 +23,7 @@ class JSONFormatter extends AbstractFormatter
 
     protected int $flags = 0;
 
+    /** @var int<1, max> */
     protected int $depth = 512;
 
     public function __construct(CasterInterface $caster, CharacterEncoding $characterEncoding)
@@ -81,13 +82,13 @@ class JSONFormatter extends AbstractFormatter
     }
 
     /**
-     * @param int $depth Must be > 0. Otherwise, a RuntimeException is thrown.
+     * @param int<1, max> $depth Must be > 0. Otherwise, a RuntimeException is thrown.
      * @throws RuntimeException
      */
     public function withDepth(int $depth): JSONFormatter
     {
         try {
-            if (false === ($depth >= 1)) {
+            if (false === ($depth >= 1)) { // @phpstan-ignore-line
                 throw new RuntimeException(sprintf(
                     'Expects argument $depth to be >= 1, but it is not. Found: %s',
                     Caster::getInstance()->castTyped($depth),
@@ -96,7 +97,7 @@ class JSONFormatter extends AbstractFormatter
 
             $clone = clone $this;
             $clone->depth = $depth;
-        } catch (\Throwable $t) {
+        } catch (\Throwable $t) { // @phpstan-ignore-line
             throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                 $this,
                 new \ReflectionMethod($this, __FUNCTION__),
@@ -128,6 +129,9 @@ class JSONFormatter extends AbstractFormatter
         return $this->characterEncoding;
     }
 
+    /**
+     * @return int<1, max>
+     */
     public function getDepth(): int
     {
         return $this->depth;

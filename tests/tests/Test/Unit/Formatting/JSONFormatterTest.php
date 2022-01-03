@@ -408,6 +408,8 @@ class JSONFormatterTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
+            $this->assertIsObject($currentException);
+            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -489,6 +491,8 @@ class JSONFormatterTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
+            $this->assertIsObject($currentException);
+            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -570,6 +574,8 @@ class JSONFormatterTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
+            $this->assertIsObject($currentException);
+            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -652,6 +658,8 @@ class JSONFormatterTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
+            $this->assertIsObject($currentException);
+            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -665,6 +673,8 @@ class JSONFormatterTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
+            $this->assertIsObject($currentException);
+            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame('JsonException', get_class($currentException));
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -712,7 +722,7 @@ class JSONFormatterTest extends TestCase
         $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
 
         try {
-            $jsonFormatter->withDepth(0);
+            $jsonFormatter->withDepth(0); // @phpstan-ignore-line
         } catch (\Exception $e) {
             $currentException = $e;
             $this->assertSame(RuntimeException::class, get_class($currentException));
@@ -744,6 +754,8 @@ class JSONFormatterTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
+            $this->assertIsObject($currentException);
+            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
                 implode('', [

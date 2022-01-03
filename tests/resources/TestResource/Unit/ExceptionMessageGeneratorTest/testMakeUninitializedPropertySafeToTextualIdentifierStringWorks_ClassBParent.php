@@ -6,5 +6,5 @@ namespace TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest;
 
 abstract class testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassBParent
 {
-    private string $a;
+    private string $a; // @phpstan-ignore-line
 }

@@ -6,7 +6,7 @@ namespace TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest;
 
 class testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassB extends testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassBParent
 {
-    private int $b = 42;
+    private int $b = 42; // @phpstan-ignore-line
 
-    private bool $c;
+    private bool $c; // @phpstan-ignore-line
 }

@@ -18,7 +18,7 @@ When a method is called, and somehow that leads to an exception/throwable being 
 
 ```json
 "php": "^7.4 || ^8.0",
-"eboreum/caster": "^0.0.2"
+"eboreum/caster": "^0.0.3"
 ```
 
 For more information, see the [`composer.json`](composer.json) file.
@@ -555,7 +555,7 @@ echo $result;
 ```json
 "doctrine/annotations": "^1.13",
 "nette/neon": "^3.2",
-"phpstan/phpstan": "0.12.99",
+"phpstan/phpstan": "^1.3",
 "phpunit/phpunit": "^9.5",
 "sebastian/diff": "^4.0"
 ```
