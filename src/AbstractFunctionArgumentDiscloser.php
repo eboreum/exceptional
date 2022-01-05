@@ -155,25 +155,34 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                 }
 
                 if ($match['classConstantName'] ?? false) {
-                    $classConstantNameFullyQuantified = sprintf(
-                        '%s::%s',
-                        $match['className'],
-                        $match['classConstantName'],
-                    );
-
-                    /**
-                     * We do NOT need to verify the visibility of the constant here, because if visibility fails, a
-                     * syntax error is thrown by the PHP process itself.
-                     */
-
-                    if (false === defined($classConstantNameFullyQuantified)) {
+                    // If class or interface does not exist, the PHP process itself will cause an Error
+                    if (
+                        false === class_exists($match['className'])
+                        && false === interface_exists($match['className'])
+                    ) {
                         throw new RuntimeException(sprintf(
-                            'Class constant %s is not defined',
-                            $this->getCaster()->cast($classConstantNameFullyQuantified),
+                            'Class or interface %s does not exist, and therefore the constant reference %s is invalid',
+                            $this->getCaster()->cast($match['className']),
+                            $this->getCaster()->cast($match[0]),
                         ));
                     }
 
-                    return constant($classConstantNameFullyQuantified);
+                    $reflectionClass = new \ReflectionClass($match['className']);
+
+                    if (false === $reflectionClass->hasConstant($match['classConstantName'])) {
+                        throw new RuntimeException(sprintf(
+                            '%s %s exists, but it does not have a constant named %s',
+                            (
+                                $reflectionClass->isInterface()
+                                ? 'Interface'
+                                : 'Class'
+                            ),
+                            $this->getCaster()->cast($match['className']),
+                            $this->getCaster()->cast($match['classConstantName']),
+                        ));
+                    }
+
+                    return $reflectionClass->getConstant($match['classConstantName']);
                 }
 
                 throw new RuntimeException(sprintf(

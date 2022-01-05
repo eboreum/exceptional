@@ -9,6 +9,9 @@ use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\MethodArgumentDiscloser;
 use PHPUnit\Framework\TestCase;
+use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testBasics\PrivateConstantReferencedAsDefaultInParameter;
+use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist\ClassExistsButClassConstantBarDoesNotExistA;
+use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist\ClassExistsButClassConstantBarDoesNotExistB;
 
 define(
     'EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226',
@@ -2019,6 +2022,58 @@ class MethodArgumentDiscloserTest extends TestCase
                     $this->assertSame(true, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
+            [
+                '1 named parameter. $a has a default value being a reference to a private constant (not using self).',
+                static function (): object {
+                    $object = new PrivateConstantReferencedAsDefaultInParameter();
+
+                    // Needs to here because otherwise, phpstan gets confused
+                    assert($object instanceof PrivateConstantReferencedAsDefaultInParameter);
+
+                    return $object;
+                },
+                /**
+                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 */
+                static function (object $object): array {
+                    // Needs to here because otherwise, phpstan gets confused
+                    assert($object instanceof PrivateConstantReferencedAsDefaultInParameter);
+
+                    return $object->foo();
+                },
+                function (
+                    string $message,
+                    MethodArgumentDiscloser $methodArgumentDiscloser,
+                    object $object
+                ): void {
+                    $this->assertInstanceOf(PrivateConstantReferencedAsDefaultInParameter::class, $object);
+
+                    // Needs to here because otherwise, phpstan gets confused
+                    assert($object instanceof PrivateConstantReferencedAsDefaultInParameter);
+
+                    $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $this->assertSame(
+                        [42],
+                        $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
+                        $message,
+                    );
+                    $this->assertSame(
+                        1,
+                        $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
+                        $message,
+                    );
+                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
+                    $this->assertSame(
+                        'a',
+                        $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
+                        $message,
+                    );
+                },
+            ],
         ];
     }
 
@@ -2430,6 +2485,60 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist(): void
+    {
+        $object = new ClassExistsButClassConstantBarDoesNotExistB();
+        $reflectionMethod = new \ReflectionMethod($object, 'foo');
+        $discloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
+        $reflectionParameter = $reflectionMethod->getParameters()[0];
+
+        try {
+            $discloser->getDefaultValueForReflectionParameter($reflectionParameter);
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Parameter \$a in method \\\\%s->foo',
+                        ' has a default value, which is a constant, but a problem with this constant was encountered',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(ClassExistsButClassConstantBarDoesNotExistB::class, '/'),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertIsObject($currentException);
+            assert(is_object($currentException)); // Make phpstan happy
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Class "%s" exists, but it does not have a constant named "BAR"',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(preg_quote(ClassExistsButClassConstantBarDoesNotExistA::class, '/'), '/'),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(null === $currentException);
+
+            return;
+        }
+
+        $this->fail('Exception was never thrown.');
+    }
+
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToANonExistingFullyQuantifiedClassConstant(): void
     {
         $object = new class
@@ -2475,7 +2584,9 @@ class MethodArgumentDiscloserTest extends TestCase
                 implode('', [
                     '/',
                     '^',
-                    'Class constant "IDontExist2da718442a7547e2b970aed55a2324b0\:\:BAR" is not defined',
+                    'Class or interface "IDontExist2da718442a7547e2b970aed55a2324b0" does not exist',
+                    ', and therefore the constant reference "IDontExist2da718442a7547e2b970aed55a2324b0\:\:BAR" is',
+                    ' invalid',
                     '$',
                     '/',
                 ]),
