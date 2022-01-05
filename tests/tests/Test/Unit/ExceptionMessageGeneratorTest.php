@@ -695,7 +695,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
+                                new \ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -729,7 +729,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 static::class,
-                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
+                                new \ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -766,7 +766,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
+                                new \ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -802,7 +802,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
+                                new \ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -841,7 +841,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
+                                new \ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -882,7 +882,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
+                                new \ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -918,7 +918,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
+                                new \ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -973,7 +973,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(__CLASS__, __FUNCTION__),
+                                new \ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }

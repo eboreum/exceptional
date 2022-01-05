@@ -55,7 +55,7 @@ class Foo377464ece90d4b918254101d596d90a8
     {
         throw new \RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(__CLASS__, __FUNCTION__),
+            new \ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
@@ -97,7 +97,7 @@ class Foo1ff07b0e563e4efbb5a5280f7fe412d8
     {
         throw new \RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(__CLASS__, __FUNCTION__),
+            new \ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
@@ -152,7 +152,7 @@ class Fooc261bae9da674d679de77a943ae57779 extends Fooaea91664ed3d4467aeb2dfabb26
     {
         throw new \RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(__CLASS__, __FUNCTION__),
+            new \ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
@@ -194,7 +194,7 @@ class Foo1a7c13d6ce9f4646a120041e36717d5a
     {
         throw new \RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             static::class,
-            new \ReflectionMethod(__CLASS__, __FUNCTION__),
+            new \ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
@@ -257,7 +257,7 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
 
         throw new \RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(__CLASS__, __FUNCTION__),
+            new \ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
@@ -310,7 +310,7 @@ class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAnnotationIn
 
         throw new \RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(__CLASS__, __FUNCTION__),
+            new \ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }

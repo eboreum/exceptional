@@ -28,7 +28,7 @@ class Fooc261bae9da674d679de77a943ae57779 extends Fooaea91664ed3d4467aeb2dfabb26
     {
         throw new \RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(__CLASS__, __FUNCTION__),
+            new \ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }

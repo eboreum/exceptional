@@ -35,7 +35,7 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
 
         throw new \RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(__CLASS__, __FUNCTION__),
+            new \ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
@@ -88,7 +88,7 @@ class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAnnotationIn
 
         throw new \RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(__CLASS__, __FUNCTION__),
+            new \ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
