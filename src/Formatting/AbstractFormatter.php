@@ -41,6 +41,18 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
     protected bool $isProvidingTimestamp = false;
 
     /**
+     * @return array<int, string>
+     */
+    public static function splitTextLinesToArray(string $text): array
+    {
+        $split = preg_split('/(\r\n|\r|\n)/', $text);
+
+        assert(is_array($split));
+
+        return $split;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function countPreviousThrowables(\Throwable $throwable): int
@@ -169,17 +181,5 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
     public function isProvidingTimestamp(): bool
     {
         return $this->isProvidingTimestamp;
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    public static function splitTextLinesToArray(string $text): array
-    {
-        $split = preg_split('/(\r\n|\r|\n)/', $text);
-
-        assert(is_array($split));
-
-        return $split;
     }
 }

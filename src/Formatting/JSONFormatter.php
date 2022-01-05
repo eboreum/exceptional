@@ -33,6 +33,34 @@ class JSONFormatter extends AbstractFormatter
     }
 
     /**
+     * @param int $jsonErrorCode Corresponds to value returned by 'json_last_error()'.
+     */
+    public static function errorCodeToText(int $jsonErrorCode): ?string
+    {
+        return static::getErrorCodeToTextMap()[$jsonErrorCode] ?? null;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function getErrorCodeToTextMap(): array
+    {
+        return [
+            JSON_ERROR_NONE => 'JSON_ERROR_NONE',
+            JSON_ERROR_DEPTH => 'JSON_ERROR_DEPTH',
+            JSON_ERROR_STATE_MISMATCH => 'JSON_ERROR_STATE_MISMATCH',
+            JSON_ERROR_CTRL_CHAR => 'JSON_ERROR_CTRL_CHAR',
+            JSON_ERROR_SYNTAX => 'JSON_ERROR_SYNTAX',
+            JSON_ERROR_UTF8 => 'JSON_ERROR_UTF8', // PHP 5.3.3
+            JSON_ERROR_RECURSION => 'JSON_ERROR_RECURSION', // PHP 5.5.0
+            JSON_ERROR_INF_OR_NAN => 'JSON_ERROR_INF_OR_NAN', // PHP 5.5.0
+            JSON_ERROR_UNSUPPORTED_TYPE => 'JSON_ERROR_UNSUPPORTED_TYPE', // PHP 5.5.0
+            JSON_ERROR_INVALID_PROPERTY_NAME => 'JSON_ERROR_INVALID_PROPERTY_NAME', // PHP 7.0.0
+            JSON_ERROR_UTF16 => 'JSON_ERROR_UTF16', // PHP 7.0.0
+        ];
+    }
+
+    /**
      * {@inheritDoc}
      *
      * Returns JSON.
@@ -187,33 +215,5 @@ class JSONFormatter extends AbstractFormatter
         }
 
         return (object)$array;
-    }
-
-    /**
-     * @param int $jsonErrorCode Corresponds to value returned by 'json_last_error()'.
-     */
-    public static function errorCodeToText(int $jsonErrorCode): ?string
-    {
-        return static::getErrorCodeToTextMap()[$jsonErrorCode] ?? null;
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    public static function getErrorCodeToTextMap(): array
-    {
-        return [
-            JSON_ERROR_NONE => 'JSON_ERROR_NONE',
-            JSON_ERROR_DEPTH => 'JSON_ERROR_DEPTH',
-            JSON_ERROR_STATE_MISMATCH => 'JSON_ERROR_STATE_MISMATCH',
-            JSON_ERROR_CTRL_CHAR => 'JSON_ERROR_CTRL_CHAR',
-            JSON_ERROR_SYNTAX => 'JSON_ERROR_SYNTAX',
-            JSON_ERROR_UTF8 => 'JSON_ERROR_UTF8', // PHP 5.3.3
-            JSON_ERROR_RECURSION => 'JSON_ERROR_RECURSION', // PHP 5.5.0
-            JSON_ERROR_INF_OR_NAN => 'JSON_ERROR_INF_OR_NAN', // PHP 5.5.0
-            JSON_ERROR_UNSUPPORTED_TYPE => 'JSON_ERROR_UNSUPPORTED_TYPE', // PHP 5.5.0
-            JSON_ERROR_INVALID_PROPERTY_NAME => 'JSON_ERROR_INVALID_PROPERTY_NAME', // PHP 7.0.0
-            JSON_ERROR_UTF16 => 'JSON_ERROR_UTF16', // PHP 7.0.0
-        ];
     }
 }

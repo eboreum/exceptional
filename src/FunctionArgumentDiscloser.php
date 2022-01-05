@@ -74,45 +74,45 @@ class FunctionArgumentDiscloser extends AbstractFunctionArgumentDiscloser
         }
     }
 
-    public function getReflectionFunction(): \ReflectionFunction
-    {
-        assert($this->reflectionFunction instanceof \ReflectionFunction); // Make phpstan happy
-
-        return $this->reflectionFunction;
-    }
-
     public static function getDefaultValueConstantRegex(): string
     {
         return implode('', [
             '/',
             '^',
             '(',
-                '(',
-                    '?<globalName>([a-zA-Z_]\w*)',
-                ')',
-                '|',
-                '(',
-                    '?<namespacedName>(',
-                        '[a-zA-Z_]\w*(',
-                            '\\\\[a-zA-Z_]\w*',
-                        ')*',
-                        '\\\\[a-zA-Z_]\w*',
-                    ')',
-                ')',
-                '|',
-                '(',
-                    '\\\\?',
-                    '(',
-                        '?<className>([a-zA-Z_]\w*(\\\\[a-zA-Z_]\w*)*)',
-                    ')',
-                    '::',
-                    '(',
-                        '?<classConstantName>([a-zA-Z_]\w*)',
-                    ')',
-                    ')',
+            '(',
+            '?<globalName>([a-zA-Z_]\w*)',
+            ')',
+            '|',
+            '(',
+            '?<namespacedName>(',
+            '[a-zA-Z_]\w*(',
+            '\\\\[a-zA-Z_]\w*',
+            ')*',
+            '\\\\[a-zA-Z_]\w*',
+            ')',
+            ')',
+            '|',
+            '(',
+            '\\\\?',
+            '(',
+            '?<className>([a-zA-Z_]\w*(\\\\[a-zA-Z_]\w*)*)',
+            ')',
+            '::',
+            '(',
+            '?<classConstantName>([a-zA-Z_]\w*)',
+            ')',
+            ')',
             ')',
             '$',
             '/',
         ]);
+    }
+
+    public function getReflectionFunction(): \ReflectionFunction
+    {
+        assert($this->reflectionFunction instanceof \ReflectionFunction); // Make phpstan happy
+
+        return $this->reflectionFunction;
     }
 }
