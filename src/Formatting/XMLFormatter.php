@@ -93,23 +93,10 @@ class XMLFormatter extends AbstractXMLFormatter
         return trim($xml);
     }
 
-    public function withIsPrettyPrinting(bool $isPrettyPrinting): XMLFormatter
-    {
-        return parent::withIsPrettyPrinting($isPrettyPrinting); // @phpstan-ignore-line
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function withPreviousThrowableLevel(int $previousThrowableLevel): XMLFormatter
-    {
-        return parent::withPreviousThrowableLevel($previousThrowableLevel); // @phpstan-ignore-line
-    }
-
     /**
      * Returns a clone.
      */
-    public function withSimpleXMLElementFactory(?SimpleXMLElementFactory $simpleXMLElementFactory): XMLFormatter
+    public function withSimpleXMLElementFactory(?SimpleXMLElementFactory $simpleXMLElementFactory): self
     {
         $clone = clone $this;
         $clone->simpleXMLElementFactory = $simpleXMLElementFactory;
@@ -155,6 +142,9 @@ class XMLFormatter extends AbstractXMLFormatter
                 );
             } else {
                 $child = $this->withPreviousThrowableLevel($this->getPreviousThrowableLevel() + 1);
+
+                assert($child instanceof XMLFormatter);
+
                 $previous = $simpleXMLElement->addChild('previous');
                 $child->formatInner($throwable->getPrevious(), $previous);
             }

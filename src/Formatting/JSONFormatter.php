@@ -113,7 +113,7 @@ class JSONFormatter extends AbstractFormatter
      * @param int<1, max> $depth Must be > 0. Otherwise, a RuntimeException is thrown.
      * @throws RuntimeException
      */
-    public function withDepth(int $depth): JSONFormatter
+    public function withDepth(int $depth): self
     {
         try {
             if (false === ($depth >= 1)) { // @phpstan-ignore-line
@@ -142,14 +142,6 @@ class JSONFormatter extends AbstractFormatter
         $clone->flags = $flags;
 
         return $clone;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function withPreviousThrowableLevel(int $previousThrowableLevel): JSONFormatter
-    {
-        return parent::withPreviousThrowableLevel($previousThrowableLevel); // @phpstan-ignore-line
     }
 
     public function getCharacterEncoding(): CharacterEncoding
@@ -207,6 +199,8 @@ class JSONFormatter extends AbstractFormatter
 
                 $child = $this->withDepth($childDepth);
                 $child = $child->withPreviousThrowableLevel($this->getPreviousThrowableLevel() + 1);
+
+                assert($child instanceof JSONFormatter);
 
                 $array['previous'] = $child->formatInner($throwable->getPrevious(), $topLevelJSONFormatter);
             }

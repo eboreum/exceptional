@@ -91,7 +91,7 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
     /**
      * {@inheritDoc}
      */
-    public function withCaster(CasterInterface $caster): FormatterInterface
+    public function withCaster(CasterInterface $caster): self
     {
         $clone = clone $this;
         $clone->caster = $caster;
@@ -102,7 +102,7 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
     /**
      * {@inheritDoc}
      */
-    public function withIsProvidingTimestamp(bool $isProvidingTimestamp): FormatterInterface
+    public function withIsProvidingTimestamp(bool $isProvidingTimestamp): self
     {
         $clone = clone $this;
         $clone->isProvidingTimestamp = $isProvidingTimestamp;
@@ -113,7 +113,7 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
     /**
      * {@inheritDoc}
      */
-    public function withMaximumPreviousDepth(?int $maximumPreviousDepth): FormatterInterface
+    public function withMaximumPreviousDepth(?int $maximumPreviousDepth): self
     {
         $clone = clone $this;
         $clone->maximumPreviousDepth = null;
@@ -128,7 +128,7 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
     /**
      * Returns a clone.
      */
-    public function withPreviousThrowableLevel(int $previousThrowableLevel): FormatterInterface
+    public function withPreviousThrowableLevel(int $previousThrowableLevel): self
     {
         try {
             if (false === ($previousThrowableLevel >= 0)) {

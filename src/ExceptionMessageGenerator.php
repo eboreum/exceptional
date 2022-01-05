@@ -10,9 +10,9 @@ use Eboreum\Exceptional\Exception\RuntimeException;
 
 class ExceptionMessageGenerator implements ImmutableObjectInterface
 {
-    protected CasterInterface $caster;
-
     private static ?ExceptionMessageGenerator $instance = null;
+
+    protected CasterInterface $caster;
 
     public function __construct(CasterInterface $caster)
     {

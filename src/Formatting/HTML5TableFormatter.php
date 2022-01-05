@@ -162,11 +162,6 @@ class HTML5TableFormatter extends AbstractXMLFormatter
         return implode('<br>', $lines);
     }
 
-    public function withIsPrettyPrinting(bool $isPrettyPrinting): HTML5TableFormatter
-    {
-        return parent::withIsPrettyPrinting($isPrettyPrinting); // @phpstan-ignore-line
-    }
-
     public function getCharacterEncoding(): CharacterEncoding
     {
         return $this->characterEncoding;
