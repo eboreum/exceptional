@@ -17,8 +17,8 @@ When a method is called, and somehow that leads to an exception/throwable being 
 # Requirements
 
 ```json
-"php": "^7.4 || ^8.0",
-"eboreum/caster": "^0.0.3"
+"php": "^8.0",
+"eboreum/caster": "dev-main"
 ```
 
 For more information, see the [`composer.json`](composer.json) file.
@@ -226,12 +226,12 @@ Wouldn't it be nice if we, in addition to the method argument snitching, could g
 ```php
 <?php
 
-use Eboreum\Caster\Annotation\DebugIdentifier;
+use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\Collection\Formatter\ObjectFormatterCollection;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Caster\Contract\TextuallyIdentifiableInterface;
-use Eboreum\Caster\Contract\DebugIdentifierAnnotationInterface;
-use Eboreum\Caster\Formatter\Object_\DebugIdentifierAnnotationInterfaceFormatter;
+use Eboreum\Caster\Contract\DebugIdentifierAttributeInterface;
+use Eboreum\Caster\Formatter\Object_\DebugIdentifierAttributeInterfaceFormatter;
 use Eboreum\Caster\Formatter\Object_\TextuallyIdentifiableInterfaceFormatter;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
@@ -284,16 +284,12 @@ try {
 }
 
 /**
- * Using DebugIdentifierAnnotationInterface
- *
- * Requires: https://packagist.org/packages/doctrine/annotations
+ * Using DebugIdentifierAttributeInterface
  */
 
-class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAnnotationInterface
+class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAttributeInterface
 {
-    /**
-     * @DebugIdentifier
-     */
+    #[DebugIdentifier]
     protected int $id = 42;
 
     /**
@@ -303,7 +299,7 @@ class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAnnotationIn
     {
         $caster = Caster::getInstance();
         $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection(...[
-            new DebugIdentifierAnnotationInterfaceFormatter(),
+            new DebugIdentifierAttributeInterfaceFormatter(),
         ]));
 
         $exceptionMessageGenerator = ExceptionMessageGenerator::getInstance()->withCaster($caster);
@@ -553,9 +549,8 @@ echo $result;
 ## Test/development requirements
 
 ```json
-"doctrine/annotations": "^1.13",
 "nette/neon": "^3.2",
-"phpstan/phpstan": "^1.3",
+"phpstan/phpstan": "^1.4",
 "phpunit/phpunit": "^9.5",
 "sebastian/diff": "^4.0"
 ```

@@ -2,12 +2,12 @@
 
 declare(strict_types = 1); // README.md.remove
 
-use Eboreum\Caster\Annotation\DebugIdentifier;
+use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\Collection\Formatter\ObjectFormatterCollection;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Caster\Contract\TextuallyIdentifiableInterface;
-use Eboreum\Caster\Contract\DebugIdentifierAnnotationInterface;
-use Eboreum\Caster\Formatter\Object_\DebugIdentifierAnnotationInterfaceFormatter;
+use Eboreum\Caster\Contract\DebugIdentifierAttributeInterface;
+use Eboreum\Caster\Formatter\Object_\DebugIdentifierAttributeInterfaceFormatter;
 use Eboreum\Caster\Formatter\Object_\TextuallyIdentifiableInterfaceFormatter;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
@@ -62,16 +62,12 @@ try {
 }
 
 /**
- * Using DebugIdentifierAnnotationInterface
- *
- * Requires: https://packagist.org/packages/doctrine/annotations
+ * Using DebugIdentifierAttributeInterface
  */
 
-class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAnnotationInterface
+class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAttributeInterface
 {
-    /**
-     * @DebugIdentifier
-     */
+    #[DebugIdentifier]
     protected int $id = 42;
 
     /**
@@ -81,7 +77,7 @@ class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAnnotationIn
     {
         $caster = Caster::getInstance();
         $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection(...[
-            new DebugIdentifierAnnotationInterfaceFormatter(),
+            new DebugIdentifierAttributeInterfaceFormatter(),
         ]));
 
         $exceptionMessageGenerator = ExceptionMessageGenerator::getInstance()->withCaster($caster);

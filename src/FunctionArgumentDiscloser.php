@@ -76,37 +76,56 @@ class FunctionArgumentDiscloser extends AbstractFunctionArgumentDiscloser
 
     public static function getDefaultValueConstantRegex(): string
     {
-        return implode('', [
-            '/',
-            '^',
-            '(',
-            '(',
-            '?<globalName>([a-zA-Z_]\w*)',
-            ')',
-            '|',
-            '(',
-            '?<namespacedName>(',
-            '[a-zA-Z_]\w*(',
-            '\\\\[a-zA-Z_]\w*',
-            ')*',
-            '\\\\[a-zA-Z_]\w*',
-            ')',
-            ')',
-            '|',
-            '(',
-            '\\\\?',
-            '(',
-            '?<className>([a-zA-Z_]\w*(\\\\[a-zA-Z_]\w*)*)',
-            ')',
-            '::',
-            '(',
-            '?<classConstantName>([a-zA-Z_]\w*)',
-            ')',
-            ')',
-            ')',
-            '$',
-            '/',
-        ]);
+        $phpClassNameRegexInner = static::getPHPClassNameRegexInner();
+
+        return sprintf(
+            implode('', [
+                '/',
+                '^',
+                '(',
+                    '(',
+                        '?<globalName>(%s)',
+                    ')',
+                    '|',
+                    '(',
+                        '?<namespacedName>(',
+                            '%s(',
+                                '\\\\%s',
+                            ')*',
+                            '\\\\%s',
+                        ')',
+                    ')',
+                    '|',
+                    '(',
+                        '\\\\?',
+                        '(',
+                            '?<className>(%s(\\\\%s)*)',
+                        ')',
+                        '::',
+                        '(',
+                            '?<classConstantName>(%s)',
+                        ')',
+                    ')',
+                ')',
+                '$',
+                '/',
+            ]),
+            $phpClassNameRegexInner,
+            $phpClassNameRegexInner,
+            $phpClassNameRegexInner,
+            $phpClassNameRegexInner,
+            $phpClassNameRegexInner,
+            $phpClassNameRegexInner,
+            $phpClassNameRegexInner,
+        );
+    }
+
+    /**
+     * @see https://www.php.net/manual/en/language.variables.basics.php
+     */
+    public static function getPHPClassNameRegexInner(): string
+    {
+        return '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
     }
 
     public function getReflectionFunction(): \ReflectionFunction

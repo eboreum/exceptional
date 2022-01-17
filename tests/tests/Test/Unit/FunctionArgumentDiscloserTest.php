@@ -1198,7 +1198,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             ->willReturn(true);
 
         $reflectionParameter
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(2))
             ->method('getDefaultValueConstantName')
             ->with()
             ->willReturn('  I don\'t work as a constant name  ');
@@ -1282,7 +1282,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             ->willReturn(true);
 
         $reflectionParameter
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getDefaultValueConstantName')
             ->with()
             ->willReturn('NONEXSITING_CONSTANT_1aedab95b22c45afbdd0e5cf93af5ee9');
@@ -1365,7 +1365,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             ->willReturn(true);
 
         $reflectionParameter
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getDefaultValueConstantName')
             ->with()
             ->willReturn('Foo\\Bar\\NONEXSITING_CONSTANT_e68ff2bd2d214c59abb3ad374163871f');

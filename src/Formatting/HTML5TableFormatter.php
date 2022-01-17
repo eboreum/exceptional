@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Eboreum\Exceptional\Formatting;
 
-use Eboreum\Caster\Annotation\DebugIdentifier;
+use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
@@ -16,7 +16,7 @@ use Eboreum\Exceptional\Caster;
  */
 class HTML5TableFormatter extends AbstractXMLFormatter
 {
-    /** @DebugIdentifier */
+    #[DebugIdentifier]
     protected CharacterEncoding $characterEncoding;
 
     public function __construct(CasterInterface $caster, CharacterEncoding $characterEncoding)

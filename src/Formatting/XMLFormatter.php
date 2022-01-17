@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Eboreum\Exceptional\Formatting;
 
-use Eboreum\Caster\Annotation\DebugIdentifier;
+use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
@@ -19,7 +19,7 @@ use Eboreum\Exceptional\Factory\PHPCore\SimpleXMLElement\SimpleXMLElementFactory
  */
 class XMLFormatter extends AbstractXMLFormatter
 {
-    /** @DebugIdentifier */
+    #[DebugIdentifier]
     protected CharacterEncoding $characterEncoding;
 
     protected ?SimpleXMLElementFactory $simpleXMLElementFactory = null;

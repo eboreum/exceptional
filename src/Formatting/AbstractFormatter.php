@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Eboreum\Exceptional\Formatting;
 
-use Eboreum\Caster\Annotation\DebugIdentifier;
+use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\Contract\CasterInterface;
-use Eboreum\Caster\Contract\DebugIdentifierAnnotationInterface;
+use Eboreum\Caster\Contract\DebugIdentifierAttributeInterface;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
@@ -14,30 +14,27 @@ use Eboreum\Exceptional\ExceptionMessageGenerator;
 /**
  * {@inheritDoc}
  */
-abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierAnnotationInterface
+abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierAttributeInterface
 {
-    /** @DebugIdentifier */
+    #[DebugIdentifier]
     protected CasterInterface $caster;
 
     /**
      * The previous throwable level the formatter is currently at. Must be >= 0.
-     *
-     * @DebugIdentifier
      */
+    #[DebugIdentifier]
     protected int $previousThrowableLevel = 0;
 
     /**
      * The number of previous exception the formatter will include. `null` means there is no limit.
-     *
-     * @DebugIdentifier
      */
+    #[DebugIdentifier]
     protected ?int $maximumPreviousDepth = null;
 
     /**
      * A timestamp for when the exception was formatted.
-     *
-     * @DebugIdentifier
      */
+    #[DebugIdentifier]
     protected bool $isProvidingTimestamp = false;
 
     /**

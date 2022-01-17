@@ -9,6 +9,7 @@ use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\MethodArgumentDiscloser;
 use PHPUnit\Framework\TestCase;
+use Serializable;
 use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testBasics\PrivateConstantReferencedAsDefaultInParameter;
 use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist\ClassExistsButClassConstantBarDoesNotExistA;
 use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist\ClassExistsButClassConstantBarDoesNotExistB;
@@ -2539,6 +2540,66 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenInterfaceExistsButInterfaceConstantDoesNotExist(): void
+    {
+        $object = new class
+        {
+            public function foo(
+                // @phpstan-ignore-next-line
+                int $a = Serializable::I_DO_NO_EXIST_EE699DE7F1C04605B41B74653B6867CB
+            ): void
+            {
+            }
+        };
+        $reflectionMethod = new \ReflectionMethod($object, 'foo');
+        $discloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
+        $reflectionParameter = $reflectionMethod->getParameters()[0];
+
+        try {
+            $discloser->getDefaultValueForReflectionParameter($reflectionParameter);
+        } catch (\Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
+                        ' has a default value, which is a constant, but a problem with this constant was encountered',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertIsObject($currentException);
+            assert(is_object($currentException)); // Make phpstan happy
+            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertMatchesRegularExpression(
+                implode('', [
+                    '/',
+                    '^',
+                    'Interface "Serializable" exists, but it does not have a constant named',
+                    ' "I_DO_NO_EXIST_EE699DE7F1C04605B41B74653B6867CB"',
+                    '$',
+                    '/',
+                ]),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(null === $currentException);
+
+            return;
+        }
+
+        $this->fail('Exception was never thrown.');
+    }
+
     public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToANonExistingFullyQuantifiedClassConstant(): void
     {
         $object = new class
@@ -2634,7 +2695,7 @@ class MethodArgumentDiscloserTest extends TestCase
             ->willReturn(true);
 
         $reflectionParameter
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(2))
             ->method('getDefaultValueConstantName')
             ->with()
             ->willReturn('  I don\'t work as a constant name  ');
@@ -2734,7 +2795,7 @@ class MethodArgumentDiscloserTest extends TestCase
             ->willReturn(true);
 
         $reflectionParameter
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(2))
             ->method('getDefaultValueConstantName')
             ->with()
             ->willReturn('  I don\'t work as a constant name  ');
@@ -2834,7 +2895,7 @@ class MethodArgumentDiscloserTest extends TestCase
             ->willReturn(true);
 
         $reflectionParameter
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getDefaultValueConstantName')
             ->with()
             ->willReturn('NONEXSITING_CONSTANT_1aedab95b22c45afbdd0e5cf93af5ee9');
@@ -2933,7 +2994,7 @@ class MethodArgumentDiscloserTest extends TestCase
             ->willReturn(true);
 
         $reflectionParameter
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getDefaultValueConstantName')
             ->with()
             ->willReturn('Foo\\Bar\\NONEXSITING_CONSTANT_e68ff2bd2d214c59abb3ad374163871f');

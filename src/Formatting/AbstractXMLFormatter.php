@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Eboreum\Exceptional\Formatting;
 
-use Eboreum\Caster\Annotation\DebugIdentifier;
+use Eboreum\Caster\Attribute\DebugIdentifier;
 
 /**
  * {@inheritDoc}
  */
 abstract class AbstractXMLFormatter extends AbstractFormatter
 {
-    /** @DebugIdentifier */
+    #[DebugIdentifier]
     protected bool $isPrettyPrinting = false;
 
     /**

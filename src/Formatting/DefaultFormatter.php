@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Eboreum\Exceptional\Formatting;
 
-use Eboreum\Caster\Annotation\DebugIdentifier;
+use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
 
@@ -17,9 +17,8 @@ class DefaultFormatter extends AbstractFormatter
 {
     /**
      * The characters utilized for indenting.
-     *
-     * @DebugIdentifier
      */
+    #[DebugIdentifier]
     protected string $indentationCharacters = '    ';
 
     public function __construct(CasterInterface $caster)
