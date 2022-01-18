@@ -2374,7 +2374,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     implode('', [
                         '/',
                         '^',
-                        'Parameter \$a in method class@anonymous\/in\/.+\/%s:\d+->foo',
+                        'Parameter \$a in method \\\\DateTimeImmutable@anonymous\/in\/.+\/%s:\d+->foo',
                         ' has a default value, which is a constant, but a problem with this constant was encountered',
                         '$',
                         '/',
