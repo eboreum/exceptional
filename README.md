@@ -106,7 +106,7 @@ class Foo1ff07b0e563e4efbb5a5280f7fe412d8
 $foo = new Foo1ff07b0e563e4efbb5a5280f7fe412d8;
 
 try {
-    $foo->bar(42, true, null, "hello");
+    $foo->bar(42, true, null, 'hello');
 } catch (\RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
@@ -130,8 +130,6 @@ Notice how `$a` and `$b` are named, but the unnamed arguments have received thei
 
 use Eboreum\Exceptional\ExceptionMessageGenerator;
 
-define("GLOBAL_CONSTANT_25b105757d32443188cca9c7646ccfe6", "Lorem");
-
 class Fooaea91664ed3d4467aeb2dfabb2623b53
 {
     const SOME_PARENT_CONSTANT = 42;
@@ -147,9 +145,8 @@ class Fooc261bae9da674d679de77a943ae57779 extends Fooaea91664ed3d4467aeb2dfabb26
     public function bar(
         float $a = self::SOME_CONSTANT,
         int $b = self::SOME_PARENT_CONSTANT,
-        string $c = GLOBAL_CONSTANT_25b105757d32443188cca9c7646ccfe6
-    ): string
-    {
+        int $c = PHP_INT_MAX
+    ): void {
         throw new \RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             $this,
             new \ReflectionMethod(self::class, __FUNCTION__),
@@ -161,16 +158,17 @@ class Fooc261bae9da674d679de77a943ae57779 extends Fooaea91664ed3d4467aeb2dfabb26
 $foo = new Fooc261bae9da674d679de77a943ae57779;
 
 try {
-    $foo->bar(42);
+    $foo->bar();
 } catch (\RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
+
 ```
 
 **Output:**
 
 ```
-Failure in \Fooc261bae9da674d679de77a943ae57779->bar($a = (float) 42, $b = (int) 42, $c = (string(5)) "Lorem") inside (object) \Fooc261bae9da674d679de77a943ae57779
+Failure in \Fooc261bae9da674d679de77a943ae57779->bar($a = (float) 3.14, $b = (int) 42, $c = (int) 9223372036854775807) inside (object) \Fooc261bae9da674d679de77a943ae57779
 
 ```
 
@@ -248,7 +246,7 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
     public function bar(int $a): string
     {
         $caster = Caster::getInstance();
-        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection(...[
+        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection([
             new TextuallyIdentifiableInterfaceFormatter(),
         ]));
 
@@ -268,7 +266,7 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
     public function toTextualIdentifier(CasterInterface $caster): string
     {
         return sprintf(
-            "My ID is: %d",
+            'My ID is: %d',
             $this->id,
         );
     }
@@ -298,7 +296,7 @@ class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAttributeInt
     public function bar(int $a): string
     {
         $caster = Caster::getInstance();
-        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection(...[
+        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection([
             new DebugIdentifierAttributeInterfaceFormatter(),
         ]));
 
@@ -320,6 +318,7 @@ try {
 } catch (\RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
+
 ```
 
 **Output:**
@@ -351,7 +350,7 @@ use Eboreum\Exceptional\Formatting\DefaultFormatter;
 $caster = Caster::getInstance();
 $defaultFormatter = new DefaultFormatter($caster);
 
-$throwable = new \Exception("foo");
+$throwable = new \Exception('foo');
 
 $result = $defaultFormatter->format($throwable);
 
@@ -366,10 +365,7 @@ Message:
     foo
 File: /some/file/path/script/misc/readme/formatter/example-1-defaultformatter.php
 Line: 13
-Code: 0
-Stacktrace:
-    #0 /path/to/some/file.php:34: fake_function()
-Previous: (None)
+Code: 0\nStacktrace:\n    #0 /path/to/some/file.php:34: fake_function()\nPrevious: (None)
 ```
 
 ### Example 2: HTML5 `<table>` formatter
@@ -386,11 +382,11 @@ use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Formatting\HTML5TableFormatter;
 
 $caster = Caster::getInstance();
-$characterEncoding = new CharacterEncoding("UTF-8");
+$characterEncoding = new CharacterEncoding('UTF-8');
 $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
 $html5TableFormatter = $html5TableFormatter->withIsPrettyPrinting(true);
 
-$throwable = new \Exception("foo");
+$throwable = new \Exception('foo');
 
 $result = $html5TableFormatter->format($throwable);
 
@@ -451,11 +447,11 @@ use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Formatting\JSONFormatter;
 
 $caster = Caster::getInstance();
-$characterEncoding = new CharacterEncoding("UTF-8");
+$characterEncoding = new CharacterEncoding('UTF-8');
 $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
 $jsonFormatter = $jsonFormatter->withFlags(JSON_PRETTY_PRINT);
 
-$throwable = new \Exception("foo");
+$throwable = new \Exception('foo');
 
 $result = $jsonFormatter->format($throwable);
 
@@ -490,10 +486,9 @@ use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Formatting\OnelineFormatter;
 
 $caster = Caster::getInstance();
-$characterEncoding = new CharacterEncoding("UTF-8");
-$onelineFormatter = new OnelineFormatter($caster, $characterEncoding);
+$onelineFormatter = new OnelineFormatter($caster);
 
-$throwable = new \Exception("foo");
+$throwable = new \Exception('foo');
 
 $result = $onelineFormatter->format($throwable);
 
@@ -503,7 +498,7 @@ echo $result;
 **Output:**
 
 ```
-\Exception. Message: foo. File: /some/file/path/script/misc/readme/formatter/example-4-onelineformatter.php. Line: 15. Code: 0. Stacktrace: #0 /path/to/some/file.php:34: fake_function(). Previous: (None)
+\Exception. Message: foo. File: /some/file/path/script/misc/readme/formatter/example-4-onelineformatter.php. Line: 14. Code: 0. Stacktrace: #0 /path/to/some/file.php:34: fake_function(). Previous: (None)
 ```
 
 ### Example 5: XML formatter
@@ -520,11 +515,11 @@ use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Formatting\XMLFormatter;
 
 $caster = Caster::getInstance();
-$characterEncoding = new CharacterEncoding("UTF-8");
+$characterEncoding = new CharacterEncoding('UTF-8');
 $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 $xmlFormatter = $xmlFormatter->withIsPrettyPrinting(true);
 
-$throwable = new \Exception("foo");
+$throwable = new \Exception('foo');
 
 $result = $xmlFormatter->format($throwable);
 

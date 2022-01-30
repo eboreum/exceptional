@@ -4,7 +4,7 @@ declare(strict_types = 1); // README.md.remove
 
 use Eboreum\Exceptional\ExceptionMessageGenerator;
 
-require_once dirname(__DIR__, 3) . "/bootstrap.php"; // README.md.remove
+require_once dirname(__DIR__, 3) . '/bootstrap.php'; // README.md.remove
 
 class Foo1ff07b0e563e4efbb5a5280f7fe412d8
 {
@@ -24,7 +24,7 @@ class Foo1ff07b0e563e4efbb5a5280f7fe412d8
 $foo = new Foo1ff07b0e563e4efbb5a5280f7fe412d8;
 
 try {
-    $foo->bar(42, true, null, "hello");
+    $foo->bar(42, true, null, 'hello');
 } catch (\RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }

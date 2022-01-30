@@ -12,7 +12,7 @@ use Eboreum\Caster\Formatter\Object_\TextuallyIdentifiableInterfaceFormatter;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
 
-require_once dirname(__DIR__, 3) . "/bootstrap.php"; // README.md.remove
+require_once dirname(__DIR__, 3) . '/bootstrap.php'; // README.md.remove
 
 // Using TextuallyIdentifiableInterface
 
@@ -26,7 +26,7 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
     public function bar(int $a): string
     {
         $caster = Caster::getInstance();
-        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection(...[
+        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection([
             new TextuallyIdentifiableInterfaceFormatter(),
         ]));
 
@@ -46,7 +46,7 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
     public function toTextualIdentifier(CasterInterface $caster): string
     {
         return sprintf(
-            "My ID is: %d",
+            'My ID is: %d',
             $this->id,
         );
     }
@@ -76,7 +76,7 @@ class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAttributeInt
     public function bar(int $a): string
     {
         $caster = Caster::getInstance();
-        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection(...[
+        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection([
             new DebugIdentifierAttributeInterfaceFormatter(),
         ]));
 

@@ -4,7 +4,7 @@ declare(strict_types = 1); // README.md.remove
 
 use Eboreum\Exceptional\ExceptionMessageGenerator;
 
-require_once dirname(__DIR__, 3) . "/bootstrap.php"; // README.md.remove
+require_once dirname(__DIR__, 3) . '/bootstrap.php'; // README.md.remove
 
 class Foo1a7c13d6ce9f4646a120041e36717d5a
 {
