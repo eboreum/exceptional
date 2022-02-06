@@ -266,7 +266,6 @@ class OnelineFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                     preg_quote(basename(__FILE__), '/'),
-                    preg_quote(basename(__FILE__), '/'),
                 ),
                 (function () {
                     $caster = $this->mockCasterInterface();

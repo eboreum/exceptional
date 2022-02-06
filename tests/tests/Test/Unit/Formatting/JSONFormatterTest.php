@@ -246,7 +246,6 @@ class JSONFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                     preg_quote(basename(__FILE__), '/'),
-                    preg_quote(basename(__FILE__), '/'),
                 ),
                 (function () {
                     $caster = $this->mockCasterInterface();
@@ -310,8 +309,6 @@ class JSONFormatterTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(basename(__FILE__), '/'),
-                    preg_quote(basename(__FILE__), '/'),
                     preg_quote(basename(__FILE__), '/'),
                 ),
                 (function () {

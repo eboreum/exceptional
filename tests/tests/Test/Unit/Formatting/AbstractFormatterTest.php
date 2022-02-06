@@ -297,17 +297,14 @@ class AbstractFormatterTest extends TestCase
             assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Expects argument \$previousThrowableLevel to be \<\= 0, but it is not\.',
-                        ' Found: \(int\) \-1',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
+                implode('', [
+                    '/',
+                    '^',
+                    'Expects argument \$previousThrowableLevel to be \<\= 0, but it is not\.',
+                    ' Found: \(int\) \-1',
+                    '$',
+                    '/',
+                ]),
                 $currentException->getMessage(),
             );
 

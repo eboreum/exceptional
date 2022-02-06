@@ -1153,17 +1153,14 @@ class FunctionArgumentDiscloserTest extends TestCase
             $currentException = $e;
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Expects argument \$reflectionParameter \(name: "a"\) to have a default value available',
-                        ', but it does not',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(FunctionArgumentDiscloser::class, '/'),
-                ),
+                implode('', [
+                    '/',
+                    '^',
+                    'Expects argument \$reflectionParameter \(name: "a"\) to have a default value available',
+                    ', but it does not',
+                    '$',
+                    '/',
+                ]),
                 $currentException->getMessage(),
             );
 
@@ -1210,7 +1207,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             ->willReturn('foo');
 
         $reflectionParameter
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getDeclaringFunction')
             ->with()
             ->willReturn($functionArgumentDiscloser->getReflectionFunction());
@@ -1294,7 +1291,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             ->willReturn('foo');
 
         $reflectionParameter
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getDeclaringFunction')
             ->with()
             ->willReturn($functionArgumentDiscloser->getReflectionFunction());
@@ -1377,7 +1374,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             ->willReturn('foo');
 
         $reflectionParameter
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getDeclaringFunction')
             ->with()
             ->willReturn($functionArgumentDiscloser->getReflectionFunction());

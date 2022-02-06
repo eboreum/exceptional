@@ -2205,17 +2205,14 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $e;
             $this->assertSame(RuntimeException::class, get_class($currentException));
             $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Expects argument \$reflectionParameter \(name: "a"\) to have a default value available',
-                        ', but it does not',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(MethodArgumentDiscloser::class, '/'),
-                ),
+                implode('', [
+                    '/',
+                    '^',
+                    'Expects argument \$reflectionParameter \(name: "a"\) to have a default value available',
+                    ', but it does not',
+                    '$',
+                    '/',
+                ]),
                 $currentException->getMessage(),
             );
 
@@ -2713,7 +2710,7 @@ class MethodArgumentDiscloserTest extends TestCase
             ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass());
 
         $reflectionParameter
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(3))
             ->method('getDeclaringFunction')
             ->with()
             ->willReturn($methodArgumentDiscloser->getReflectionFunction());
@@ -2813,7 +2810,7 @@ class MethodArgumentDiscloserTest extends TestCase
             ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass());
 
         $reflectionParameter
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(3))
             ->method('getDeclaringFunction')
             ->with()
             ->willReturn($methodArgumentDiscloser->getReflectionFunction());
@@ -2913,7 +2910,7 @@ class MethodArgumentDiscloserTest extends TestCase
             ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass());
 
         $reflectionParameter
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(3))
             ->method('getDeclaringFunction')
             ->with()
             ->willReturn($methodArgumentDiscloser->getReflectionFunction());
@@ -3012,7 +3009,7 @@ class MethodArgumentDiscloserTest extends TestCase
             ->willReturn($methodArgumentDiscloser->getReflectionFunction()->getDeclaringClass());
 
         $reflectionParameter
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(3))
             ->method('getDeclaringFunction')
             ->with()
             ->willReturn($methodArgumentDiscloser->getReflectionFunction());

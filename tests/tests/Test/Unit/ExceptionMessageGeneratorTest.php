@@ -1235,7 +1235,6 @@ class ExceptionMessageGeneratorTest extends TestCase
                     '/',
                 ]),
                 preg_quote(basename(__FILE__), '/'),
-                preg_quote(basename(__FILE__), '/'),
             ),
             ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage($object, $reflectionMethod, ['c']),
         );
@@ -1354,17 +1353,14 @@ class ExceptionMessageGeneratorTest extends TestCase
             assert(is_object($currentThrowable)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, get_class($currentThrowable));
             $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Expects argument \$objectOrClassName to be an object or a string, but it is not\.',
-                        ' Found: \(int\) 42',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(ExceptionMessageGenerator::class, '/'),
-                ),
+                implode('', [
+                    '/',
+                    '^',
+                    'Expects argument \$objectOrClassName to be an object or a string, but it is not\.',
+                    ' Found: \(int\) 42',
+                    '$',
+                    '/',
+                ]),
                 $currentThrowable->getMessage(),
             );
 
@@ -1413,19 +1409,16 @@ class ExceptionMessageGeneratorTest extends TestCase
             assert(is_object($currentThrowable)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, get_class($currentThrowable));
             $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Arguments \$objectOrClassName \= \(string\(8\)\) "stdClass"',
-                        ' and \$reflectionMethod \= \(object\) \\\\ReflectionMethod',
-                        ' \(declaring class name: \\\\DateTime\) are problematic as they do not do not reference the',
-                        ' same class or a child class hereof',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(ExceptionMessageGenerator::class, '/'),
-                ),
+                implode('', [
+                    '/',
+                    '^',
+                    'Arguments \$objectOrClassName \= \(string\(8\)\) "stdClass"',
+                    ' and \$reflectionMethod \= \(object\) \\\\ReflectionMethod',
+                    ' \(declaring class name: \\\\DateTime\) are problematic as they do not do not reference the',
+                    ' same class or a child class hereof',
+                    '$',
+                    '/',
+                ]),
                 $currentThrowable->getMessage(),
             );
 
@@ -1474,17 +1467,14 @@ class ExceptionMessageGeneratorTest extends TestCase
             assert(is_object($currentThrowable)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, get_class($currentThrowable));
             $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Argument \$objectOrClassName \= \(string\(43\)\)',
-                        ' "IDoNotExist425393c93a7d435ea6e95b2d0a6ac670" refers to a non\-existing class',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(ExceptionMessageGenerator::class, '/'),
-                ),
+                implode('', [
+                    '/',
+                    '^',
+                    'Argument \$objectOrClassName \= \(string\(43\)\)',
+                    ' "IDoNotExist425393c93a7d435ea6e95b2d0a6ac670" refers to a non\-existing class',
+                    '$',
+                    '/',
+                ]),
                 $currentThrowable->getMessage(),
             );
 
@@ -1652,17 +1642,14 @@ class ExceptionMessageGeneratorTest extends TestCase
             assert(is_object($currentThrowable)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, get_class($currentThrowable));
             $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'In argument \$propertyNamesToBeShown, 1\/2 elements are invalid, including\:',
-                        ' Element is not a string\: 1 \=\> \(int\) 42',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
+                implode('', [
+                    '/',
+                    '^',
+                    'In argument \$propertyNamesToBeShown, 1\/2 elements are invalid, including\:',
+                    ' Element is not a string\: 1 \=\> \(int\) 42',
+                    '$',
+                    '/',
+                ]),
                 $currentThrowable->getMessage(),
             );
 

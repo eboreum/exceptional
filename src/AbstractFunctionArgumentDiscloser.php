@@ -219,12 +219,11 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
                 throw new RuntimeException(sprintf(
                     implode('', [
-                        'Parameter $%s in %s has a default value, which is a constant, but',
-                        ' a problem with this constant was encountered',
+                        'Parameter $%s in %s has a default value, which is a constant, but a problem with this',
+                        ' constant was encountered',
                     ]),
                     $reflectionParameter->getName(),
                     $functionText,
-                    $reflectionParameter->getDeclaringFunction()->getName(),
                 ), 0, $t);
             }
         }
