@@ -19,7 +19,7 @@ abstract class AbstractXMLFormatter extends AbstractFormatter
      *
      * @return static
      */
-    public function withIsPrettyPrinting(bool $isPrettyPrinting): self
+    public function withIsPrettyPrinting(bool $isPrettyPrinting): static
     {
         $clone = clone $this;
         $clone->isPrettyPrinting = $isPrettyPrinting;

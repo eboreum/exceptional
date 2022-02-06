@@ -113,7 +113,7 @@ class JSONFormatter extends AbstractFormatter
      * @param int<1, max> $depth Must be > 0. Otherwise, a RuntimeException is thrown.
      * @throws RuntimeException
      */
-    public function withDepth(int $depth): self
+    public function withDepth(int $depth): static
     {
         try {
             if (false === ($depth >= 1)) { // @phpstan-ignore-line

@@ -27,14 +27,14 @@ interface FormatterInterface
      *
      * @return static
      */
-    public function withIsProvidingTimestamp(bool $isProvidingTimestamp): self;
+    public function withIsProvidingTimestamp(bool $isProvidingTimestamp): static;
 
     /**
      * Must return a clone.
      *
      * @return static
      */
-    public function withMaximumPreviousDepth(?int $maximumPreviousDepth): self;
+    public function withMaximumPreviousDepth(?int $maximumPreviousDepth): static;
 
     /**
      * Must return a clone.
@@ -43,7 +43,7 @@ interface FormatterInterface
      * @return static
      * @throws RuntimeException
      */
-    public function withPreviousThrowableLevel(int $previousThrowableLevel): self;
+    public function withPreviousThrowableLevel(int $previousThrowableLevel): static;
 
     /**
      * Retrieve the caster which should be used internally for rendering safe output.

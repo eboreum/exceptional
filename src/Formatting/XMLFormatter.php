@@ -96,7 +96,7 @@ class XMLFormatter extends AbstractXMLFormatter
     /**
      * Returns a clone.
      */
-    public function withSimpleXMLElementFactory(?SimpleXMLElementFactory $simpleXMLElementFactory): self
+    public function withSimpleXMLElementFactory(?SimpleXMLElementFactory $simpleXMLElementFactory): static
     {
         $clone = clone $this;
         $clone->simpleXMLElementFactory = $simpleXMLElementFactory;
