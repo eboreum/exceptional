@@ -25,13 +25,13 @@ class Caster extends OriginalCaster
     /**
      * {@inheritDoc}
      */
-    public static function create(?CharacterEncodingInterface $characterEncoding = null): Caster
+    public static function create(?CharacterEncodingInterface $characterEncoding = null): static
     {
         if (null === $characterEncoding) {
             $characterEncoding = CharacterEncoding::getInstance();
         }
 
-        $caster = new self($characterEncoding);
+        $caster = new static($characterEncoding);
 
         $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection([
             new TextuallyIdentifiableInterfaceFormatter(),
@@ -42,7 +42,7 @@ class Caster extends OriginalCaster
             new ThrowableFormatter(),
         ]));
 
-        return $caster; // @phpstan-ignore-line
+        return $caster;
     }
 
     public static function getInstance(): Caster
