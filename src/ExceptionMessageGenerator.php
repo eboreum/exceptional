@@ -306,7 +306,7 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                         );
                     }
 
-                    if (false === $isClassAcceptable) { // @phpstan-ignore-line
+                    if (false === $isClassAcceptable) {
                         $errorMessages[] = sprintf(
                             implode('', [
                                 'Arguments $objectOrClassName = %s and $reflectionMethod = %s (declaring class',
