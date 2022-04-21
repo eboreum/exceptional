@@ -18,7 +18,7 @@ When a method is called, and somehow that leads to an exception/throwable being 
 
 ```json
 "php": "^8.0",
-"eboreum/caster": "dev-main"
+"eboreum/caster": "^1.0"
 ```
 
 For more information, see the [`composer.json`](composer.json) file.

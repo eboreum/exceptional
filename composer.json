@@ -4,7 +4,7 @@
     "type": "library",
     "require": {
         "php": "^8.0",
-        "eboreum/caster": "dev-main"
+        "eboreum/caster": "^1.0"
     },
     "require-dev": {
         "nette/neon": "^3.2",
