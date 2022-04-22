@@ -1,8 +1,8 @@
 Eboreum/Exceptional: Create and format PHP exceptions easily
 ===============================
 
-![License](https://img.shields.io/packagist/l/eboreum/exceptional.svg)
-![Build Status](https://app.travis-ci.com/eboreum/exceptional.svg?branch=main)
+![license](https://img.shields.io/github/license/eboreum/exceptional?label=license)
+![build](https://github.com/eboreum/exceptional/workflows/build/badge.svg?branch=main)
 ![codecov](https://codecov.io/gh/eboreum/exceptional/branch/main/graph/badge.svg)
 %run "script/make-readme/make-phpstan-badge.php"%
 
