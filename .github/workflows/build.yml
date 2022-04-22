@@ -38,7 +38,7 @@ jobs:
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
       - name: Test with phpunit
-        run: cd tests && vendor/bin/phpunit --coverage-clover=coverage.xml
+        run: cd tests && ../vendor/bin/phpunit --coverage-clover=coverage.xml
 
       - name: Upload Code Coverate Report to Codecov
         uses: codecov/codecov-action@v2
