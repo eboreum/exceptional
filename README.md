@@ -3,8 +3,8 @@ Eboreum/Exceptional: Create and format PHP exceptions easily
 
 ![license](https://img.shields.io/github/license/eboreum/exceptional?label=license)
 ![build](https://github.com/eboreum/exceptional/workflows/build/badge.svg?branch=main)
-![codecov](https://codecov.io/gh/eboreum/exceptional/branch/main/graph/badge.svg)
-![PHPStan](https://img.shields.io/badge/PHPStan-Level%209-brightgreen.svg?style=flat)
+[![Code Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/kafoso/a6e4ffd4089e5e6a13e307c707849eb7/raw/test-coverage__main.json)](https://github.com/eboreum/exceptional/actions)
+[![PHPStan Level](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/kafoso/a6e4ffd4089e5e6a13e307c707849eb7/raw/phpstan-level__main.json)](https://github.com/eboreum/exceptional/actions)
 
 Create and format PHP exceptions easily. Automatically unravel method arguments. Ensure that sensitive strings like passwords, tokens, PHPSESSID, etc. are being masked and thus will instead appear as e.g. "******" in the resulting text.
 

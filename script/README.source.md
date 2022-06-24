@@ -3,8 +3,8 @@ Eboreum/Exceptional: Create and format PHP exceptions easily
 
 ![license](https://img.shields.io/github/license/eboreum/exceptional?label=license)
 ![build](https://github.com/eboreum/exceptional/workflows/build/badge.svg?branch=main)
-![codecov](https://codecov.io/gh/eboreum/exceptional/branch/main/graph/badge.svg)
-%run "script/make-readme/make-phpstan-badge.php"%
+[![Code Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/kafoso/a6e4ffd4089e5e6a13e307c707849eb7/raw/test-coverage__main.json)](https://github.com/eboreum/exceptional/actions)
+[![PHPStan Level](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/kafoso/a6e4ffd4089e5e6a13e307c707849eb7/raw/phpstan-level__main.json)](https://github.com/eboreum/exceptional/actions)
 
 %composer.json.description%
 
