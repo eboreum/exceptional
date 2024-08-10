@@ -628,7 +628,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     ', EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226. 3 passed argument values.',
                 ]),
                 static function (): object {
-                    return new class // @phpstan-ignore-line
+                    return new class
                     {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
@@ -812,7 +812,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     ', EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a. 3 passed argument values.',
                 ]),
                 static function (): object {
-                    return new class // @phpstan-ignore-line
+                    return new class
                     {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
@@ -1086,7 +1086,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     ' 3 passed argument values, overriding $c.',
                 ]),
                 static function (): object {
-                    return new class // @phpstan-ignore-line
+                    return new class
                     {
                         public const BAR = 3.14;
 
@@ -1266,7 +1266,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     ', using parent binding, parent::ATOM. 3 passed argument values.',
                 ]),
                 static function (): object {
-                    return new class extends \DateTimeImmutable // @phpstan-ignore-line
+                    return new class extends \DateTimeImmutable
                     {
                         /**
                          * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
