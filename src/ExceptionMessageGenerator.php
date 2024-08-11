@@ -14,6 +14,7 @@ use ReflectionMethod;
 use ReflectionObject;
 use Throwable;
 
+use function assert;
 use function class_exists;
 use function count;
 use function implode;
