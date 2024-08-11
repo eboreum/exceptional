@@ -1,8 +1,8 @@
 <?php
+// phpcs:ignoreFile
 
-declare(strict_types = 1); // README.md.remove
+declare(strict_types=1); // README.md.remove
 
-use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Formatting\OnelineFormatter;
 
@@ -11,7 +11,7 @@ require_once dirname(__DIR__, 3) . '/bootstrap.php'; // README.md.remove
 $caster = Caster::getInstance();
 $onelineFormatter = new OnelineFormatter($caster);
 
-$throwable = new \Exception('foo');
+$throwable = new Exception('foo');
 
 $result = $onelineFormatter->format($throwable);
 

@@ -6,6 +6,7 @@ namespace Eboreum\Exceptional\Formatting;
 
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Exception\RuntimeException;
+use Throwable;
 
 /**
  * Implementing class will make a human readable version of the contents of a \Throwable instance.
@@ -15,12 +16,12 @@ interface FormatterInterface
     /**
      * Must return the number of previous throwables (using `getPrevious`), excluding the $throwable argument.
      */
-    public function countPreviousThrowables(\Throwable $throwable): int;
+    public function countPreviousThrowables(Throwable $throwable): int;
 
     /**
      * Must make a string representation of the provided \Throwable and return that as a string.
      */
-    public function format(\Throwable $throwable): string;
+    public function format(Throwable $throwable): string;
 
     /**
      * Must return a clone.
@@ -40,7 +41,9 @@ interface FormatterInterface
      * Must return a clone.
      *
      * @param int $previousThrowableLevel Must be >= 0. Otherwise, an exception must be thrown.
+     *
      * @return static
+     *
      * @throws RuntimeException
      */
     public function withPreviousThrowableLevel(int $previousThrowableLevel): static;

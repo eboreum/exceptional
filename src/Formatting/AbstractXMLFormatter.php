@@ -6,9 +6,6 @@ namespace Eboreum\Exceptional\Formatting;
 
 use Eboreum\Caster\Attribute\DebugIdentifier;
 
-/**
- * {@inheritDoc}
- */
 abstract class AbstractXMLFormatter extends AbstractFormatter
 {
     #[DebugIdentifier]

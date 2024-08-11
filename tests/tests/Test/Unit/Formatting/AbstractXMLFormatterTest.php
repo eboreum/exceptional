@@ -6,6 +6,7 @@ namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
 use Eboreum\Exceptional\Formatting\AbstractXMLFormatter;
 use PHPUnit\Framework\TestCase;
+use Throwable;
 
 class AbstractXMLFormatterTest extends TestCase
 {
@@ -13,10 +14,7 @@ class AbstractXMLFormatterTest extends TestCase
     {
         $object = new class extends AbstractXMLFormatter
         {
-            /**
-             * {@inheritDoc}
-             */
-            public function format(\Throwable $throwable): string
+            public function format(Throwable $throwable): string
             {
                 return '';
             }
@@ -29,10 +27,7 @@ class AbstractXMLFormatterTest extends TestCase
     {
         $objectA = new class extends AbstractXMLFormatter
         {
-            /**
-             * {@inheritDoc}
-             */
-            public function format(\Throwable $throwable): string
+            public function format(Throwable $throwable): string
             {
                 return '';
             }

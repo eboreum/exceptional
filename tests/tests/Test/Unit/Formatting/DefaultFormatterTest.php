@@ -7,8 +7,19 @@ namespace Test\Unit\Eboreum\Exceptional\Formatting;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Formatting\DefaultFormatter;
+use Exception;
+use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+use Throwable;
+
+use function basename;
+use function implode;
+use function in_array;
+use function preg_match;
+use function preg_quote;
+use function sprintf;
 
 class DefaultFormatterTest extends TestCase
 {
@@ -23,20 +34,20 @@ class DefaultFormatterTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testFormatWorks
+     * @dataProvider providerTestFormatWorks
      */
     public function testFormatWorks(
         string $expectedJSONRegex,
         DefaultFormatter $defaultFormatter,
-        \Throwable $throwable
+        Throwable $throwable
     ): void {
         $this->assertMatchesRegularExpression($expectedJSONRegex, $defaultFormatter->format($throwable));
     }
 
     /**
-     * @return array<int, array{0: string, 1: DefaultFormatter, 2: \Exception}>
+     * @return array<int, array{0: string, 1: DefaultFormatter, 2: Exception}>
      */
-    public function dataProvider_testFormatWorks(): array
+    public function providerTestFormatWorks(): array
     {
         return [
             [
@@ -79,7 +90,7 @@ class DefaultFormatterTest extends TestCase
                                 return '#0 Lorem';
                             }
 
-                            throw new \Exception(sprintf(
+                            throw new Exception(sprintf(
                                 'Uncovered case for $v = %s',
                                 Caster::getInstance()->castTyped($v),
                             ));
@@ -87,7 +98,7 @@ class DefaultFormatterTest extends TestCase
 
                     return new DefaultFormatter($caster);
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -129,7 +140,7 @@ class DefaultFormatterTest extends TestCase
                                 return '#0 Lorem';
                             }
 
-                            throw new \Exception(sprintf(
+                            throw new Exception(sprintf(
                                 'Uncovered case for $v = %s',
                                 Caster::getInstance()->castTyped($v),
                             ));
@@ -138,13 +149,13 @@ class DefaultFormatterTest extends TestCase
                     $defaultFormatter = new DefaultFormatter($caster);
 
                     /**
-                     * @var DefaultFormatter
+                     * @var DefaultFormatter $defaultFormatter
                      */
                     $defaultFormatter = $defaultFormatter->withIsProvidingTimestamp(true);
 
                     return $defaultFormatter;
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -206,7 +217,7 @@ class DefaultFormatterTest extends TestCase
                                 return '#0 Lorem';
                             }
 
-                            throw new \Exception(sprintf(
+                            throw new Exception(sprintf(
                                 'Uncovered case for $v = %s',
                                 Caster::getInstance()->castTyped($v),
                             ));
@@ -215,10 +226,10 @@ class DefaultFormatterTest extends TestCase
                     return new DefaultFormatter($caster);
                 })(),
                 (static function () {
-                    $baz = new \LogicException('baz', 2);
-                    $bar = new \RuntimeException('bar', 1, $baz);
+                    $baz = new LogicException('baz', 2);
+                    $bar = new RuntimeException('bar', 1, $baz);
 
-                    return new \Exception('foo', 0, $bar);
+                    return new Exception('foo', 0, $bar);
                 })(),
             ],
             [
@@ -271,7 +282,7 @@ class DefaultFormatterTest extends TestCase
                                 return '#0 Lorem';
                             }
 
-                            throw new \Exception(sprintf(
+                            throw new Exception(sprintf(
                                 'Uncovered case for $v = %s',
                                 Caster::getInstance()->castTyped($v),
                             ));
@@ -280,18 +291,18 @@ class DefaultFormatterTest extends TestCase
                     $defaultFormatter = new DefaultFormatter($caster);
 
                     /**
-                     * @var DefaultFormatter
+                     * @var DefaultFormatter $defaultFormatter
                      */
                     $defaultFormatter = $defaultFormatter->withMaximumPreviousDepth(1);
 
                     return $defaultFormatter;
                 })(),
                 (static function () {
-                    $bim = new \LogicException('bim', 3);
-                    $baz = new \LogicException('baz', 2, $bim);
-                    $bar = new \RuntimeException('bar', 1, $baz);
+                    $bim = new LogicException('bim', 3);
+                    $baz = new LogicException('baz', 2, $bim);
+                    $bar = new RuntimeException('bar', 1, $baz);
 
-                    return new \Exception('foo', 0, $bar);
+                    return new Exception('foo', 0, $bar);
                 })(),
             ],
         ];

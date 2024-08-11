@@ -7,6 +7,29 @@ namespace Eboreum\Exceptional;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Caster\Contract\ImmutableObjectInterface;
 use Eboreum\Exceptional\Exception\RuntimeException;
+use ReflectionClass;
+use ReflectionClassConstant;
+use ReflectionFunction;
+use ReflectionMethod;
+use ReflectionParameter;
+use Throwable;
+
+use function array_key_exists;
+use function array_slice;
+use function array_values;
+use function assert;
+use function class_exists;
+use function constant;
+use function count;
+use function defined;
+use function escapeshellarg;
+use function implode;
+use function interface_exists;
+use function is_object;
+use function is_string;
+use function max;
+use function preg_match;
+use function sprintf;
 
 /**
  * Provides an API for extracting information about and mapping them to values for method arguments/parameters.
@@ -16,10 +39,11 @@ use Eboreum\Exceptional\Exception\RuntimeException;
  */
 abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInterface
 {
+    abstract public static function getDefaultValueConstantRegex(): string;
+
     protected CasterInterface $caster;
 
-    /** @var \ReflectionFunction|\ReflectionMethod */
-    protected $reflectionFunction;
+    protected ReflectionFunction|ReflectionMethod $reflectionFunction;
 
     /** @var array<int, mixed> */
     protected array $functionArgumentValues;
@@ -29,20 +53,18 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
     protected ?int $requiredParameterCount = null;
 
-    abstract public static function getDefaultValueConstantRegex(): string;
-
     public function getCaster(): CasterInterface
     {
         return $this->caster;
     }
 
     /**
-     * @param \ReflectionParameter $reflectionParameter
+     * @param ReflectionParameter $reflectionParameter
      *                                          Must have a default value. Otherwise, a RuntimeException is thrown.
+     *
      * @throws RuntimeException
-     * @return mixed
      */
-    public function getDefaultValueForReflectionParameter(\ReflectionParameter $reflectionParameter)
+    public function getDefaultValueForReflectionParameter(ReflectionParameter $reflectionParameter): mixed
     {
         if (false === $reflectionParameter->isDefaultValueAvailable()) {
             throw new RuntimeException(sprintf(
@@ -53,11 +75,13 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
         if ($reflectionParameter->isDefaultValueConstant()) {
             try {
-                assert(is_string($reflectionParameter->getDefaultValueConstantName()));
+                $defaultValueConstantName = $reflectionParameter->getDefaultValueConstantName();
+
+                assert(is_string($defaultValueConstantName));
 
                 preg_match(
                     static::getDefaultValueConstantRegex(),
-                    $reflectionParameter->getDefaultValueConstantName(),
+                    $defaultValueConstantName,
                     $match,
                 );
 
@@ -69,7 +93,7 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                         ]),
                         $reflectionParameter->getName(),
                         escapeshellarg(static::getDefaultValueConstantRegex()),
-                        $this->getCaster()->castTyped($reflectionParameter->getDefaultValueConstantName()),
+                        $this->getCaster()->castTyped($defaultValueConstantName),
                     ));
                 }
 
@@ -109,7 +133,7 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                                     );
 
                                     assert(is_object($reflectionClassConstant));
-                                    assert($reflectionClassConstant instanceof \ReflectionClassConstant);
+                                    assert($reflectionClassConstant instanceof ReflectionClassConstant);
 
                                     if ($reflectionClassConstant->isPrivate()) {
                                         if (0 === $currentClassLevelIndex) {
@@ -167,7 +191,7 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                         ));
                     }
 
-                    $reflectionClass = new \ReflectionClass($match['className']);
+                    $reflectionClass = new ReflectionClass($match['className']);
 
                     if (false === $reflectionClass->hasConstant($match['classConstantName'])) {
                         throw new RuntimeException(sprintf(
@@ -187,16 +211,16 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
                 throw new RuntimeException(sprintf(
                     'Uncovered case for constant name %s and $match = %s',
-                    $this->getCaster()->cast($reflectionParameter->getDefaultValueConstantName()),
+                    $this->getCaster()->cast($defaultValueConstantName),
                     $this->getCaster()->castTyped($match),
                 ));
-            } catch (\Throwable $t) {
+            } catch (Throwable $t) {
                 $functionText = '';
 
                 if ($reflectionParameter->getDeclaringClass()) {
                     $isStatic = false;
 
-                    if ($reflectionParameter->getDeclaringFunction() instanceof \ReflectionMethod) {
+                    if ($reflectionParameter->getDeclaringFunction() instanceof ReflectionMethod) {
                         $isStatic = $reflectionParameter->getDeclaringFunction()->isStatic();
                     }
 
@@ -257,8 +281,9 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
      *   2. We convert a potential variadic named parameter from all variadic array elements being at the same level as
      *      all other arguments, to being an array at the index position of the variadic named parameter.
      *
-     * @throws RuntimeException
      * @return array<int, mixed>
+     *
+     * @throws RuntimeException
      */
     public function getNormalizedFunctionArgumentValues(): array
     {
@@ -291,14 +316,14 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                         }
                     }
 
+                    $this->normalizedFunctionArgumentValues[$index] = null;
+
                     if (array_key_exists($index, $functionArgumentValues)) {
                         $this->normalizedFunctionArgumentValues[$index] = $functionArgumentValues[$index];
                     } elseif ($reflectionParameter->isDefaultValueAvailable()) {
                         $this->normalizedFunctionArgumentValues[$index] = $this->getDefaultValueForReflectionParameter(
                             $reflectionParameter
                         );
-                    } else {
-                        $this->normalizedFunctionArgumentValues[$index] = null;
                     }
                 } else {
                     $this->normalizedFunctionArgumentValues[$index] = $functionArgumentValues[$index];
@@ -324,15 +349,12 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
         return $this->getNamedParameterCount() - 1;
     }
 
-    /**
-     * @return \ReflectionFunction|\ReflectionMethod
-     */
-    public function getReflectionFunction()
+    public function getReflectionFunction(): ReflectionFunction|ReflectionMethod
     {
         return $this->reflectionFunction;
     }
 
-    public function getReflectionParameterByIndex(int $index): ?\ReflectionParameter
+    public function getReflectionParameterByIndex(int $index): ?ReflectionParameter
     {
         return ($this->getReflectionFunction()->getParameters()[$index] ?? null);
     }
@@ -343,7 +365,7 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
         return (
             array_key_exists($lastNamedParameterIndex, $this->getReflectionFunction()->getParameters())
-            && $this->getReflectionFunction()->getParameters()[$lastNamedParameterIndex] instanceof \ReflectionParameter
+            && $this->getReflectionFunction()->getParameters()[$lastNamedParameterIndex] instanceof ReflectionParameter
             && $this->getReflectionFunction()->getParameters()[$lastNamedParameterIndex]->isVariadic()
         );
     }

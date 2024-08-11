@@ -4,18 +4,40 @@ declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional;
 
+use Closure;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Eboreum\Exceptional\AbstractFunctionArgumentDiscloser;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\MethodArgumentDiscloser;
+use Exception;
+use IDontExist2da718442a7547e2b970aed55a2324b0;
+use IDontExista8728361d30f42bfb9a954abfac4ccab;
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
+use ReflectionObject;
 use Serializable;
-use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testBasics\PrivateConstantReferencedAsDefaultInParameter;
-use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist\ClassExistsButClassConstantBarDoesNotExistA;
-use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist\ClassExistsButClassConstantBarDoesNotExistB;
+use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testBasics\PrivateConstantReferencedAsDefaultInParameter; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist\ClassExistsButClassConstantBarDoesNotExistA; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist\ClassExistsButClassConstantBarDoesNotExistB; // phpcs:ignore
+
+use function assert;
+use function basename;
+use function count;
+use function define;
+use function func_get_args;
+use function implode;
+use function is_object;
+use function method_exists;
+use function preg_quote;
+use function sprintf;
+
+// @phpstan-ignore-next-line
+use const EBOREUM_EXCEPTIONAL_TEST_323586A4460042C286A544D258337226;
 
 define(
-    'EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226',
+    'EBOREUM_EXCEPTIONAL_TEST_323586A4460042C286A544D258337226',
     sprintf(
         'A global constant utilized in unit test %s\\MethodArgumentDiscloserTest->testBasics',
         __NAMESPACE__,
@@ -33,13 +55,13 @@ define(
 class MethodArgumentDiscloserTest extends TestCase
 {
     /**
-     * @dataProvider dataProvider_testBasics
+     * @dataProvider providerTestBasics
      */
     public function testBasics(
         string $message,
-        \Closure $objectFactory,
-        \Closure $objectValueFactoryCallback,
-        \Closure $assertionsCallback
+        Closure $objectFactory,
+        Closure $objectValueFactoryCallback,
+        Closure $assertionsCallback
     ): void {
         $object = $objectFactory();
 
@@ -48,7 +70,7 @@ class MethodArgumentDiscloserTest extends TestCase
         [
             $reflectionMethod,
             $methodArgumentValues,
-            $methodArgumentDiscloser
+            $methodArgumentDiscloser,
         ] = $objectValueFactoryCallback($object);
 
         $this->assertSame($reflectionMethod, $methodArgumentDiscloser->getReflectionFunction(), $message);
@@ -63,9 +85,9 @@ class MethodArgumentDiscloserTest extends TestCase
     }
 
     /**
-     * @return array<array{string, \Closure(): object, \Closure, \Closure(string, MethodArgumentDiscloser, object): void}>
+     * @return array<array{string, Closure(): object, Closure, Closure(string, MethodArgumentDiscloser, object): void}>
      */
-    public function dataProvider_testBasics(): array
+    public function providerTestBasics(): array
     {
         return [
             [
@@ -74,11 +96,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -94,7 +116,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -135,11 +157,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a = 42): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -155,7 +177,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -207,11 +229,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a = 42): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -227,7 +249,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -275,11 +297,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, float $c): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -295,7 +317,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -358,14 +380,14 @@ class MethodArgumentDiscloserTest extends TestCase
             [
                 '3 named parameters. All required. 4 passed argument values.',
                 static function (): object {
-                    $object = new class
+                    return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, float $c): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -378,12 +400,10 @@ class MethodArgumentDiscloserTest extends TestCase
                                 ),
                             ];
                         }
-                    };
-
-                    return $object; // Needs to be in a variable because phpstan gets confused
+                    }; // Needs to be in a variable because phpstan gets confused
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -450,11 +470,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, ?float $c = null): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -470,7 +490,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -533,20 +553,20 @@ class MethodArgumentDiscloserTest extends TestCase
             [
                 implode('', [
                     '3 named parameters. $c is optional and default value being a global constant',
-                    ', EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226. 2 passed argument values.',
+                    ', EBOREUM_EXCEPTIONAL_TEST_323586A4460042C286A544D258337226. 2 passed argument values.',
                 ]),
                 static function (): object {
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(
                             int $a,
                             string $b,
-                            string $c = \EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226
+                            string $c = EBOREUM_EXCEPTIONAL_TEST_323586A4460042C286A544D258337226
                         ): array {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -562,7 +582,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -580,7 +600,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         [
                             42,
                             'bar',
-                            \EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226,
+                            EBOREUM_EXCEPTIONAL_TEST_323586A4460042C286A544D258337226,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -625,20 +645,20 @@ class MethodArgumentDiscloserTest extends TestCase
             [
                 implode('', [
                     '3 named parameters. $c is optional and default value being a global constant',
-                    ', EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226. 3 passed argument values.',
+                    ', EBOREUM_EXCEPTIONAL_TEST_323586A4460042C286A544D258337226. 3 passed argument values.',
                 ]),
                 static function (): object {
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(
                             int $a,
                             string $b,
-                            string $c = \EBOREUM_EXCEPTIONAL_TEST_323586a4460042c286a544d258337226
+                            string $c = EBOREUM_EXCEPTIONAL_TEST_323586A4460042C286A544D258337226
                         ): array {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -654,7 +674,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -723,14 +743,14 @@ class MethodArgumentDiscloserTest extends TestCase
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(
                             int $a,
                             string $b,
                             string $c = EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a
                         ): array {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -746,7 +766,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -815,14 +835,14 @@ class MethodArgumentDiscloserTest extends TestCase
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(
                             int $a,
                             string $b,
                             string $c = EBOREUM_EXCEPTIONAL_TEST_2098a8136eb848ce8d23f0e42a5d8a7a
                         ): array {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -838,7 +858,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -909,11 +929,11 @@ class MethodArgumentDiscloserTest extends TestCase
                         public const BAR = 3.14;
 
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, ?float $c = self::BAR): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -929,7 +949,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1000,11 +1020,11 @@ class MethodArgumentDiscloserTest extends TestCase
                         private const BAR = 3.14;
 
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, ?float $c = self::BAR): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1020,7 +1040,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1091,11 +1111,11 @@ class MethodArgumentDiscloserTest extends TestCase
                         public const BAR = 3.14;
 
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, ?float $c = self::BAR): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1111,7 +1131,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1177,14 +1197,14 @@ class MethodArgumentDiscloserTest extends TestCase
                     ', using parent binding, parent::ATOM. 2 passed argument values.',
                 ]),
                 static function (): object {
-                    return new class extends \DateTimeImmutable
+                    return new class extends DateTimeImmutable
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, string $c = parent::ATOM): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1200,7 +1220,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1218,7 +1238,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         [
                             42,
                             'bar',
-                            \DateTimeInterface::ATOM,
+                            DateTimeInterface::ATOM,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -1266,14 +1286,14 @@ class MethodArgumentDiscloserTest extends TestCase
                     ', using parent binding, parent::ATOM. 3 passed argument values.',
                 ]),
                 static function (): object {
-                    return new class extends \DateTimeImmutable
+                    return new class extends DateTimeImmutable
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a, string $b, string $c = parent::ATOM): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1289,7 +1309,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1355,14 +1375,14 @@ class MethodArgumentDiscloserTest extends TestCase
                     ', using parent binding, \DateTimeInterface::ATOM. 2 passed argument values.',
                 ]),
                 static function (): object {
-                    return new class extends \DateTimeImmutable
+                    return new class extends DateTimeImmutable
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
-                        public function foo(int $a, string $b, string $c = \DateTimeInterface::ATOM): array
+                        public function foo(int $a, string $b, string $c = DateTimeInterface::ATOM): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1378,7 +1398,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1396,7 +1416,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         [
                             42,
                             'bar',
-                            \DateTimeInterface::ATOM,
+                            DateTimeInterface::ATOM,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -1445,14 +1465,14 @@ class MethodArgumentDiscloserTest extends TestCase
                     ' Notice: \DateTimeImmutable - not \DateTimeInterface - is used here.',
                 ]),
                 static function (): object {
-                    return new class extends \DateTimeImmutable
+                    return new class extends DateTimeImmutable
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
-                        public function foo(int $a, string $b, string $c = \DateTimeImmutable::ATOM): array
+                        public function foo(int $a, string $b, string $c = DateTimeImmutable::ATOM): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1468,7 +1488,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1486,7 +1506,7 @@ class MethodArgumentDiscloserTest extends TestCase
                         [
                             42,
                             'bar',
-                            \DateTimeInterface::ATOM,
+                            DateTimeInterface::ATOM,
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -1537,11 +1557,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
-                        public function foo(int $a, string $b, string $c = \DateTimeInterface::ATOM): array
+                        public function foo(int $a, string $b, string $c = DateTimeInterface::ATOM): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1557,7 +1577,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1623,11 +1643,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int ...$a): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1643,7 +1663,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1690,14 +1710,14 @@ class MethodArgumentDiscloserTest extends TestCase
             [
                 '1 named parameters. $a is variadic. 1 passed argument values.',
                 static function (): object {
-                    $object = new class
+                    return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int ...$a): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1710,12 +1730,10 @@ class MethodArgumentDiscloserTest extends TestCase
                                 ),
                             ];
                         }
-                    };
-
-                    return $object; // Needs to be in a variable because phpstan gets confused
+                    }; // Needs to be in a variable because phpstan gets confused
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1765,11 +1783,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a = 42, string $b = 'baz', float ...$c): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1785,7 +1803,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     };
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1848,14 +1866,14 @@ class MethodArgumentDiscloserTest extends TestCase
             [
                 '3 named parameters. $c is variadic. 2 passed argument values.',
                 static function (): object {
-                    $object = new class
+                    return new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a = 42, string $b = 'baz', float ...$c): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1868,12 +1886,10 @@ class MethodArgumentDiscloserTest extends TestCase
                                 ),
                             ];
                         }
-                    };
-
-                    return $object; // Needs to be in a variable because phpstan gets confused
+                    }; // Needs to be in a variable because phpstan gets confused
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -1939,11 +1955,11 @@ class MethodArgumentDiscloserTest extends TestCase
                     $object = new class
                     {
                         /**
-                         * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                         * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                          */
                         public function foo(int $a = 42, string $b = 'baz', float ...$c): array
                         {
-                            $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                            $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
                             $methodArgumentValues = func_get_args();
 
                             return [
@@ -1963,7 +1979,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     return $object; // Needs to be in a variable because phpstan gets confused
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
@@ -2034,7 +2050,7 @@ class MethodArgumentDiscloserTest extends TestCase
                     return $object;
                 },
                 /**
-                 * @return array{\ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
+                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
                  */
                 static function (object $object): array {
                     // Needs to here because otherwise, phpstan gets confused
@@ -2079,18 +2095,18 @@ class MethodArgumentDiscloserTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionMethod
+     * @dataProvider providerTestConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionMethod
      */
-    public function testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionMethod(
+    public function testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionMethod( // phpcs:ignore
         string $message,
         string $glue,
-        \ReflectionMethod $reflectionMethod
+        ReflectionMethod $reflectionMethod
     ): void {
         try {
             new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException), $message);
+            $this->assertSame(RuntimeException::class, $currentException::class, $message);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2114,7 +2130,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException, $message);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException), $message);
+            $this->assertSame(RuntimeException::class, $currentException::class, $message);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2147,7 +2163,7 @@ class MethodArgumentDiscloserTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string, 2: object}>
      */
-    public function dataProvider_testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionMethod(): array
+    public function providerTestConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionMethod(): array // phpcs:ignore
     {
         return [
             [
@@ -2156,9 +2172,9 @@ class MethodArgumentDiscloserTest extends TestCase
                 (static function () {
                     $object = new class
                     {
-                        public function foo(int $a): \ReflectionMethod
+                        public function foo(int $a): ReflectionMethod
                         {
-                            return new \ReflectionMethod($this, __FUNCTION__);
+                            return new ReflectionMethod($this, __FUNCTION__);
                         }
                     };
 
@@ -2171,9 +2187,9 @@ class MethodArgumentDiscloserTest extends TestCase
                 (static function () {
                     $object = new class
                     {
-                        public static function foo(int $a): \ReflectionMethod
+                        public static function foo(int $a): ReflectionMethod
                         {
-                            return new \ReflectionMethod(self::class, __FUNCTION__);
+                            return new ReflectionMethod(self::class, __FUNCTION__);
                         }
                     };
 
@@ -2183,13 +2199,13 @@ class MethodArgumentDiscloserTest extends TestCase
         ];
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenNoDefaultValueIsAvailableOnReflectionParameter(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenNoDefaultValueIsAvailableOnReflectionParameter(): void // phpcs:ignore
     {
         $object = new class
         {
             public function foo(int $a): MethodArgumentDiscloser
             {
-                $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
 
                 return new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, [42]);
             }
@@ -2201,9 +2217,9 @@ class MethodArgumentDiscloserTest extends TestCase
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter(
                 $methodArgumentDiscloser->getReflectionFunction()->getParameters()[0]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -2225,7 +2241,7 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToANonExistingClassConstant(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToANonExistingClassConstant(): void // phpcs:ignore
     {
         $object = new class
         {
@@ -2236,16 +2252,16 @@ class MethodArgumentDiscloserTest extends TestCase
             }
         };
 
-        $reflectionObject = new \ReflectionObject($object);
+        $reflectionObject = new ReflectionObject($object);
         $reflectionMethod = $reflectionObject->getMethod('foo');
         $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
         $reflectionParameter = $reflectionMethod->getParameters()[0];
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2264,7 +2280,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -2285,7 +2301,7 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToAConstantOnANonExistingParentClass(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToAConstantOnANonExistingParentClass(): void // phpcs:ignore
     {
         $object = new class
         {
@@ -2296,16 +2312,16 @@ class MethodArgumentDiscloserTest extends TestCase
             }
         };
 
-        $reflectionObject = new \ReflectionObject($object);
+        $reflectionObject = new ReflectionObject($object);
         $reflectionMethod = $reflectionObject->getMethod('foo');
         $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
         $reflectionParameter = $reflectionMethod->getParameters()[0];
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2324,7 +2340,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -2345,9 +2361,9 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToAConstantWhichDoesNotExistOnTheParentClass(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToAConstantWhichDoesNotExistOnTheParentClass(): void // phpcs:ignore
     {
-        $object = new class extends \DateTimeImmutable
+        $object = new class extends DateTimeImmutable
         {
             public function foo(
                 /** @phpstan-ignore-next-line */
@@ -2356,16 +2372,16 @@ class MethodArgumentDiscloserTest extends TestCase
             }
         };
 
-        $reflectionObject = new \ReflectionObject($object);
+        $reflectionObject = new ReflectionObject($object);
         $reflectionMethod = $reflectionObject->getMethod('foo');
         $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
         $reflectionParameter = $reflectionMethod->getParameters()[0];
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2384,7 +2400,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -2412,27 +2428,24 @@ class MethodArgumentDiscloserTest extends TestCase
         {
             public function foo(
                 /** @phpstan-ignore-next-line */
-                int $a = \IDontExista8728361d30f42bfb9a954abfac4ccab::BAR
+                int $a = IDontExista8728361d30f42bfb9a954abfac4ccab::BAR
             ): void {
             }
         };
 
-        $reflectionMethod = new \ReflectionMethod($object, 'foo');
+        $reflectionMethod = new ReflectionMethod($object, 'foo');
 
         $discloser = new class (Caster::getInstance(), $reflectionMethod) extends AbstractFunctionArgumentDiscloser
         {
-            public function __construct(Caster $caster, \ReflectionMethod $reflectionMethod)
-            {
-                $this->caster = $caster;
-                $this->reflectionFunction = $reflectionMethod;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
             public static function getDefaultValueConstantRegex(): string
             {
                 return '/^(?<scope>(IDontExista8728361d30f42bfb9a954abfac4ccab))::(?<scopedName>(\w+))$/';
+            }
+
+            public function __construct(Caster $caster, ReflectionMethod $reflectionMethod)
+            {
+                $this->caster = $caster;
+                $this->reflectionFunction = $reflectionMethod;
             }
         };
 
@@ -2440,9 +2453,9 @@ class MethodArgumentDiscloserTest extends TestCase
 
         try {
             $discloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2461,7 +2474,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -2483,18 +2496,18 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist(): void // phpcs:ignore
     {
         $object = new ClassExistsButClassConstantBarDoesNotExistB();
-        $reflectionMethod = new \ReflectionMethod($object, 'foo');
+        $reflectionMethod = new ReflectionMethod($object, 'foo');
         $discloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
         $reflectionParameter = $reflectionMethod->getParameters()[0];
 
         try {
             $discloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2513,7 +2526,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2537,26 +2550,25 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenInterfaceExistsButInterfaceConstantDoesNotExist(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenInterfaceExistsButInterfaceConstantDoesNotExist(): void // phpcs:ignore
     {
         $object = new class
         {
             public function foo(
                 // @phpstan-ignore-next-line
                 int $a = Serializable::I_DO_NO_EXIST_EE699DE7F1C04605B41B74653B6867CB
-            ): void
-            {
+            ): void {
             }
         };
-        $reflectionMethod = new \ReflectionMethod($object, 'foo');
+        $reflectionMethod = new ReflectionMethod($object, 'foo');
         $discloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
         $reflectionParameter = $reflectionMethod->getParameters()[0];
 
         try {
             $discloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2575,7 +2587,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -2597,28 +2609,27 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToANonExistingFullyQuantifiedClassConstant(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassConstantNamePointsToANonExistingFullyQuantifiedClassConstant(): void // phpcs:ignore
     {
         $object = new class
         {
             public function foo(
                 /** @phpstan-ignore-next-line */
-                int $a = \IDontExist2da718442a7547e2b970aed55a2324b0::BAR
-            ): void
-            {
+                int $a = IDontExist2da718442a7547e2b970aed55a2324b0::BAR
+            ): void {
             }
         };
 
-        $reflectionObject = new \ReflectionObject($object);
+        $reflectionObject = new ReflectionObject($object);
         $reflectionMethod = $reflectionObject->getMethod('foo');
         $methodArgumentDiscloser = new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, []);
         $reflectionParameter = $reflectionMethod->getParameters()[0];
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2637,7 +2648,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -2660,13 +2671,13 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpressionForNonStaticMethod(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpressionForNonStaticMethod(): void // phpcs:ignore
     {
         $object = new class
         {
             public function foo(int $a): MethodArgumentDiscloser
             {
-                $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
 
                 return new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, [42]);
             }
@@ -2692,7 +2703,7 @@ class MethodArgumentDiscloserTest extends TestCase
             ->willReturn(true);
 
         $reflectionParameter
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getDefaultValueConstantName')
             ->with()
             ->willReturn('  I don\'t work as a constant name  ');
@@ -2717,9 +2728,9 @@ class MethodArgumentDiscloserTest extends TestCase
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2738,7 +2749,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -2760,13 +2771,13 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpressionForStaticMethod(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpressionForStaticMethod(): void // phpcs:ignore
     {
         $object = new class
         {
             public static function foo(int $a): MethodArgumentDiscloser
             {
-                $reflectionMethod = new \ReflectionMethod(self::class, __FUNCTION__);
+                $reflectionMethod = new ReflectionMethod(self::class, __FUNCTION__);
 
                 return new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, [42]);
             }
@@ -2792,7 +2803,7 @@ class MethodArgumentDiscloserTest extends TestCase
             ->willReturn(true);
 
         $reflectionParameter
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getDefaultValueConstantName')
             ->with()
             ->willReturn('  I don\'t work as a constant name  ');
@@ -2817,9 +2828,9 @@ class MethodArgumentDiscloserTest extends TestCase
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2838,7 +2849,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -2860,13 +2871,13 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedGlobalConstantDoesNotExist(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedGlobalConstantDoesNotExist(): void // phpcs:ignore
     {
         $object = new class
         {
             public function foo(int $a): MethodArgumentDiscloser
             {
-                $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
 
                 return new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, [42]);
             }
@@ -2917,9 +2928,9 @@ class MethodArgumentDiscloserTest extends TestCase
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -2938,7 +2949,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -2959,13 +2970,13 @@ class MethodArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist(): void // phpcs:ignore
     {
         $object = new class
         {
             public function foo(int $a): MethodArgumentDiscloser
             {
-                $reflectionMethod = new \ReflectionMethod($this, __FUNCTION__);
+                $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
 
                 return new MethodArgumentDiscloser(Caster::getInstance(), $reflectionMethod, [42]);
             }
@@ -3016,9 +3027,9 @@ class MethodArgumentDiscloserTest extends TestCase
 
         try {
             $methodArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -3037,7 +3048,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -3071,22 +3082,19 @@ class MethodArgumentDiscloserTest extends TestCase
             }
         };
 
-        $reflectionMethod = new \ReflectionMethod($object, 'foo');
+        $reflectionMethod = new ReflectionMethod($object, 'foo');
 
         $discloser = new class (Caster::getInstance(), $reflectionMethod) extends AbstractFunctionArgumentDiscloser
         {
-            public function __construct(Caster $caster, \ReflectionMethod $reflectionMethod)
-            {
-                $this->caster = $caster;
-                $this->reflectionFunction = $reflectionMethod;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
             public static function getDefaultValueConstantRegex(): string
             {
                 return '/^.+$/';
+            }
+
+            public function __construct(Caster $caster, ReflectionMethod $reflectionMethod)
+            {
+                $this->caster = $caster;
+                $this->reflectionFunction = $reflectionMethod;
             }
         };
 
@@ -3094,9 +3102,9 @@ class MethodArgumentDiscloserTest extends TestCase
 
         try {
             $discloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -3115,7 +3123,7 @@ class MethodArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',

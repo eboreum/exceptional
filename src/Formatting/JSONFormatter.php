@@ -10,6 +10,33 @@ use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
+use ReflectionMethod;
+use ReflectionObject;
+use stdClass;
+use Throwable;
+
+use function assert;
+use function date;
+use function func_get_args;
+use function is_int;
+use function is_string;
+use function json_encode;
+use function json_last_error;
+use function json_last_error_msg;
+use function sprintf;
+use function strval;
+
+use const JSON_ERROR_CTRL_CHAR;
+use const JSON_ERROR_DEPTH;
+use const JSON_ERROR_INF_OR_NAN;
+use const JSON_ERROR_INVALID_PROPERTY_NAME;
+use const JSON_ERROR_NONE;
+use const JSON_ERROR_RECURSION;
+use const JSON_ERROR_STATE_MISMATCH;
+use const JSON_ERROR_SYNTAX;
+use const JSON_ERROR_UNSUPPORTED_TYPE;
+use const JSON_ERROR_UTF16;
+use const JSON_ERROR_UTF8;
 
 /**
  * {@inheritDoc}
@@ -18,20 +45,6 @@ use Eboreum\Exceptional\ExceptionMessageGenerator;
  */
 class JSONFormatter extends AbstractFormatter
 {
-    #[DebugIdentifier]
-    protected CharacterEncoding $characterEncoding;
-
-    protected int $flags = 0;
-
-    /** @var int<1, max> */
-    protected int $depth = 512;
-
-    public function __construct(CasterInterface $caster, CharacterEncoding $characterEncoding)
-    {
-        $this->caster = $caster;
-        $this->characterEncoding = $characterEncoding;
-    }
-
     /**
      * @param int $jsonErrorCode Corresponds to value returned by 'json_last_error()'.
      */
@@ -60,6 +73,20 @@ class JSONFormatter extends AbstractFormatter
         ];
     }
 
+    #[DebugIdentifier]
+    protected CharacterEncoding $characterEncoding;
+
+    protected int $flags = 0;
+
+    /** @var int<1, max> */
+    protected int $depth = 512;
+
+    public function __construct(CasterInterface $caster, CharacterEncoding $characterEncoding)
+    {
+        $this->caster = $caster;
+        $this->characterEncoding = $characterEncoding;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -67,14 +94,14 @@ class JSONFormatter extends AbstractFormatter
      *
      * @throws RuntimeException
      */
-    public function format(\Throwable $throwable): string
+    public function format(Throwable $throwable): string
     {
         try {
             $stdClass = $this->formatInner($throwable, $this);
 
             try {
                 $json = json_encode($stdClass, $this->getFlags(), $this->getDepth());
-            } catch (\Throwable $t) {
+            } catch (Throwable $t) {
                 throw new RuntimeException(sprintf(
                     'Failure when calling: json_encode(%s, %s, %s)',
                     $this->getCaster()->castTyped($stdClass),
@@ -96,10 +123,10 @@ class JSONFormatter extends AbstractFormatter
                     ));
                 }
             }
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                 $this,
-                new \ReflectionMethod($this, __FUNCTION__),
+                new ReflectionMethod($this, __FUNCTION__),
                 func_get_args(),
             ), 0, $t);
         }
@@ -111,6 +138,7 @@ class JSONFormatter extends AbstractFormatter
 
     /**
      * @param int<1, max> $depth Must be > 0. Otherwise, a RuntimeException is thrown.
+     *
      * @throws RuntimeException
      */
     public function withDepth(int $depth): static
@@ -125,10 +153,10 @@ class JSONFormatter extends AbstractFormatter
 
             $clone = clone $this;
             $clone->depth = $depth;
-        } catch (\Throwable $t) { // @phpstan-ignore-line
+        } catch (Throwable $t) { // @phpstan-ignore-line
             throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                 $this,
-                new \ReflectionMethod($this, __FUNCTION__),
+                new ReflectionMethod($this, __FUNCTION__),
                 func_get_args(),
             ), 0, $t);
         }
@@ -162,10 +190,10 @@ class JSONFormatter extends AbstractFormatter
         return $this->flags;
     }
 
-    protected function formatInner(\Throwable $throwable, JSONFormatter $topLevelJSONFormatter): \stdClass
+    protected function formatInner(Throwable $throwable, JSONFormatter $topLevelJSONFormatter): stdClass
     {
         $array = [
-            'class' => Caster::makeNormalizedClassName(new \ReflectionObject($throwable)),
+            'class' => Caster::makeNormalizedClassName(new ReflectionObject($throwable)),
         ];
 
         if ($this->isProvidingTimestamp()) {

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional;
 
-use Eboreum\Exceptional\Caster;
-use Nette\Neon\Neon;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+
+use function escapeshellarg;
+use function exec;
+use function sprintf;
 
 class PHPStanAtDesiredLevelTest extends TestCase
 {
@@ -22,7 +25,7 @@ class PHPStanAtDesiredLevelTest extends TestCase
         exec($command, $output, $resultCode);
 
         if (0 !== $resultCode) {
-            throw new \RuntimeException('phpstan is not at the level specidied in phpstan.neon');
+            throw new RuntimeException('phpstan is not at the level specidied in phpstan.neon');
         }
 
         $this->assertTrue(true);

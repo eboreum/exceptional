@@ -10,12 +10,32 @@ use Eboreum\Caster\Contract\DebugIdentifierAttributeInterface;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
+use ReflectionMethod;
+use Throwable;
 
-/**
- * {@inheritDoc}
- */
+use function assert;
+use function func_get_args;
+use function is_array;
+use function is_int;
+use function max;
+use function preg_split;
+use function sprintf;
+use function str_replace;
+
 abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierAttributeInterface
 {
+    /**
+     * @return array<int, string>
+     */
+    public static function splitTextLinesToArray(string $text): array
+    {
+        $split = preg_split('/(\r\n|\r|\n)/', $text);
+
+        assert(is_array($split));
+
+        return $split;
+    }
+
     #[DebugIdentifier]
     protected CasterInterface $caster;
 
@@ -37,22 +57,7 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
     #[DebugIdentifier]
     protected bool $isProvidingTimestamp = false;
 
-    /**
-     * @return array<int, string>
-     */
-    public static function splitTextLinesToArray(string $text): array
-    {
-        $split = preg_split('/(\r\n|\r|\n)/', $text);
-
-        assert(is_array($split));
-
-        return $split;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function countPreviousThrowables(\Throwable $throwable): int
+    public function countPreviousThrowables(Throwable $throwable): int
     {
         $count = 0;
         $currentThrowable = $throwable->getPrevious();
@@ -85,9 +90,6 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function withCaster(CasterInterface $caster): static
     {
         $clone = clone $this;
@@ -96,9 +98,6 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
         return $clone;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function withIsProvidingTimestamp(bool $isProvidingTimestamp): static
     {
         $clone = clone $this;
@@ -107,9 +106,6 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
         return $clone;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function withMaximumPreviousDepth(?int $maximumPreviousDepth): static
     {
         $clone = clone $this;
@@ -137,10 +133,10 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
 
             $clone = clone $this;
             $clone->previousThrowableLevel = $previousThrowableLevel;
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                 $this,
-                new \ReflectionMethod(self::class, __FUNCTION__),
+                new ReflectionMethod(self::class, __FUNCTION__),
                 func_get_args(),
             ), 0, $t);
         }
@@ -148,33 +144,21 @@ abstract class AbstractFormatter implements FormatterInterface, DebugIdentifierA
         return $clone;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getCaster(): CasterInterface
     {
         return $this->caster;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getMaximumPreviousDepth(): ?int
     {
         return $this->maximumPreviousDepth;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getPreviousThrowableLevel(): int
     {
         return $this->previousThrowableLevel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isProvidingTimestamp(): bool
     {
         return $this->isProvidingTimestamp;

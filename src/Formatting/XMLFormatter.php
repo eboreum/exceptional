@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Eboreum\Exceptional\Formatting;
 
+use DOMDocument;
 use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Caster\Contract\CasterInterface;
@@ -11,6 +12,24 @@ use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
 use Eboreum\Exceptional\Factory\PHPCore\SimpleXMLElement\SimpleXMLElementFactory;
+use Error;
+use ReflectionMethod;
+use ReflectionObject;
+use SimpleXMLElement;
+use Throwable;
+
+use function assert;
+use function date;
+use function func_get_args;
+use function htmlspecialchars;
+use function is_int;
+use function is_string;
+use function sprintf;
+use function strval;
+use function trim;
+
+use const ENT_COMPAT;
+use const ENT_HTML401;
 
 /**
  * {@inheritDoc}
@@ -37,11 +56,11 @@ class XMLFormatter extends AbstractXMLFormatter
      *
      * @throws RuntimeException
      */
-    public function format(\Throwable $throwable): string
+    public function format(Throwable $throwable): string
     {
         try {
             $rootElementName = (
-                $throwable instanceof \Error
+                $throwable instanceof Error
                 ? 'error'
                 : 'exception'
             );
@@ -53,7 +72,7 @@ class XMLFormatter extends AbstractXMLFormatter
             }
 
             if (null === $simpleXMLElement) {
-                $simpleXMLElement = new \SimpleXMLElement(sprintf(
+                $simpleXMLElement = new SimpleXMLElement(sprintf(
                     '<?xml version="1.0" encoding="%s" ?><%s></%s>',
                     htmlspecialchars(
                         (string)$this->getCharacterEncoding(),
@@ -68,7 +87,7 @@ class XMLFormatter extends AbstractXMLFormatter
             $simpleXMLElement = $this->formatInner($throwable, $simpleXMLElement);
 
             if ($this->isPrettyPrinting()) {
-                $domDocument = new \DOMDocument('1.0', (string)$this->getCharacterEncoding());
+                $domDocument = new DOMDocument('1.0', (string)$this->getCharacterEncoding());
                 $domDocument->preserveWhiteSpace = false;
                 $domDocument->formatOutput = true;
                 $xml = $simpleXMLElement->asXML();
@@ -82,10 +101,10 @@ class XMLFormatter extends AbstractXMLFormatter
             }
 
             assert(is_string($xml));
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                 $this,
-                new \ReflectionMethod($this, __FUNCTION__),
+                new ReflectionMethod($this, __FUNCTION__),
                 func_get_args(),
             ), 0, $t);
         }
@@ -114,9 +133,9 @@ class XMLFormatter extends AbstractXMLFormatter
         return $this->simpleXMLElementFactory;
     }
 
-    protected function formatInner(\Throwable $throwable, \SimpleXMLElement $simpleXMLElement): \SimpleXMLElement
+    protected function formatInner(Throwable $throwable, SimpleXMLElement $simpleXMLElement): SimpleXMLElement
     {
-        $simpleXMLElement->addChild('class', Caster::makeNormalizedClassName(new \ReflectionObject($throwable)));
+        $simpleXMLElement->addChild('class', Caster::makeNormalizedClassName(new ReflectionObject($throwable)));
 
         if ($this->isProvidingTimestamp()) {
             $simpleXMLElement->addChild('time', date('c'));

@@ -9,6 +9,8 @@ use Eboreum\Exceptional\Factory\PHPCore\SimpleXMLElement\SimpleXMLElementFactory
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+use function implode;
+
 class SimpleXMLElementFactoryTest extends TestCase
 {
     public function testBasics(): void

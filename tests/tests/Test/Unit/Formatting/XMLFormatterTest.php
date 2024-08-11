@@ -11,8 +11,21 @@ use Eboreum\Exceptional\Factory\PHPCore\SimpleXMLElement\SimpleXMLElementFactory
 use Eboreum\Exceptional\Formatting\AbstractFormatter;
 use Eboreum\Exceptional\Formatting\AbstractXMLFormatter;
 use Eboreum\Exceptional\Formatting\XMLFormatter;
+use Error;
+use Exception;
+use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use SimpleXMLElement;
+use Throwable;
+
+use function assert;
+use function basename;
+use function implode;
+use function is_object;
+use function preg_match;
+use function preg_quote;
+use function sprintf;
 
 class XMLFormatterTest extends TestCase
 {
@@ -29,17 +42,17 @@ class XMLFormatterTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testFormatWorks
+     * @dataProvider providerTestFormatWorks
      */
-    public function testFormatWorks(string $expectedXMLRegex, XMLFormatter $xmlFormatter, \Throwable $throwable): void
+    public function testFormatWorks(string $expectedXMLRegex, XMLFormatter $xmlFormatter, Throwable $throwable): void
     {
         $this->assertMatchesRegularExpression($expectedXMLRegex, $xmlFormatter->format($throwable));
     }
 
     /**
-     * @return array<int, array{0: string, 1: XMLFormatter, 2: \Throwable}>
+     * @return array<int, array{0: string, 1: XMLFormatter, 2: Throwable}>
      */
-    public function dataProvider_testFormatWorks(): array
+    public function providerTestFormatWorks(): array
     {
         return [
             [
@@ -90,7 +103,7 @@ class XMLFormatterTest extends TestCase
 
                     return new XMLFormatter($caster, $characterEncoding);
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -140,7 +153,7 @@ class XMLFormatterTest extends TestCase
 
                     return new XMLFormatter($caster, $characterEncoding);
                 })(),
-                new \Error('foo'),
+                new Error('foo'),
             ],
             [
                 sprintf(
@@ -191,13 +204,13 @@ class XMLFormatterTest extends TestCase
                     $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
                     /**
-                     * @var XMLFormatter
+                     * @var XMLFormatter $xmlFormatter
                      */
                     $xmlFormatter = $xmlFormatter->withIsPrettyPrinting(true);
 
                     return $xmlFormatter;
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -249,13 +262,13 @@ class XMLFormatterTest extends TestCase
                     $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
                     /**
-                     * @var XMLFormatter
+                     * @var XMLFormatter $xmlFormatter
                      */
                     $xmlFormatter = $xmlFormatter->withIsProvidingTimestamp(true);
 
                     return $xmlFormatter;
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -340,10 +353,10 @@ class XMLFormatterTest extends TestCase
                     return new XMLFormatter($caster, $characterEncoding);
                 })(),
                 (static function () {
-                    $baz = new \LogicException('baz', 2);
+                    $baz = new LogicException('baz', 2);
                     $bar = new \RuntimeException('bar', 1, $baz);
 
-                    return new \Exception('foo', 0, $bar);
+                    return new Exception('foo', 0, $bar);
                 })(),
             ],
             [
@@ -412,18 +425,18 @@ class XMLFormatterTest extends TestCase
                     $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
                     /**
-                     * @var XMLFormatter
+                     * @var XMLFormatter $xmlFormatter
                      */
                     $xmlFormatter = $xmlFormatter->withMaximumPreviousDepth(1);
 
                     return $xmlFormatter;
                 })(),
                 (static function () {
-                    $bim = new \LogicException('bim', 3);
-                    $baz = new \LogicException('baz', 2, $bim);
+                    $bim = new LogicException('bim', 3);
+                    $baz = new LogicException('baz', 2, $bim);
                     $bar = new \RuntimeException('bar', 1, $baz);
 
-                    return new \Exception('foo', 0, $bar);
+                    return new Exception('foo', 0, $bar);
                 })(),
             ],
             [
@@ -474,7 +487,7 @@ class XMLFormatterTest extends TestCase
 
                     return new XMLFormatter($caster, $characterEncoding);
                 })(),
-                new \Exception('æøå'),
+                new Exception('æøå'),
             ],
             [
                 sprintf(
@@ -527,18 +540,18 @@ class XMLFormatterTest extends TestCase
                         ->expects($this->exactly(1))
                         ->method('createSimpleXMLElement')
                         ->with('exception')
-                        ->willReturn(new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><lorem></lorem>'));
+                        ->willReturn(new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><lorem></lorem>'));
 
                     $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
                     /**
-                     * @var XMLFormatter
+                     * @var XMLFormatter $xmlFormatter
                      */
                     $xmlFormatter = $xmlFormatter->withSimpleXMLElementFactory($simpleXMLElementFactory);
 
                     return $xmlFormatter;
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
         ];
     }
@@ -557,10 +570,10 @@ class XMLFormatterTest extends TestCase
         $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 
         try {
-            $xmlFormatter->format(new \Exception('foo'));
-        } catch (\Exception $e) {
+            $xmlFormatter->format(new Exception('foo'));
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -593,7 +606,7 @@ class XMLFormatterTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(\Exception::class, get_class($currentException));
+            $this->assertSame(Exception::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',

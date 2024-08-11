@@ -4,10 +4,29 @@ declare(strict_types=1);
 
 namespace Eboreum\Exceptional\Formatting;
 
+use DOMDocument;
+use DOMElement;
+use DOMNodeList;
 use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
+use ReflectionObject;
+use Throwable;
+
+use function array_walk;
+use function assert;
+use function date;
+use function htmlspecialchars;
+use function implode;
+use function is_int;
+use function is_object;
+use function is_string;
+use function sprintf;
+use function strval;
+
+use const ENT_COMPAT;
+use const ENT_HTML5;
 
 /**
  * {@inheritDoc}
@@ -30,9 +49,9 @@ class HTML5TableFormatter extends AbstractXMLFormatter
      *
      * Returns a HTML5 string with values having been properly escaped.
      */
-    public function format(\Throwable $throwable): string
+    public function format(Throwable $throwable): string
     {
-        $normalizedClassName = Caster::makeNormalizedClassName(new \ReflectionObject($throwable));
+        $normalizedClassName = Caster::makeNormalizedClassName(new ReflectionObject($throwable));
 
         $headingHTML = sprintf(
             '<h1>%s</h1>',
@@ -116,19 +135,19 @@ class HTML5TableFormatter extends AbstractXMLFormatter
         $html .= '</tbody></table>';
 
         if ($this->isPrettyPrinting()) {
-            $domDocument = new \DOMDocument('1.0', (string)$this->getCharacterEncoding());
+            $domDocument = new DOMDocument('1.0', (string)$this->getCharacterEncoding());
             $domDocument->preserveWhiteSpace = false;
             $domDocument->formatOutput = true;
             $domDocument->loadHTML($html);
 
             $tables = $domDocument->getElementsByTagName('table');
 
-            assert($tables instanceof \DOMNodeList);
+            assert($tables instanceof DOMNodeList);
 
             $table = $tables->item(0);
 
             assert(is_object($table));
-            assert($table instanceof \DOMElement);
+            assert($table instanceof DOMElement);
             assert($table->nodeName === 'table');
 
             $html = $domDocument->saveXML($table);

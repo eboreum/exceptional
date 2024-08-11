@@ -7,8 +7,17 @@ namespace Test\Unit\Eboreum\Exceptional\Formatting;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\Formatting\AbstractFormatter;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Throwable;
+
+use function assert;
+use function basename;
+use function implode;
+use function is_object;
+use function preg_quote;
+use function sprintf;
 
 class AbstractFormatterTest extends TestCase
 {
@@ -23,7 +32,7 @@ class AbstractFormatterTest extends TestCase
                 $this->caster = $caster;
             }
 
-            public function format(\Throwable $throwable): string
+            public function format(Throwable $throwable): string
             {
                 return '';
             }
@@ -36,7 +45,7 @@ class AbstractFormatterTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testMaskStringWorks
+     * @dataProvider providerTestMaskStringWorks
      */
     public function testMaskStringWorks(string $expected, string $maskedString): void
     {
@@ -55,7 +64,7 @@ class AbstractFormatterTest extends TestCase
                 $this->caster = $caster;
             }
 
-            public function format(\Throwable $throwable): string
+            public function format(Throwable $throwable): string
             {
                 return '';
             }
@@ -67,7 +76,7 @@ class AbstractFormatterTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string}>
      */
-    public function dataProvider_testMaskStringWorks(): array
+    public function providerTestMaskStringWorks(): array
     {
         return [
             [
@@ -82,7 +91,7 @@ class AbstractFormatterTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testNormalizeFilePathWorks
+     * @dataProvider providerTestNormalizeFilePathWorks
      */
     public function testNormalizeFilePathWorks(string $expected, string $filePath): void
     {
@@ -95,7 +104,7 @@ class AbstractFormatterTest extends TestCase
                 $this->caster = $caster;
             }
 
-            public function format(\Throwable $throwable): string
+            public function format(Throwable $throwable): string
             {
                 return '';
             }
@@ -107,7 +116,7 @@ class AbstractFormatterTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string}>
      */
-    public function dataProvider_testNormalizeFilePathWorks(): array
+    public function providerTestNormalizeFilePathWorks(): array
     {
         return [
             [
@@ -142,7 +151,7 @@ class AbstractFormatterTest extends TestCase
                 $this->caster = $caster;
             }
 
-            public function format(\Throwable $throwable): string
+            public function format(Throwable $throwable): string
             {
                 return '';
             }
@@ -170,7 +179,7 @@ class AbstractFormatterTest extends TestCase
                 $this->caster = $caster;
             }
 
-            public function format(\Throwable $throwable): string
+            public function format(Throwable $throwable): string
             {
                 return '';
             }
@@ -198,7 +207,7 @@ class AbstractFormatterTest extends TestCase
                 $this->caster = $caster;
             }
 
-            public function format(\Throwable $throwable): string
+            public function format(Throwable $throwable): string
             {
                 return '';
             }
@@ -226,7 +235,7 @@ class AbstractFormatterTest extends TestCase
                 $this->caster = $caster;
             }
 
-            public function format(\Throwable $throwable): string
+            public function format(Throwable $throwable): string
             {
                 return '';
             }
@@ -254,7 +263,7 @@ class AbstractFormatterTest extends TestCase
                 $this->caster = $caster;
             }
 
-            public function format(\Throwable $throwable): string
+            public function format(Throwable $throwable): string
             {
                 return '';
             }
@@ -262,9 +271,9 @@ class AbstractFormatterTest extends TestCase
 
         try {
             $object->withPreviousThrowableLevel(-1);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -295,7 +304,7 @@ class AbstractFormatterTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -318,8 +327,9 @@ class AbstractFormatterTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testSplitTextLinesToArrayWorks
      * @param array<int, string> $expected
+     *
+     * @dataProvider providerTestSplitTextLinesToArrayWorks
      */
     public function testSplitTextLinesToArrayWorks(array $expected, string $str): void
     {
@@ -329,7 +339,7 @@ class AbstractFormatterTest extends TestCase
     /**
      * @return array<int, array{0: array<int, string>, 1: string}>
      */
-    public function dataProvider_testSplitTextLinesToArrayWorks(): array
+    public function providerTestSplitTextLinesToArrayWorks(): array
     {
         return [
             [

@@ -5,7 +5,24 @@ declare(strict_types=1);
 namespace Test\Unit\Eboreum\Exceptional;
 
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use SebastianBergmann\Diff\Differ;
+
+use function array_map;
+use function assert;
+use function dirname;
+use function file_get_contents;
+use function implode;
+use function is_array;
+use function is_file;
+use function is_string;
+use function ob_end_clean;
+use function ob_get_contents;
+use function ob_start;
+use function preg_match;
+use function preg_quote;
+use function preg_split;
+use function sprintf;
 
 class ReadmeMdTest extends TestCase
 {
@@ -28,7 +45,7 @@ class ReadmeMdTest extends TestCase
     /**
      * Did we leave remember to update the contents of README.md?
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function testCompareContents(): void
     {
@@ -42,7 +59,7 @@ class ReadmeMdTest extends TestCase
         if ($this->contents !== $producedContents) {
             $differ = new Differ();
 
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 implode('', [
                     'README.md is not up–to-date. Please run: php script/make-readme.php.',
                     ' The diff is:\n\n%s',

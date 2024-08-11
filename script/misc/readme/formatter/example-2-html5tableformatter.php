@@ -1,6 +1,7 @@
 <?php
+// phpcs:ignoreFile
 
-declare(strict_types = 1); // README.md.remove
+declare(strict_types=1); // README.md.remove
 
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Exceptional\Caster;
@@ -13,7 +14,7 @@ $characterEncoding = new CharacterEncoding('UTF-8');
 $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
 $html5TableFormatter = $html5TableFormatter->withIsPrettyPrinting(true);
 
-$throwable = new \Exception('foo');
+$throwable = new Exception('foo');
 
 $result = $html5TableFormatter->format($throwable);
 

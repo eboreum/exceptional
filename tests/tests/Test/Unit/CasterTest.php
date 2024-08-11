@@ -7,6 +7,8 @@ namespace Test\Unit\Eboreum\Exceptional;
 use Eboreum\Exceptional\Caster;
 use PHPUnit\Framework\TestCase;
 
+use function count;
+
 class CasterTest extends TestCase
 {
     public function testCreateInstanceWorks(): void
@@ -15,8 +17,8 @@ class CasterTest extends TestCase
         $casterB = Caster::create();
 
         $this->assertNotSame($casterA, $casterB);
-        $this->assertSame(Caster::class, get_class($casterA));
-        $this->assertSame(Caster::class, get_class($casterB));
+        $this->assertSame(Caster::class, $casterA::class);
+        $this->assertSame(Caster::class, $casterB::class);
         $this->assertGreaterThan(0, count($casterA->getCustomObjectFormatterCollection()));
         $this->assertGreaterThan(0, count($casterB->getCustomObjectFormatterCollection()));
     }
@@ -27,7 +29,7 @@ class CasterTest extends TestCase
         $casterB = Caster::getInstance();
 
         $this->assertSame($casterA, $casterB);
-        $this->assertSame(Caster::class, get_class($casterA));
+        $this->assertSame(Caster::class, $casterA::class);
         $this->assertGreaterThan(0, count($casterA->getCustomObjectFormatterCollection()));
     }
 }

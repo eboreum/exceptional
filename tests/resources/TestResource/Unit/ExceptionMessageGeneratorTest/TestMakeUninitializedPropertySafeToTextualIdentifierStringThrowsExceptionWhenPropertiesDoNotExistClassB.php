@@ -1,0 +1,9 @@
+<?php
+
+declare(strict_types=1);
+
+namespace TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest;
+
+class TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassB extends TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassBParent // phpcs:ignore
+{
+}

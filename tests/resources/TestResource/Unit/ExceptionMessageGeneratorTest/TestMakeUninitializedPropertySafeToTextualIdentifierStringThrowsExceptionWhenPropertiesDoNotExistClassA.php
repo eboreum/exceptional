@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest;
 
-class testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassA
+class TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassA
 {
     protected int $a;
 }

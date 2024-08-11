@@ -9,8 +9,25 @@ use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\Formatting\AbstractFormatter;
 use Eboreum\Exceptional\Formatting\JSONFormatter;
+use Exception;
+use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use stdClass;
+use Throwable;
+
+use function assert;
+use function basename;
+use function implode;
+use function is_object;
+use function preg_match;
+use function preg_quote;
+use function sprintf;
+
+use const JSON_ERROR_DEPTH;
+use const JSON_ERROR_NONE;
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_UNICODE;
 
 class JSONFormatterTest extends TestCase
 {
@@ -27,20 +44,20 @@ class JSONFormatterTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testFormatWorks
+     * @dataProvider providerTestFormatWorks
      */
     public function testFormatWorks(
         string $expectedJSONRegex,
         JSONFormatter $jsonFormatter,
-        \Throwable $throwable
+        Throwable $throwable
     ): void {
         $this->assertMatchesRegularExpression($expectedJSONRegex, $jsonFormatter->format($throwable));
     }
 
     /**
-     * @return array<array{0: string, 1: JSONFormatter, 2: \Exception}>
+     * @return array<array{0: string, 1: JSONFormatter, 2: Exception}>
      */
-    public function dataProvider_testFormatWorks(): array
+    public function providerTestFormatWorks(): array
     {
         return [
             [
@@ -84,7 +101,7 @@ class JSONFormatterTest extends TestCase
 
                     return new JSONFormatter($caster, $characterEncoding);
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -129,13 +146,13 @@ class JSONFormatterTest extends TestCase
                     $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
 
                     /**
-                     * @var JSONFormatter
+                     * @var JSONFormatter $jsonFormatter
                      */
                     $jsonFormatter = $jsonFormatter->withIsProvidingTimestamp(true);
 
                     return $jsonFormatter;
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -213,10 +230,10 @@ class JSONFormatterTest extends TestCase
                     return new JSONFormatter($caster, $characterEncoding);
                 })(),
                 (static function () {
-                    $baz = new \LogicException('baz', 2);
+                    $baz = new LogicException('baz', 2);
                     $bar = new \RuntimeException('bar', 1, $baz);
 
-                    return new \Exception('foo', 0, $bar);
+                    return new Exception('foo', 0, $bar);
                 })(),
             ],
             [
@@ -278,18 +295,18 @@ class JSONFormatterTest extends TestCase
                     $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
 
                     /**
-                     * @var JSONFormatter
+                     * @var JSONFormatter $jsonFormatter
                      */
                     $jsonFormatter = $jsonFormatter->withMaximumPreviousDepth(1);
 
                     return $jsonFormatter;
                 })(),
                 (static function () {
-                    $bim = new \LogicException('bim', 3);
-                    $baz = new \LogicException('baz', 2, $bim);
+                    $bim = new LogicException('bim', 3);
+                    $baz = new LogicException('baz', 2, $bim);
                     $bar = new \RuntimeException('bar', 1, $baz);
 
-                    return new \Exception('foo', 0, $bar);
+                    return new Exception('foo', 0, $bar);
                 })(),
             ],
             [
@@ -334,13 +351,13 @@ class JSONFormatterTest extends TestCase
                     $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
 
                     /**
-                     * @var JSONFormatter
+                     * @var JSONFormatter $jsonFormatter
                      */
                     $jsonFormatter = $jsonFormatter->withFlags(JSON_UNESCAPED_UNICODE);
 
                     return $jsonFormatter;
                 })(),
-                new \Exception('æøå'),
+                new Exception('æøå'),
             ],
         ];
     }
@@ -348,7 +365,7 @@ class JSONFormatterTest extends TestCase
     public function testFormatThrowsExceptionWhenMaximumChildDepthIsReached(): void
     {
         $bar = new \RuntimeException('bar', 1);
-        $foo = new \Exception('foo', 0, $bar);
+        $foo = new Exception('foo', 0, $bar);
 
         $caster = $this->mockCasterInterface();
         $characterEncoding = $this->mockCharacterEncoding();
@@ -374,9 +391,9 @@ class JSONFormatterTest extends TestCase
 
         try {
             $jsonFormatter->format($foo);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -407,7 +424,7 @@ class JSONFormatterTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -431,7 +448,7 @@ class JSONFormatterTest extends TestCase
     public function testFormatThrowsExceptionWhenJSONDepthIsReached(): void
     {
         $bar = new \RuntimeException('bar', 1);
-        $foo = new \Exception('foo', 0, $bar);
+        $foo = new Exception('foo', 0, $bar);
 
         $caster = $this->mockCasterInterface();
         $characterEncoding = $this->mockCharacterEncoding();
@@ -457,9 +474,9 @@ class JSONFormatterTest extends TestCase
 
         try {
             $jsonFormatter->format($foo);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -490,7 +507,7 @@ class JSONFormatterTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -511,7 +528,7 @@ class JSONFormatterTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testFormatThrowsExceptionWhenjson_encodeFailsByReturningFalse(): void
+    public function testFormatThrowsExceptionWhenJsonEncodeFailsByReturningFalse(): void
     {
         $caster = $this->mockCasterInterface();
         $characterEncoding = $this->mockCharacterEncoding();
@@ -521,7 +538,7 @@ class JSONFormatterTest extends TestCase
             /**
              * @override
              */
-            protected function formatInner(\Throwable $throwable, JSONFormatter $topLevelJSONFormatter): \stdClass
+            protected function formatInner(Throwable $throwable, JSONFormatter $topLevelJSONFormatter): stdClass
             {
                 return (object)[
                     'too' => [
@@ -535,13 +552,13 @@ class JSONFormatterTest extends TestCase
 
         $jsonFormatter = $jsonFormatter->withDepth(2);
 
-        $exception = new \Exception();
+        $exception = new Exception();
 
         try {
             $jsonFormatter->format($exception);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -574,7 +591,7 @@ class JSONFormatterTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -595,7 +612,7 @@ class JSONFormatterTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testFormatThrowsExceptionWhenjson_encodeFailsByThrowingException(): void
+    public function testFormatThrowsExceptionWhenJsonEncodeFailsByThrowingException(): void
     {
         $caster = $this->mockCasterInterface();
         $characterEncoding = $this->mockCharacterEncoding();
@@ -605,7 +622,7 @@ class JSONFormatterTest extends TestCase
             /**
              * @override
              */
-            protected function formatInner(\Throwable $throwable, JSONFormatter $topLevelJSONFormatter): \stdClass
+            protected function formatInner(Throwable $throwable, JSONFormatter $topLevelJSONFormatter): stdClass
             {
                 return (object)[
                     'too' => [
@@ -620,13 +637,13 @@ class JSONFormatterTest extends TestCase
         $jsonFormatter = $jsonFormatter->withFlags(JSON_THROW_ON_ERROR);
         $jsonFormatter = $jsonFormatter->withDepth(2);
 
-        $exception = new \Exception();
+        $exception = new Exception();
 
         try {
             $jsonFormatter->format($exception);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -659,7 +676,7 @@ class JSONFormatterTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -674,7 +691,7 @@ class JSONFormatterTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame('JsonException', get_class($currentException));
+            $this->assertSame('JsonException', $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -722,9 +739,9 @@ class JSONFormatterTest extends TestCase
 
         try {
             $jsonFormatter->withDepth(0); // @phpstan-ignore-line
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -755,7 +772,7 @@ class JSONFormatterTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',

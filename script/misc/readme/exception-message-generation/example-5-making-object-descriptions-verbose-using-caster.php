@@ -1,12 +1,13 @@
 <?php
+// phpcs:ignoreFile
 
-declare(strict_types = 1); // README.md.remove
+declare(strict_types=1); // README.md.remove
 
 use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\Collection\Formatter\ObjectFormatterCollection;
 use Eboreum\Caster\Contract\CasterInterface;
-use Eboreum\Caster\Contract\TextuallyIdentifiableInterface;
 use Eboreum\Caster\Contract\DebugIdentifierAttributeInterface;
+use Eboreum\Caster\Contract\TextuallyIdentifiableInterface;
 use Eboreum\Caster\Formatter\Object_\DebugIdentifierAttributeInterfaceFormatter;
 use Eboreum\Caster\Formatter\Object_\TextuallyIdentifiableInterfaceFormatter;
 use Eboreum\Exceptional\Caster;
@@ -21,7 +22,7 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
     protected int $id = 42;
 
     /**
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function bar(int $a): string
     {
@@ -33,16 +34,13 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
 
         $exceptionMessageGenerator = ExceptionMessageGenerator::getInstance()->withCaster($caster);
 
-        throw new \RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
+        throw new RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(self::class, __FUNCTION__),
+            new ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function toTextualIdentifier(CasterInterface $caster): string
     {
         return sprintf(
@@ -50,14 +48,14 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
             $this->id,
         );
     }
-};
+}
 
 
-$foo = new Foo1990801ff8324df1b73e323d7fca71a8;
+$foo = new Foo1990801ff8324df1b73e323d7fca71a8();
 
 try {
     $foo->bar(7);
-} catch (\RuntimeException $e) {
+} catch (RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
 
@@ -71,7 +69,7 @@ class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAttributeInt
     protected int $id = 42;
 
     /**
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function bar(int $a): string
     {
@@ -82,19 +80,19 @@ class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAttributeInt
 
         $exceptionMessageGenerator = ExceptionMessageGenerator::getInstance()->withCaster($caster);
 
-        throw new \RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
+        throw new RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(self::class, __FUNCTION__),
+            new ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
-};
+}
 
 
-$foo = new Foo31eda25b57e8456fb2b3e8158232b5e5;
+$foo = new Foo31eda25b57e8456fb2b3e8158232b5e5();
 
 try {
     $foo->bar(7);
-} catch (\RuntimeException $e) {
+} catch (RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }

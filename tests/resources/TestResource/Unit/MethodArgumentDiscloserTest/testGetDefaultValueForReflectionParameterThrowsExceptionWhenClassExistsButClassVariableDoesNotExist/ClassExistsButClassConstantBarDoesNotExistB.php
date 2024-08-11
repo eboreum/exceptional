@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist;
+namespace TestResource\Unit\Eboreum\Exceptional\MethodArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenClassExistsButClassVariableDoesNotExist; // phpcs:ignore
 
 class ClassExistsButClassConstantBarDoesNotExistB
 {
-    public function foo( // @phpstan-ignore-line
+    // @phpstan-ignore-next-line
+    public function foo( // phpcs:ignore
         $a = ClassExistsButClassConstantBarDoesNotExistA::BAR // @phpstan-ignore-line
-    ): void
-    {
+    ): void {
     }
 }

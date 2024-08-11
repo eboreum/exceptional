@@ -4,24 +4,39 @@ declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional;
 
+use Closure;
+use DateTimeImmutable;
 use Eboreum\Caster\Common\DataType\Integer\PositiveInteger;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeFailureInMethodMessageWorks_ANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClasses_A;
-use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeFailureInMethodMessageWorks_ANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClasses_C;
-use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeFailureInMethodMessageWorks_ClassANoNamedArguments;
-use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeFailureInMethodMessageWorks_ClassB4NamedArguments;
-use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeFailureInMethodMessageWorksWithNonStaticMethods_AClassWithADefaultConstant;
-use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassA;
-use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassB;
-use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassBParent;
-use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassA;
-use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassB;
-use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassBParent;
+use ReflectionFunction;
+use ReflectionFunctionAbstract;
+use ReflectionMethod;
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesA; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesC; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeFailureInMethodMessageWorksClassANoNamedArguments; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeFailureInMethodMessageWorksClassB4NamedArguments; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeFailureInMethodMessageWorksWithNonStaticMethodsAClassWithADefaultConstant; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassA; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassB; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassBParent; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassA; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassB; // phpcs:ignore
+use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassBParent; // phpcs:ignore
+use Throwable;
+
+use function assert;
+use function basename;
+use function func_get_args;
+use function implode;
+use function is_object;
+use function preg_quote;
+use function sprintf;
 
 class ExceptionMessageGeneratorTest extends TestCase
 {
@@ -34,13 +49,14 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testCastFunctionArgumentsToStringWorks
      * @param array<int, mixed> $arguments
+     *
+     * @dataProvider dataProviderTestCastFunctionArgumentsToStringWorks
      */
     public function testCastFunctionArgumentsToStringWorks(
         string $message,
         string $expected,
-        \Closure $reflectionFunctionFactory,
+        Closure $reflectionFunctionFactory,
         array $arguments,
         ExceptionMessageGenerator $exceptionMessageGenerator
     ): void {
@@ -57,16 +73,16 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @return array<int, array{string, string, \Closure, array<int, mixed>, ExceptionMessageGenerator}>
+     * @return array<int, array{string, string, Closure, array<int, mixed>, ExceptionMessageGenerator}>
      */
-    public function dataProvider_testCastFunctionArgumentsToStringWorks(): array
+    public function dataProviderTestCastFunctionArgumentsToStringWorks(): array
     {
         return [
             [
                 '`stripos` called with 2 arguments.',
                 '$haystack = , $needle = , $offset = ',
-                static function (): \ReflectionFunction {
-                    return new \ReflectionFunction('stripos');
+                static function (): ReflectionFunction {
+                    return new ReflectionFunction('stripos');
                 },
                 [
                     'Lorem ipsum',
@@ -77,8 +93,8 @@ class ExceptionMessageGeneratorTest extends TestCase
             [
                 '`stripos` called with 3 arguments.',
                 '$haystack = foo, $needle = bar, $offset = 42',
-                static function (): \ReflectionFunction {
-                    return new \ReflectionFunction('stripos');
+                static function (): ReflectionFunction {
+                    return new ReflectionFunction('stripos');
                 },
                 [
                     'Lorem ipsum',
@@ -116,9 +132,12 @@ class ExceptionMessageGeneratorTest extends TestCase
                 })(),
             ],
             [
-                'Method in anonymous class. 2 named arguments. 1st optional, 2nd required and variadic. Called with 4 arguments; no splat operator.',
+                implode(' ', [
+                    'Method in anonymous class. 2 named arguments. 1st optional, 2nd required and variadic. Called',
+                    'with 4 arguments; no splat operator.',
+                ]),
                 '$a = 42, $b = ...foo,bar,baz',
-                static function (): \ReflectionMethod {
+                static function (): ReflectionMethod {
                     $object = new class
                     {
                         public function foo(int $a = 42, string ...$b): void
@@ -126,7 +145,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         }
                     };
 
-                    return new \ReflectionMethod($object, 'foo');
+                    return new ReflectionMethod($object, 'foo');
                 },
                 [
                     42,
@@ -158,7 +177,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                                     'foo',
                                     'bar',
                                     'baz',
-                                ]
+                                ],
                             ],
                         )
                         ->willReturnOnConsecutiveCalls(
@@ -170,9 +189,12 @@ class ExceptionMessageGeneratorTest extends TestCase
                 })(),
             ],
             [
-                'Method in anonymous class. 2 named arguments. 1st optional. 2nd required and variadic. Called with 1 argument; with splat operator.',
+                implode(' ', [
+                    'Method in anonymous class. 2 named arguments. 1st optional. 2nd required and variadic. Called',
+                    'with 1 argument; with splat operator.',
+                ]),
                 '$a = 42, $b = ...[]',
-                static function (): \ReflectionMethod {
+                static function (): ReflectionMethod {
                     $object = new class
                     {
                         public function foo(int $a = 42, string ...$b): void
@@ -180,7 +202,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         }
                     };
 
-                    return new \ReflectionMethod($object, 'foo');
+                    return new ReflectionMethod($object, 'foo');
                 },
                 [42],
                 (function (): ExceptionMessageGenerator {
@@ -213,9 +235,12 @@ class ExceptionMessageGeneratorTest extends TestCase
                 })(),
             ],
             [
-                'Method in anonymous class. 2 named arguments. 1st optional. 2nd is required and variadic. Called with 1 argument.',
+                implode('', [
+                    'Method in anonymous class. 2 named arguments. 1st optional. 2nd is required and variadic. Called',
+                    'with 1 argument.',
+                ]),
                 '$a = 42, $b = ...[]',
-                static function (): \ReflectionMethod {
+                static function (): ReflectionMethod {
                     $object = new class
                     {
                         public function foo(int $a = 42, string ...$b): void
@@ -223,7 +248,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         }
                     };
 
-                    return new \ReflectionMethod($object, 'foo');
+                    return new ReflectionMethod($object, 'foo');
                 },
                 [42],
                 (function (): ExceptionMessageGenerator {
@@ -261,7 +286,7 @@ class ExceptionMessageGeneratorTest extends TestCase
     public function testCastFunctionArgumentsToStringThrowsExceptionWhenArgumentReflectionFunctionIsNotAccepted(): void
     {
         $exceptionMessageGenerator = new ExceptionMessageGenerator($this->mockCasterInterface());
-        $reflectionFunction = new class extends \ReflectionFunctionAbstract
+        $reflectionFunction = new class extends ReflectionFunctionAbstract
         {
             public function __toString(): string
             {
@@ -271,22 +296,23 @@ class ExceptionMessageGeneratorTest extends TestCase
 
         try {
             $exceptionMessageGenerator->castFunctionArgumentsToString($reflectionFunction, []);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
                         '/',
                         '^',
                         'Failure in \\\\%s-\>castFunctionArgumentsToString\(',
-                            '\$reflectionFunction = \(object\) \\\\ReflectionFunctionAbstract@anonymous\/in\/.+\/%s:\d+',
+                            '\$reflectionFunction = \(object\) \\\\%s@anonymous\/in\/.+\/%s:\d+',
                             ', \$functionArgumentValues = ',
                         '\)',
                         '$',
                         '/',
                     ]),
                     preg_quote(ExceptionMessageGenerator::class, '/'),
+                    preg_quote(ReflectionFunctionAbstract::class, '/'),
                     preg_quote(basename(__FILE__), '/'),
                 ),
                 $currentException->getMessage(),
@@ -295,7 +321,7 @@ class ExceptionMessageGeneratorTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -323,7 +349,7 @@ class ExceptionMessageGeneratorTest extends TestCase
     public function testCastFunctionArgumentsToStringHandleExceptionGracefullyForReflectionMethod(): void
     {
         $caster = $this->mockCasterInterface();
-        $exception = new \Exception('foo');
+        $exception = new Exception('foo');
 
         $caster
             ->expects($this->exactly(1))
@@ -338,13 +364,13 @@ class ExceptionMessageGeneratorTest extends TestCase
                 return '';
             }
         };
-        $reflectionMethod = new \ReflectionMethod($object, 'foo');
+        $reflectionMethod = new ReflectionMethod($object, 'foo');
 
         try {
             $exceptionMessageGenerator->castFunctionArgumentsToString($reflectionMethod, []);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -375,12 +401,12 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testMakeFailureInFunctionMessageWorksForAnonymousFunctions
+     * @dataProvider dataProviderTestMakeFailureInFunctionMessageWorksForAnonymousFunctions
      */
     public function testMakeFailureInFunctionMessageWorksForAnonymousFunctions(
         string $message,
         string $expectedRegex,
-        \Closure $callback
+        Closure $callback
     ): void {
         [
             $reflectionFunction,
@@ -400,7 +426,7 @@ class ExceptionMessageGeneratorTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string, 2: object}>
      */
-    public function dataProvider_testMakeFailureInFunctionMessageWorksForAnonymousFunctions(): array
+    public function dataProviderTestMakeFailureInFunctionMessageWorksForAnonymousFunctions(): array
     {
         return [
             [
@@ -419,7 +445,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 static function () {
                     $anonymousFunction = static function () use (&$anonymousFunction): array {
                         return [
-                            new \ReflectionFunction($anonymousFunction),
+                            new ReflectionFunction($anonymousFunction),
                             func_get_args(),
                         ];
                     };
@@ -447,7 +473,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 static function () {
                     $anonymousFunction = static function () use (&$anonymousFunction): array {
                         return [
-                            new \ReflectionFunction($anonymousFunction),
+                            new ReflectionFunction($anonymousFunction),
                             func_get_args(),
                         ];
                     };
@@ -473,7 +499,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 static function () {
                     $anonymousFunction = static function (int $a = 42) use (&$anonymousFunction): array {
                         return [
-                            new \ReflectionFunction($anonymousFunction),
+                            new ReflectionFunction($anonymousFunction),
                             func_get_args(),
                         ];
                     };
@@ -499,7 +525,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 static function () {
                     $anonymousFunction = static function (int $a = 42) use (&$anonymousFunction): array {
                         return [
-                            new \ReflectionFunction($anonymousFunction),
+                            new ReflectionFunction($anonymousFunction),
                             func_get_args(),
                         ];
                     };
@@ -531,7 +557,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         float $c = 3.14
                     ) use (&$anonymousFunction): array {
                         return [
-                            new \ReflectionFunction($anonymousFunction),
+                            new ReflectionFunction($anonymousFunction),
                             func_get_args(),
                         ];
                     };
@@ -563,7 +589,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         float $c = 3.14
                     ) use (&$anonymousFunction): array {
                         return [
-                            new \ReflectionFunction($anonymousFunction),
+                            new ReflectionFunction($anonymousFunction),
                             func_get_args(),
                         ];
                     };
@@ -576,7 +602,7 @@ class ExceptionMessageGeneratorTest extends TestCase
 
     public function testMakeFailureInFunctionMessageWorksForANamedFunction(): void
     {
-        $reflectionFunction = new \ReflectionFunction('strpos');
+        $reflectionFunction = new ReflectionFunction('strpos');
 
         $this->assertMatchesRegularExpression(
             sprintf(
@@ -610,7 +636,7 @@ class ExceptionMessageGeneratorTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $exception = new \Exception();
+        $exception = new Exception();
 
         $reflectionFunction
             ->expects($this->exactly(1))
@@ -623,9 +649,9 @@ class ExceptionMessageGeneratorTest extends TestCase
                 $reflectionFunction,
                 [],
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -653,12 +679,12 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testMakeFailureInMethodMessageWorksWithNonStaticMethods
+     * @dataProvider dataProviderTestMakeFailureInMethodMessageWorksWithNonStaticMethods
      */
     public function testMakeFailureInMethodMessageWorksWithNonStaticMethods(
         string $message,
         string $expectedRegex,
-        \Closure $objectFactory
+        Closure $objectFactory
     ): void {
         $this->assertMatchesRegularExpression(
             $expectedRegex,
@@ -670,7 +696,7 @@ class ExceptionMessageGeneratorTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string, 2: object}>
      */
-    public function dataProvider_testMakeFailureInMethodMessageWorksWithNonStaticMethods(): array
+    public function dataProviderTestMakeFailureInMethodMessageWorksWithNonStaticMethods(): array
     {
         return [
             [
@@ -695,7 +721,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(self::class, __FUNCTION__),
+                                new ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -708,7 +734,10 @@ class ExceptionMessageGeneratorTest extends TestCase
                 },
             ],
             [
-                'An anonymous class, no named arguments exist, no arguments are passed, static::class used instead of $this',
+                implode(' ', [
+                    'An anonymous class, no named arguments exist, no arguments are passed, static::class used instead',
+                    'of $this',
+                ]),
                 sprintf(
                     implode('', [
                         '/',
@@ -729,7 +758,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 static::class,
-                                new \ReflectionMethod(self::class, __FUNCTION__),
+                                new ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -766,7 +795,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(self::class, __FUNCTION__),
+                                new ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -802,7 +831,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(self::class, __FUNCTION__),
+                                new ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -841,7 +870,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(self::class, __FUNCTION__),
+                                new ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -882,7 +911,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(self::class, __FUNCTION__),
+                                new ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -918,7 +947,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(self::class, __FUNCTION__),
+                                new ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -942,10 +971,13 @@ class ExceptionMessageGeneratorTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(testMakeFailureInMethodMessageWorksWithNonStaticMethods_AClassWithADefaultConstant::class, '/'),
+                    preg_quote(
+                        TestMakeFailureInMethodMessageWorksWithNonStaticMethodsAClassWithADefaultConstant::class,
+                        '/',
+                    ),
                 ),
                 static function () {
-                    return new testMakeFailureInMethodMessageWorksWithNonStaticMethods_AClassWithADefaultConstant();
+                    return new TestMakeFailureInMethodMessageWorksWithNonStaticMethodsAClassWithADefaultConstant();
                 },
             ],
             [
@@ -973,7 +1005,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         {
                             $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
                                 $this,
-                                new \ReflectionMethod(self::class, __FUNCTION__),
+                                new ReflectionMethod(self::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -996,11 +1028,11 @@ class ExceptionMessageGeneratorTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(testMakeFailureInMethodMessageWorks_ClassANoNamedArguments::class, '/'),
-                    preg_quote(testMakeFailureInMethodMessageWorks_ClassANoNamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
                 ),
                 static function () {
-                    return new testMakeFailureInMethodMessageWorks_ClassANoNamedArguments();
+                    return new TestMakeFailureInMethodMessageWorksClassANoNamedArguments();
                 },
             ],
             [
@@ -1015,11 +1047,11 @@ class ExceptionMessageGeneratorTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(testMakeFailureInMethodMessageWorks_ClassANoNamedArguments::class, '/'),
-                    preg_quote(testMakeFailureInMethodMessageWorks_ClassANoNamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
                 ),
                 static function () {
-                    return new testMakeFailureInMethodMessageWorks_ClassANoNamedArguments('extra');
+                    return new TestMakeFailureInMethodMessageWorksClassANoNamedArguments('extra');
                 },
             ],
             [
@@ -1038,11 +1070,11 @@ class ExceptionMessageGeneratorTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(testMakeFailureInMethodMessageWorks_ClassB4NamedArguments::class, '/'),
-                    preg_quote(testMakeFailureInMethodMessageWorks_ClassB4NamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
                 ),
                 static function () {
-                    return new testMakeFailureInMethodMessageWorks_ClassB4NamedArguments('bar', 42, true, 3.14);
+                    return new TestMakeFailureInMethodMessageWorksClassB4NamedArguments('bar', 42, true, 3.14);
                 },
             ],
             [
@@ -1062,11 +1094,11 @@ class ExceptionMessageGeneratorTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(testMakeFailureInMethodMessageWorks_ClassB4NamedArguments::class, '/'),
-                    preg_quote(testMakeFailureInMethodMessageWorks_ClassB4NamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
                 ),
                 static function () {
-                    return new testMakeFailureInMethodMessageWorks_ClassB4NamedArguments(
+                    return new TestMakeFailureInMethodMessageWorksClassB4NamedArguments(
                         'bar',
                         42,
                         true,
@@ -1089,11 +1121,11 @@ class ExceptionMessageGeneratorTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(testMakeFailureInMethodMessageWorks_ANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClasses_C::class, '/'),
-                    preg_quote(testMakeFailureInMethodMessageWorks_ANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClasses_A::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesC::class, '/'), // phpcs:ignore
+                    preg_quote(TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesA::class, '/'), // phpcs:ignore
                 ),
                 static function () {
-                    return new testMakeFailureInMethodMessageWorks_ANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClasses_A(
+                    return new TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesA( // phpcs:ignore
                         42,
                     );
                 },
@@ -1102,12 +1134,12 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testMakeFailureInMethodMessageWorksWithStaticMethods
+     * @dataProvider dataProviderTestMakeFailureInMethodMessageWorksWithStaticMethods
      */
     public function testMakeFailureInMethodMessageWorksWithStaticMethods(
         string $message,
         string $expectedRegex,
-        \Closure $callback
+        Closure $callback
     ): void {
         $this->assertMatchesRegularExpression(
             $expectedRegex,
@@ -1119,7 +1151,7 @@ class ExceptionMessageGeneratorTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string, 2: object}>
      */
-    public function dataProvider_testMakeFailureInMethodMessageWorksWithStaticMethods(): array
+    public function dataProviderTestMakeFailureInMethodMessageWorksWithStaticMethods(): array
     {
         return [
             [
@@ -1141,8 +1173,8 @@ class ExceptionMessageGeneratorTest extends TestCase
                         public static function foo(): string
                         {
                             return ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                get_called_class(),
-                                new \ReflectionMethod(get_called_class(), __FUNCTION__),
+                                static::class,
+                                new ReflectionMethod(static::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -1172,8 +1204,8 @@ class ExceptionMessageGeneratorTest extends TestCase
                         public static function foo(): string
                         {
                             return ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                get_called_class(),
-                                new \ReflectionMethod(get_called_class(), __FUNCTION__),
+                                static::class,
+                                new ReflectionMethod(static::class, __FUNCTION__),
                                 func_get_args(),
                             );
                         }
@@ -1185,7 +1217,7 @@ class ExceptionMessageGeneratorTest extends TestCase
         ];
     }
 
-    public function testMakeFailureInMethodMessageWorksWhenArgumentObjectOrClassNameRefersToTheSameClassAsThatForArgumentReflectionMethod(): void
+    public function testMakeFailureInMethodMessageWorksWhenArgumentObjectOrClassNameRefersToTheSameClassAsThatForArgumentReflectionMethod(): void // phpcs:ignore
     {
         $object = new class
         {
@@ -1195,7 +1227,7 @@ class ExceptionMessageGeneratorTest extends TestCase
             }
         };
 
-        $reflectionMethod = new \ReflectionMethod($object, 'foo');
+        $reflectionMethod = new ReflectionMethod($object, 'foo');
 
         $this->assertMatchesRegularExpression(
             sprintf(
@@ -1213,13 +1245,13 @@ class ExceptionMessageGeneratorTest extends TestCase
         );
     }
 
-    public function testMakeFailureInMethodMessageWorksWhenArgumentObjectOrClassNameIsAChildClassOfTheClassForArgumentReflectionMethod(): void
+    public function testMakeFailureInMethodMessageWorksWhenArgumentObjectOrClassNameIsAChildClassOfTheClassForArgumentReflectionMethod(): void // phpcs:ignore
     {
-        $object = new class extends \DateTimeImmutable
+        $object = new class extends DateTimeImmutable
         {
         };
 
-        $reflectionMethod = new \ReflectionMethod($object, 'format');
+        $reflectionMethod = new ReflectionMethod($object, 'format');
 
         $this->assertMatchesRegularExpression(
             sprintf(
@@ -1240,7 +1272,7 @@ class ExceptionMessageGeneratorTest extends TestCase
         );
     }
 
-    public function testMakeFailureInMethodMessageThrowsExceptionWhenClassOfArgumentObjectOrClassNameIsDifferentThanClassFromArgumentReflectionMethod(): void
+    public function testMakeFailureInMethodMessageThrowsExceptionWhenClassOfArgumentObjectOrClassNameIsDifferentThanClassFromArgumentReflectionMethod(): void // phpcs:ignore
     {
         $objectA = new class
         {
@@ -1254,13 +1286,13 @@ class ExceptionMessageGeneratorTest extends TestCase
             }
         };
 
-        $reflectionMethod = new \ReflectionMethod($objectB, 'foo');
+        $reflectionMethod = new ReflectionMethod($objectB, 'foo');
 
         try {
             ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage($objectA, $reflectionMethod, []);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -1283,7 +1315,7 @@ class ExceptionMessageGeneratorTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -1311,71 +1343,9 @@ class ExceptionMessageGeneratorTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testMakeFailureInMethodMessageThrowsExceptionWhenArgumentObjectOrClassNameIsInvalid(): void
+    public function testMakeFailureInMethodMessageThrowsExceptionWhenArgumentObjectOrClassNameIsAStringAndIsNotASubclassOfTheDeclaringClassOfTheReflectionMethod(): void // phpcs:ignore
     {
-        $objectB = new class {
-            public function foo(): void
-            {
-            }
-        };
-
-        $reflectionMethod = new \ReflectionMethod($objectB, 'foo');
-
-        try {
-            ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                42, // @phpstan-ignore-line
-                $reflectionMethod,
-                [],
-            );
-        } catch (\Throwable $t) {
-            $currentThrowable = $t;
-            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
-            $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in \\\\%s->makeFailureInMethodMessage\(',
-                            '\$objectOrClassName = \(int\) 42',
-                            ', \$reflectionMethod = \(object\) \\\\ReflectionMethod',
-                            ', \$methodArgumentValues = \(array\(0\)\) \[\]',
-                        '\)',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(ExceptionMessageGenerator::class, '/'),
-                ),
-                $currentThrowable->getMessage(),
-            );
-
-            $currentThrowable = $currentThrowable->getPrevious();
-            $this->assertIsObject($currentThrowable);
-            assert(is_object($currentThrowable)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
-            $this->assertMatchesRegularExpression(
-                implode('', [
-                    '/',
-                    '^',
-                    'Expects argument \$objectOrClassName to be an object or a string, but it is not\.',
-                    ' Found: \(int\) 42',
-                    '$',
-                    '/',
-                ]),
-                $currentThrowable->getMessage(),
-            );
-
-            $currentThrowable = $currentThrowable->getPrevious();
-            $this->assertTrue(null === $currentThrowable);
-
-            return;
-        }
-
-        $this->fail('Exception was never thrown.');
-    }
-
-    public function testMakeFailureInMethodMessageThrowsExceptionWhenArgumentObjectOrClassNameIsAStringAndIsNotASubclassOfTheDeclaringClassOfTheReflectionMethod(): void
-    {
-        $reflectionMethod = new \ReflectionMethod('DateTime', 'format');
+        $reflectionMethod = new ReflectionMethod('DateTime', 'format');
 
         try {
             ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
@@ -1383,9 +1353,9 @@ class ExceptionMessageGeneratorTest extends TestCase
                 $reflectionMethod,
                 [],
             );
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $currentThrowable = $t;
-            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertSame(RuntimeException::class, $currentThrowable::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -1407,7 +1377,7 @@ class ExceptionMessageGeneratorTest extends TestCase
             $currentThrowable = $currentThrowable->getPrevious();
             $this->assertIsObject($currentThrowable);
             assert(is_object($currentThrowable)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertSame(RuntimeException::class, $currentThrowable::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -1431,9 +1401,9 @@ class ExceptionMessageGeneratorTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testMakeFailureInMethodMessageThrowsExceptionWhenArgumentObjectOrClassNameIsAStringAndClassDoesNotExist(): void
+    public function testMakeFailureInMethodMessageThrowsExceptionWhenArgumentObjectOrClassNameIsAStringAndClassDoesNotExist(): void // phpcs:ignore
     {
-        $reflectionMethod = new \ReflectionMethod('DateTime', 'format');
+        $reflectionMethod = new ReflectionMethod('DateTime', 'format');
 
         try {
             ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
@@ -1441,9 +1411,9 @@ class ExceptionMessageGeneratorTest extends TestCase
                 $reflectionMethod,
                 [],
             );
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $currentThrowable = $t;
-            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertSame(RuntimeException::class, $currentThrowable::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -1465,7 +1435,7 @@ class ExceptionMessageGeneratorTest extends TestCase
             $currentThrowable = $currentThrowable->getPrevious();
             $this->assertIsObject($currentThrowable);
             assert(is_object($currentThrowable)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertSame(RuntimeException::class, $currentThrowable::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -1488,14 +1458,13 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testMakeUninitializedPropertySafeToTextualIdentifierStringWorks
+     * @dataProvider dataProviderTestMakeUninitializedPropertySafeToTextualIdentifierStringWorks
      */
     public function testMakeUninitializedPropertySafeToTextualIdentifierStringWorks(
         string $message,
         string $expectedRegex,
         object $object
-    ): void
-    {
+    ): void {
         $this->assertMatchesRegularExpression(
             $expectedRegex,
             ExceptionMessageGenerator::getInstance()->makeUninitializedPropertySafeToTextualIdentifierString(
@@ -1512,7 +1481,7 @@ class ExceptionMessageGeneratorTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string, 2: object}>
      */
-    public function dataProvider_testMakeUninitializedPropertySafeToTextualIdentifierStringWorks(): array
+    public function dataProviderTestMakeUninitializedPropertySafeToTextualIdentifierStringWorks(): array
     {
         return [
             [
@@ -1552,10 +1521,13 @@ class ExceptionMessageGeneratorTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassBParent::class, '/'),
+                    preg_quote(
+                        TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassBParent::class,
+                        '/',
+                    ),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                new class extends testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassBParent {
+                new class extends TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassBParent {
                     private int $b = 42; // @phpstan-ignore-line
 
                     private bool $c; // @phpstan-ignore-line
@@ -1574,9 +1546,9 @@ class ExceptionMessageGeneratorTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassA::class, '/'),
+                    preg_quote(TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassA::class, '/'),
                 ),
-                new testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassA(),
+                new TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassA(),
             ],
             [
                 'A named class with parent and one property being on the parent',
@@ -1591,14 +1563,14 @@ class ExceptionMessageGeneratorTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote(testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassB::class, '/'),
+                    preg_quote(TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassB::class, '/'),
                 ),
-                new testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassB(),
+                new TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassB(),
             ],
         ];
     }
 
-    public function testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenAValueInArgumentPropertyNamesToBeShownIsNotAString(): void
+    public function testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenAValueInArgumentPropertyNamesToBeShownIsNotAString(): void // phpcs:ignore
     {
         $object = new class
         {
@@ -1613,9 +1585,9 @@ class ExceptionMessageGeneratorTest extends TestCase
                     42,
                 ],
             );
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $currentThrowable = $t;
-            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertSame(RuntimeException::class, $currentThrowable::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -1640,7 +1612,7 @@ class ExceptionMessageGeneratorTest extends TestCase
             $currentThrowable = $currentThrowable->getPrevious();
             $this->assertIsObject($currentThrowable);
             assert(is_object($currentThrowable)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+            $this->assertSame(RuntimeException::class, $currentThrowable::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -1663,12 +1635,13 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist
      * @param array<int, string> $propertyNamesToBeShown
+     *
+     * @dataProvider providerTestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist
      */
     public function testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist(
         string $message,
-        \Closure $expectedCallback,
+        Closure $expectedCallback,
         object $object,
         array $propertyNamesToBeShown
     ): void {
@@ -1677,7 +1650,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 $object,
                 $propertyNamesToBeShown,
             );
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $expectedCallback($message, $t);
 
             return;
@@ -1687,16 +1660,16 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @return array<int, array{0: string, 1: \Closure, 2: object, 3: array<int, string>}>
+     * @return array<int, array{0: string, 1: Closure, 2: object, 3: array<int, string>}>
      */
-    public function dataProvider_testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist(): array
+    public function providerTestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist(): array // phpcs:ignore
     {
         return [
             [
                 'An anonymous class without parent',
-                function (string $message, \Throwable $t): void {
+                function (string $message, Throwable $t): void {
                     $currentThrowable = $t;
-                    $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
                     $this->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
@@ -1719,7 +1692,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                     $currentThrowable = $currentThrowable->getPrevious();
                     $this->assertIsObject($currentThrowable);
                     assert(is_object($currentThrowable)); // Make phpstan happy
-                    $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
                     $this->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
@@ -1748,9 +1721,9 @@ class ExceptionMessageGeneratorTest extends TestCase
             ],
             [
                 'An anonymous class with a parent and the $a property on the parent',
-                function (string $message, \Throwable $t): void {
+                function (string $message, Throwable $t): void {
                     $currentThrowable = $t;
-                    $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
                     $this->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
@@ -1765,7 +1738,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                             ]),
                             preg_quote(ExceptionMessageGenerator::class, '/'),
                             preg_quote(
-                                testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassBParent::class,
+                                TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassBParent::class, // phpcs:ignore
                                 '/',
                             ),
                             preg_quote(basename(__FILE__), '/'),
@@ -1777,7 +1750,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                     $currentThrowable = $currentThrowable->getPrevious();
                     $this->assertIsObject($currentThrowable);
                     assert(is_object($currentThrowable)); // Make phpstan happy
-                    $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
                     $this->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
@@ -1791,7 +1764,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                                 '/',
                             ]),
                             preg_quote(
-                                testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassBParent::class,
+                                TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassBParent::class, // phpcs:ignore
                                 '/',
                             ),
                             preg_quote(basename(__FILE__), '/'),
@@ -1803,7 +1776,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                     $currentThrowable = $currentThrowable->getPrevious();
                     $this->assertTrue(null === $currentThrowable);
                 },
-                new class extends testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassBParent
+                new class extends TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassBParent // phpcs:ignore
                 {
                     protected int $a = 1;
                 },
@@ -1811,9 +1784,9 @@ class ExceptionMessageGeneratorTest extends TestCase
             ],
             [
                 'An named class without parent',
-                function (string $message, \Throwable $t): void {
+                function (string $message, Throwable $t): void {
                     $currentThrowable = $t;
-                    $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
                     $this->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
@@ -1827,7 +1800,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                                 '/',
                             ]),
                             preg_quote(ExceptionMessageGenerator::class, '/'),
-                            preg_quote(testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassA::class, '/'),
+                            preg_quote(TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassA::class, '/'), // phpcs:ignore
                         ),
                         $currentThrowable->getMessage(),
                         $message,
@@ -1836,7 +1809,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                     $currentThrowable = $currentThrowable->getPrevious();
                     $this->assertIsObject($currentThrowable);
                     assert(is_object($currentThrowable)); // Make phpstan happy
-                    $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
                     $this->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
@@ -1847,7 +1820,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                                 '$',
                                 '/',
                             ]),
-                            preg_quote(testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassA::class, '/'),
+                            preg_quote(TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassA::class, '/'), // phpcs:ignore
                         ),
                         $currentThrowable->getMessage(),
                         $message,
@@ -1856,14 +1829,14 @@ class ExceptionMessageGeneratorTest extends TestCase
                     $currentThrowable = $currentThrowable->getPrevious();
                     $this->assertTrue(null === $currentThrowable);
                 },
-                new testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassA(),
+                new TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassA(), // phpcs:ignore
                 ['b'],
             ],
             [
                 'An named class with a parent and $a property on parent class',
-                function (string $message, \Throwable $t): void {
+                function (string $message, Throwable $t): void {
                     $currentThrowable = $t;
-                    $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
                     $this->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
@@ -1877,7 +1850,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                                 '/',
                             ]),
                             preg_quote(ExceptionMessageGenerator::class, '/'),
-                            preg_quote(testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassB::class, '/'),
+                            preg_quote(TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassB::class, '/'), // phpcs:ignore
                         ),
                         $currentThrowable->getMessage(),
                         $message,
@@ -1886,7 +1859,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                     $currentThrowable = $currentThrowable->getPrevious();
                     $this->assertIsObject($currentThrowable);
                     assert(is_object($currentThrowable)); // Make phpstan happy
-                    $this->assertSame(RuntimeException::class, get_class($currentThrowable));
+                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
                     $this->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
@@ -1898,7 +1871,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                                 '$',
                                 '/',
                             ]),
-                            preg_quote(testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassB::class, '/'),
+                            preg_quote(TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassB::class, '/'), // phpcs:ignore
                         ),
                         $currentThrowable->getMessage(),
                         $message,
@@ -1907,7 +1880,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                     $currentThrowable = $currentThrowable->getPrevious();
                     $this->assertTrue(null === $currentThrowable);
                 },
-                new testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist_ClassB(),
+                new TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassB(), // phpcs:ignore
                 ['b'],
             ],
         ];
@@ -1933,7 +1906,7 @@ class ExceptionMessageGeneratorTest extends TestCase
     {
         $exceptionMessageGeneratorA = ExceptionMessageGenerator::getInstance();
 
-        $this->assertSame(ExceptionMessageGenerator::class, get_class($exceptionMessageGeneratorA));
+        $this->assertSame(ExceptionMessageGenerator::class, $exceptionMessageGeneratorA::class);
 
         $exceptionMessageGeneratorB = ExceptionMessageGenerator::getInstance();
 

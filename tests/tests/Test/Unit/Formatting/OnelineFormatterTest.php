@@ -6,8 +6,18 @@ namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Formatting\OnelineFormatter;
+use Exception;
+use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+use Throwable;
+
+use function basename;
+use function implode;
+use function preg_match;
+use function preg_quote;
+use function sprintf;
 
 class OnelineFormatterTest extends TestCase
 {
@@ -22,20 +32,20 @@ class OnelineFormatterTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testFormatWorks
+     * @dataProvider providerTestFormatWorks
      */
     public function testFormatWorks(
         string $expectedJSONRegex,
         OnelineFormatter $onelineFormatter,
-        \Throwable $throwable
+        Throwable $throwable
     ): void {
         $this->assertMatchesRegularExpression($expectedJSONRegex, $onelineFormatter->format($throwable));
     }
 
     /**
-     * @return array<int, array{0: string, 1: OnelineFormatter, 2: \Exception}>
+     * @return array<int, array{0: string, 1: OnelineFormatter, 2: Exception}>
      */
-    public function dataProvider_testFormatWorks(): array
+    public function providerTestFormatWorks(): array
     {
         return [
             [
@@ -76,7 +86,7 @@ class OnelineFormatterTest extends TestCase
 
                     return new OnelineFormatter($caster);
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -117,13 +127,13 @@ class OnelineFormatterTest extends TestCase
                     $onelineFormatter = new OnelineFormatter($caster);
 
                     /**
-                     * @var OnelineFormatter
+                     * @var OnelineFormatter $onelineFormatter
                      */
                     $onelineFormatter = $onelineFormatter->withIsProvidingTimestamp(true);
 
                     return $onelineFormatter;
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -163,7 +173,7 @@ class OnelineFormatterTest extends TestCase
 
                     return new OnelineFormatter($caster);
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -236,10 +246,10 @@ class OnelineFormatterTest extends TestCase
                     return new OnelineFormatter($caster);
                 })(),
                 (static function () {
-                    $baz = new \LogicException('baz', 2);
-                    $bar = new \RuntimeException('bar', 1, $baz);
+                    $baz = new LogicException('baz', 2);
+                    $bar = new RuntimeException('bar', 1, $baz);
 
-                    return new \Exception('foo', 0, $bar);
+                    return new Exception('foo', 0, $bar);
                 })(),
             ],
             [
@@ -297,25 +307,25 @@ class OnelineFormatterTest extends TestCase
                     $onelineFormatter = new OnelineFormatter($caster);
 
                     /**
-                     * @var OnelineFormatter
+                     * @var OnelineFormatter $onelineFormatter
                      */
                     $onelineFormatter = $onelineFormatter->withMaximumPreviousDepth(1);
 
                     return $onelineFormatter;
                 })(),
                 (static function () {
-                    $bim = new \LogicException('bim', 3);
-                    $baz = new \LogicException('baz', 2, $bim);
-                    $bar = new \RuntimeException('bar', 1, $baz);
+                    $bim = new LogicException('bim', 3);
+                    $baz = new LogicException('baz', 2, $bim);
+                    $bar = new RuntimeException('bar', 1, $baz);
 
-                    return new \Exception('foo', 0, $bar);
+                    return new Exception('foo', 0, $bar);
                 })(),
             ],
         ];
     }
 
     /**
-     * @dataProvider dataProvider_testNormalizeStringWorks
+     * @dataProvider providerTestNormalizeStringWorks
      */
     public function testNormalizeStringWorks(string $expected, string $str): void
     {
@@ -329,7 +339,7 @@ class OnelineFormatterTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string}>
      */
-    public function dataProvider_testNormalizeStringWorks(): array
+    public function providerTestNormalizeStringWorks(): array
     {
         return [
             [

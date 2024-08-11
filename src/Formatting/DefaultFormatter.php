@@ -7,6 +7,18 @@ namespace Eboreum\Exceptional\Formatting;
 use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
+use ReflectionObject;
+use Throwable;
+
+use function array_map;
+use function assert;
+use function date;
+use function implode;
+use function is_array;
+use function is_int;
+use function max;
+use function sprintf;
+use function str_repeat;
 
 /**
  * {@inheritDoc}
@@ -26,12 +38,9 @@ class DefaultFormatter extends AbstractFormatter
         $this->caster = $caster;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function format(\Throwable $throwable): string
+    public function format(Throwable $throwable): string
     {
-        $result = Caster::makeNormalizedClassName(new \ReflectionObject($throwable));
+        $result = Caster::makeNormalizedClassName(new ReflectionObject($throwable));
 
         if (
             $this->isProvidingTimestamp()

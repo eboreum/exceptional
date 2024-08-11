@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest;
 
-abstract class testMakeUninitializedPropertySafeToTextualIdentifierStringWorks_ClassBParent
+abstract class TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassBParent
 {
     private string $a; // @phpstan-ignore-line
 }

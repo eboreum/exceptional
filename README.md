@@ -18,7 +18,7 @@ When a method is called, and somehow that leads to an exception/throwable being 
 
 ```json
 "php": "^8.1",
-"eboreum/caster": "^1.0"
+"eboreum/caster": "^2.0 || ^1.0"
 ```
 
 For more information, see the [`composer.json`](composer.json) file.
@@ -49,25 +49,26 @@ use Eboreum\Exceptional\ExceptionMessageGenerator;
 class Foo377464ece90d4b918254101d596d90a8
 {
     /**
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function bar(int $a, bool $b, ?string $c = null): string
     {
-        throw new \RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+        throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(self::class, __FUNCTION__),
+            new ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
-};
+}
 
-$foo = new Foo377464ece90d4b918254101d596d90a8;
+$foo = new Foo377464ece90d4b918254101d596d90a8();
 
 try {
     $foo->bar(42, true);
-} catch (\RuntimeException $e) {
+} catch (RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
+
 ```
 
 **Output:**
@@ -91,25 +92,26 @@ use Eboreum\Exceptional\ExceptionMessageGenerator;
 class Foo1ff07b0e563e4efbb5a5280f7fe412d8
 {
     /**
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function bar(int $a, bool $b): string
     {
-        throw new \RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+        throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(self::class, __FUNCTION__),
+            new ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
-};
+}
 
-$foo = new Foo1ff07b0e563e4efbb5a5280f7fe412d8;
+$foo = new Foo1ff07b0e563e4efbb5a5280f7fe412d8();
 
 try {
     $foo->bar(42, true, null, 'hello');
-} catch (\RuntimeException $e) {
+} catch (RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
+
 ```
 
 **Output:**
@@ -132,34 +134,34 @@ use Eboreum\Exceptional\ExceptionMessageGenerator;
 
 class Fooaea91664ed3d4467aeb2dfabb2623b53
 {
-    const SOME_PARENT_CONSTANT = 42;
+    public const SOME_PARENT_CONSTANT = 42;
 }
 
 class Fooc261bae9da674d679de77a943ae57779 extends Fooaea91664ed3d4467aeb2dfabb2623b53
 {
-    const SOME_CONSTANT = 3.14;
+    public const SOME_CONSTANT = 3.14;
 
     /**
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function bar(
         float $a = self::SOME_CONSTANT,
         int $b = self::SOME_PARENT_CONSTANT,
         int $c = PHP_INT_MAX
     ): void {
-        throw new \RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+        throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(self::class, __FUNCTION__),
+            new ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
-};
+}
 
-$foo = new Fooc261bae9da674d679de77a943ae57779;
+$foo = new Fooc261bae9da674d679de77a943ae57779();
 
 try {
     $foo->bar();
-} catch (\RuntimeException $e) {
+} catch (RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
 
@@ -186,24 +188,25 @@ use Eboreum\Exceptional\ExceptionMessageGenerator;
 class Foo1a7c13d6ce9f4646a120041e36717d5a
 {
     /**
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public static function bar(int $a): string
     {
-        throw new \RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+        throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
             static::class,
-            new \ReflectionMethod(self::class, __FUNCTION__),
+            new ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
-};
+}
 
 
 try {
     Foo1a7c13d6ce9f4646a120041e36717d5a::bar(42);
-} catch (\RuntimeException $e) {
+} catch (RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
+
 ```
 
 **Output:**
@@ -227,8 +230,8 @@ Wouldn't it be nice if we, in addition to the method argument snitching, could g
 use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\Collection\Formatter\ObjectFormatterCollection;
 use Eboreum\Caster\Contract\CasterInterface;
-use Eboreum\Caster\Contract\TextuallyIdentifiableInterface;
 use Eboreum\Caster\Contract\DebugIdentifierAttributeInterface;
+use Eboreum\Caster\Contract\TextuallyIdentifiableInterface;
 use Eboreum\Caster\Formatter\Object_\DebugIdentifierAttributeInterfaceFormatter;
 use Eboreum\Caster\Formatter\Object_\TextuallyIdentifiableInterfaceFormatter;
 use Eboreum\Exceptional\Caster;
@@ -241,7 +244,7 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
     protected int $id = 42;
 
     /**
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function bar(int $a): string
     {
@@ -253,16 +256,13 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
 
         $exceptionMessageGenerator = ExceptionMessageGenerator::getInstance()->withCaster($caster);
 
-        throw new \RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
+        throw new RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(self::class, __FUNCTION__),
+            new ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function toTextualIdentifier(CasterInterface $caster): string
     {
         return sprintf(
@@ -270,14 +270,14 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
             $this->id,
         );
     }
-};
+}
 
 
-$foo = new Foo1990801ff8324df1b73e323d7fca71a8;
+$foo = new Foo1990801ff8324df1b73e323d7fca71a8();
 
 try {
     $foo->bar(7);
-} catch (\RuntimeException $e) {
+} catch (RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
 
@@ -291,7 +291,7 @@ class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAttributeInt
     protected int $id = 42;
 
     /**
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function bar(int $a): string
     {
@@ -302,20 +302,20 @@ class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAttributeInt
 
         $exceptionMessageGenerator = ExceptionMessageGenerator::getInstance()->withCaster($caster);
 
-        throw new \RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
+        throw new RuntimeException($exceptionMessageGenerator->makeFailureInMethodMessage(
             $this,
-            new \ReflectionMethod(self::class, __FUNCTION__),
+            new ReflectionMethod(self::class, __FUNCTION__),
             func_get_args(),
         ));
     }
-};
+}
 
 
-$foo = new Foo31eda25b57e8456fb2b3e8158232b5e5;
+$foo = new Foo31eda25b57e8456fb2b3e8158232b5e5();
 
 try {
     $foo->bar(7);
-} catch (\RuntimeException $e) {
+} catch (RuntimeException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
 
@@ -350,11 +350,12 @@ use Eboreum\Exceptional\Formatting\DefaultFormatter;
 $caster = Caster::getInstance();
 $defaultFormatter = new DefaultFormatter($caster);
 
-$throwable = new \Exception('foo');
+$throwable = new Exception('foo');
 
 $result = $defaultFormatter->format($throwable);
 
 echo $result;
+
 ```
 
 **Output:**
@@ -364,7 +365,7 @@ echo $result;
 Message:
     foo
 File: /some/file/path/script/misc/readme/formatter/example-1-defaultformatter.php
-Line: 13
+Line: 14
 Code: 0\nStacktrace:\n    #0 /path/to/some/file.php:34: fake_function()\nPrevious: (None)
 ```
 
@@ -386,11 +387,12 @@ $characterEncoding = new CharacterEncoding('UTF-8');
 $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
 $html5TableFormatter = $html5TableFormatter->withIsPrettyPrinting(true);
 
-$throwable = new \Exception('foo');
+$throwable = new Exception('foo');
 
 $result = $html5TableFormatter->format($throwable);
 
 echo $result;
+
 ```
 
 **Output:**
@@ -413,7 +415,7 @@ echo $result;
     </tr>
     <tr>
       <td>Line:</td>
-      <td>16</td>
+      <td>17</td>
     </tr>
     <tr>
       <td>Code:</td>
@@ -451,11 +453,12 @@ $characterEncoding = new CharacterEncoding('UTF-8');
 $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
 $jsonFormatter = $jsonFormatter->withFlags(JSON_PRETTY_PRINT);
 
-$throwable = new \Exception('foo');
+$throwable = new Exception('foo');
 
 $result = $jsonFormatter->format($throwable);
 
 echo $result;
+
 ```
 
 **Output:**
@@ -464,7 +467,7 @@ echo $result;
 {
     "class": "\\Exception",
     "file": "\/some\/file\/path\/script\/misc\/readme\/formatter\/example-3-jsonformatter.php",
-    "line": "16",
+    "line": "17",
     "code": "0",
     "message": "foo",
     "stacktrace": "#0 \/path\/to\/some\/file.php:34: fake_function()"
@@ -481,18 +484,18 @@ Formats the throwable as string with all its contents on a single line. Great fo
 ```php
 <?php
 
-use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Formatting\OnelineFormatter;
 
 $caster = Caster::getInstance();
 $onelineFormatter = new OnelineFormatter($caster);
 
-$throwable = new \Exception('foo');
+$throwable = new Exception('foo');
 
 $result = $onelineFormatter->format($throwable);
 
 echo $result;
+
 ```
 
 **Output:**
@@ -519,11 +522,12 @@ $characterEncoding = new CharacterEncoding('UTF-8');
 $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
 $xmlFormatter = $xmlFormatter->withIsPrettyPrinting(true);
 
-$throwable = new \Exception('foo');
+$throwable = new Exception('foo');
 
 $result = $xmlFormatter->format($throwable);
 
 echo $result;
+
 ```
 
 **Output:**
@@ -533,7 +537,7 @@ echo $result;
 <exception>
   <class>\Exception</class>
   <file>/some/file/path/script/misc/readme/formatter/example-5-xmlformatter.php</file>
-  <line>16</line>
+  <line>17</line>
   <code>0</code>
   <message>foo</message>
   <stacktrace>#0 /path/to/some/file.php:34: fake_function()</stacktrace>
@@ -545,9 +549,11 @@ echo $result;
 
 ```json
 "nette/neon": "^3.2",
-"phpstan/phpstan": "^1.4",
+"phpstan/phpstan": "^1.11",
 "phpunit/phpunit": "^9.5",
-"sebastian/diff": "^4.0"
+"sebastian/diff": "^4.0",
+"slevomat/coding-standard": "8.15.0",
+"squizlabs/php_codesniffer": "3.10.1"
 ```
 
 ## Running tests

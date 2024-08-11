@@ -1,6 +1,7 @@
 <?php
+// phpcs:ignoreFile
 
-declare(strict_types = 1); // README.md.remove
+declare(strict_types=1); // README.md.remove
 
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Exceptional\Caster;
@@ -13,7 +14,7 @@ $characterEncoding = new CharacterEncoding('UTF-8');
 $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
 $jsonFormatter = $jsonFormatter->withFlags(JSON_PRETTY_PRINT);
 
-$throwable = new \Exception('foo');
+$throwable = new Exception('foo');
 
 $result = $jsonFormatter->format($throwable);
 

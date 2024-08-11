@@ -1,6 +1,7 @@
 <?php
+// phpcs:ignoreFile
 
-declare(strict_types = 1); // README.md.remove
+declare(strict_types=1); // README.md.remove
 
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Formatting\DefaultFormatter;
@@ -10,7 +11,7 @@ require_once dirname(__DIR__, 3) . '/bootstrap.php'; // README.md.remove
 $caster = Caster::getInstance();
 $defaultFormatter = new DefaultFormatter($caster);
 
-$throwable = new \Exception('foo');
+$throwable = new Exception('foo');
 
 $result = $defaultFormatter->format($throwable);
 

@@ -7,8 +7,18 @@ namespace Test\Unit\Eboreum\Exceptional\Formatting;
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Formatting\HTML5TableFormatter;
+use Exception;
+use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+use Throwable;
+
+use function basename;
+use function implode;
+use function preg_match;
+use function preg_quote;
+use function sprintf;
 
 class HTML5TableFormatterTest extends TestCase
 {
@@ -24,20 +34,20 @@ class HTML5TableFormatterTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testFormatWorks
+     * @dataProvider providerTestFormatWorks
      */
     public function testFormatWorks(
         string $expectedJSONRegex,
         HTML5TableFormatter $html5TableFormatter,
-        \Throwable $throwable
+        Throwable $throwable
     ): void {
         $this->assertMatchesRegularExpression($expectedJSONRegex, $html5TableFormatter->format($throwable));
     }
 
     /**
-     * @return array<int, array{0: string, 1: HTML5TableFormatter, 2: \Exception}>
+     * @return array<int, array{0: string, 1: HTML5TableFormatter, 2: Exception}>
      */
-    public function dataProvider_testFormatWorks(): array
+    public function providerTestFormatWorks(): array
     {
         return [
             [
@@ -107,7 +117,7 @@ class HTML5TableFormatterTest extends TestCase
 
                     return new HTML5TableFormatter($caster, $characterEncoding);
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -177,13 +187,13 @@ class HTML5TableFormatterTest extends TestCase
                     $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
 
                     /**
-                     * @var HTML5TableFormatter
+                     * @var HTML5TableFormatter $html5TableFormatter
                      */
                     $html5TableFormatter = $html5TableFormatter->withIsPrettyPrinting(true);
 
                     return $html5TableFormatter;
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -252,7 +262,7 @@ class HTML5TableFormatterTest extends TestCase
 
                     return new HTML5TableFormatter($caster, $characterEncoding);
                 })(),
-                new \Exception('<p class="mellon">foo</p>'),
+                new Exception('<p class="mellon">foo</p>'),
             ],
             [
                 sprintf(
@@ -326,13 +336,13 @@ class HTML5TableFormatterTest extends TestCase
                     $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
 
                     /**
-                     * @var HTML5TableFormatter
+                     * @var HTML5TableFormatter $html5TableFormatter
                      */
                     $html5TableFormatter = $html5TableFormatter->withIsProvidingTimestamp(true);
 
                     return $html5TableFormatter;
                 })(),
-                new \Exception('foo'),
+                new Exception('foo'),
             ],
             [
                 sprintf(
@@ -492,10 +502,10 @@ class HTML5TableFormatterTest extends TestCase
                     return new HTML5TableFormatter($caster, $characterEncoding);
                 })(),
                 (static function () {
-                    $baz = new \LogicException('baz', 2);
-                    $bar = new \RuntimeException('bar', 1, $baz);
+                    $baz = new LogicException('baz', 2);
+                    $bar = new RuntimeException('bar', 1, $baz);
 
-                    return new \Exception('foo', 0, $bar);
+                    return new Exception('foo', 0, $bar);
                 })(),
             ],
             [
@@ -611,25 +621,25 @@ class HTML5TableFormatterTest extends TestCase
                     $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
 
                     /**
-                     * @var HTML5TableFormatter
+                     * @var HTML5TableFormatter $html5TableFormatter
                      */
                     $html5TableFormatter = $html5TableFormatter->withMaximumPreviousDepth(1);
 
                     return $html5TableFormatter;
                 })(),
                 (static function () {
-                    $bim = new \LogicException('bim', 3);
-                    $baz = new \LogicException('baz', 2, $bim);
-                    $bar = new \RuntimeException('bar', 1, $baz);
+                    $bim = new LogicException('bim', 3);
+                    $baz = new LogicException('baz', 2, $bim);
+                    $bar = new RuntimeException('bar', 1, $baz);
 
-                    return new \Exception('foo', 0, $bar);
+                    return new Exception('foo', 0, $bar);
                 })(),
             ],
         ];
     }
 
     /**
-     * @dataProvider dataProvider_testHtmlEncodeWorks
+     * @dataProvider providerTestHtmlEncodeWorks
      */
     public function testHtmlEncodeWorks(string $expected, string $text): void
     {
@@ -644,7 +654,7 @@ class HTML5TableFormatterTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string}>
      */
-    public function dataProvider_testHtmlEncodeWorks(): array
+    public function providerTestHtmlEncodeWorks(): array
     {
         return [
             [
@@ -663,7 +673,7 @@ class HTML5TableFormatterTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testHtmlEncodeWithLn2BrWorks
+     * @dataProvider providerTestHtmlEncodeWithLn2BrWorks
      */
     public function testHtmlEncodeWithLn2BrWorks(string $expected, string $text): void
     {
@@ -678,7 +688,7 @@ class HTML5TableFormatterTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string}>
      */
-    public function dataProvider_testHtmlEncodeWithLn2BrWorks(): array
+    public function providerTestHtmlEncodeWithLn2BrWorks(): array
     {
         return [
             [

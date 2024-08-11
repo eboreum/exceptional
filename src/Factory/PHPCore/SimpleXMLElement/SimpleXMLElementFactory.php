@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace Eboreum\Exceptional\Factory\PHPCore\SimpleXMLElement;
 
 use Eboreum\Caster\CharacterEncoding;
+use SimpleXMLElement;
 
-/**
- * {@inheritDoc}
- */
+use function htmlspecialchars;
+use function sprintf;
+
+use const ENT_COMPAT;
+use const ENT_HTML401;
+
 class SimpleXMLElementFactory implements SimpleXMLElementFactoryInterface
 {
     protected CharacterEncoding $characterEncoding;
@@ -20,12 +24,9 @@ class SimpleXMLElementFactory implements SimpleXMLElementFactoryInterface
         $this->characterEncoding = $characterEncoding;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createSimpleXMLElement(string $rootElementName): \SimpleXMLElement
+    public function createSimpleXMLElement(string $rootElementName): SimpleXMLElement
     {
-        return new \SimpleXMLElement(sprintf(
+        return new SimpleXMLElement(sprintf(
             '<?xml version="%s" encoding="%s" ?><%s></%s>',
             htmlspecialchars(
                 (string)$this->getXMLVersion(),
@@ -64,17 +65,11 @@ class SimpleXMLElementFactory implements SimpleXMLElementFactoryInterface
         return $clone;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getCharacterEncoding(): CharacterEncoding
     {
         return $this->characterEncoding;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getXMLVersion(): string
     {
         return $this->xmlVersion;

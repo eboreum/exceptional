@@ -4,47 +4,60 @@ declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional;
 
+use Closure;
+use DateTimeInterface;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\FunctionArgumentDiscloser;
+use Exception;
 use PHPUnit\Framework\TestCase;
+use ReflectionFunction;
+use ReflectionObject;
 
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_0632691243674084af85b52269f0d4d2;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1318db58f81f45c8a955f860c371ae5c;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1863be0363a14f498ae9e8368267db83;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1ca3717f657946cc8ea73a9c10d25a15;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_26670d45e52341889d9dd9d9a2026810;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_273f629332064648a935524ecf024cc9;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_37704407c9d04b5dbf2ce6de4ffbbfbd;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_42fb127ea64c4bc39f6d0ce58df1b9a6;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_445cb914ff6f48a0a039e4eedd0f4ff0;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_4d2650269a324a3788f827ee739afee1;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_534d34186ec84bd5baf195e141284d36;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_55f325c24dc64ff4bb9df02b6f51de6d;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_5d337039b3b747738ecfaf56520a5450;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_85366d3d2de04a969f58caf818a35590;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_8ff1bec0e2734ff5b74e095ae01cd3da;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_912de21dd0fd454f8cdb0b71ac45a9e3;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_a822fb8b9ffd444b923b71185d41ad57;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_b50e80c0945c44e98bd73f356410e342;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_d89b416e02504e34812c70ae20083403;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_d9d24ee6520f4a2792f07471f77eaf45;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_e1508b2e20334bd5a4de82855086873e;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_f169b74a249c47f28543063439f58f4d;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_fb4c857d2c2b422da8d8e8fc6ed7da1c;
-use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_fe25fbdda555464f982783f37b43ade9;
+use function assert;
+use function count;
+use function func_get_args;
+use function implode;
+use function is_object;
+use function preg_quote;
+use function sprintf;
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_0632691243674084af85b52269f0d4d2; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1318db58f81f45c8a955f860c371ae5c; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1863be0363a14f498ae9e8368267db83; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_1ca3717f657946cc8ea73a9c10d25a15; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_26670d45e52341889d9dd9d9a2026810; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_273f629332064648a935524ecf024cc9; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_37704407c9d04b5dbf2ce6de4ffbbfbd; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_42fb127ea64c4bc39f6d0ce58df1b9a6; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_445cb914ff6f48a0a039e4eedd0f4ff0; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_534d34186ec84bd5baf195e141284d36; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_55f325c24dc64ff4bb9df02b6f51de6d; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_5d337039b3b747738ecfaf56520a5450; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_85366d3d2de04a969f58caf818a35590; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_8ff1bec0e2734ff5b74e095ae01cd3da; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_912de21dd0fd454f8cdb0b71ac45a9e3; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_a822fb8b9ffd444b923b71185d41ad57; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_b50e80c0945c44e98bd73f356410e342; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_d89b416e02504e34812c70ae20083403; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_d9d24ee6520f4a2792f07471f77eaf45; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_e1508b2e20334bd5a4de82855086873e; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_f169b74a249c47f28543063439f58f4d; // phpcs:ignore
+use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_fb4c857d2c2b422da8d8e8fc6ed7da1c; // phpcs:ignore
+
+use const EBOREUM_EXCEPTIONAL_TEST_3AE1CC1DE032441D9A2AC7929B9D9892;
+use const TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\EBOREUM_EXCEPTIONAL_TEST_E000D6A7BA5941278D823905F218B71F; // phpcs:ignore
 
 class FunctionArgumentDiscloserTest extends TestCase
 {
     /**
-     * @dataProvider dataProvider_testBasics
+     * @dataProvider providerTestBasics
      */
-    public function testBasics(string $message, \Closure $valueFactoryCallback, \Closure $assertionsCallback ): void
+    public function testBasics(string $message, Closure $valueFactoryCallback, Closure $assertionsCallback): void
     {
         [
             $reflectionFunction,
             $functionArgumentValues,
-            $functionArgumentDiscloser
+            $functionArgumentDiscloser,
         ] = $valueFactoryCallback();
 
         $this->assertSame($reflectionFunction, $functionArgumentDiscloser->getReflectionFunction(), $message);
@@ -59,9 +72,9 @@ class FunctionArgumentDiscloserTest extends TestCase
     }
 
     /**
-     * @return array<array{string, \Closure, \Closure}>
+     * @return array<array{string, Closure, Closure}>
      */
-    public function dataProvider_testBasics(): array
+    public function providerTestBasics(): array
     {
         return [
             [
@@ -331,7 +344,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             [
                 implode('', [
                     '3 named parameters. $c is optional and default value being a global constant',
-                    ', EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892. 2 passed argument values.',
+                    ', EBOREUM_EXCEPTIONAL_TEST_3AE1CC1DE032441D9A2AC7929B9D9892. 2 passed argument values.',
                 ]),
                 static function () {
                     return foo_0632691243674084af85b52269f0d4d2(42, 'bar');
@@ -343,7 +356,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         [
                             42,
                             'bar',
-                            \EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892,
+                            EBOREUM_EXCEPTIONAL_TEST_3AE1CC1DE032441D9A2AC7929B9D9892,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -388,7 +401,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             [
                 implode('', [
                     '3 named parameters. $c is optional and default value being a global constant',
-                    ', EBOREUM_EXCEPTIONAL_TEST_3ae1cc1de032441d9a2ac7929b9d9892. 3 passed argument values.',
+                    ', EBOREUM_EXCEPTIONAL_TEST_3AE1CC1DE032441D9A2AC7929B9D9892. 3 passed argument values.',
                 ]),
                 static function () {
                     return foo_273f629332064648a935524ecf024cc9(42, 'bar', 'baz');
@@ -445,7 +458,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             [
                 implode('', [
                     '3 named parameters. $c is optional and default value being a namespaced constant',
-                    ', EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f. 2 passed argument values.',
+                    ', EBOREUM_EXCEPTIONAL_TEST_E000D6A7BA5941278D823905F218B71F. 2 passed argument values.',
                 ]),
                 static function () {
                     return foo_5d337039b3b747738ecfaf56520a5450(42, 'bar');
@@ -457,7 +470,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         [
                             42,
                             'bar',
-                            \TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f,
+                            EBOREUM_EXCEPTIONAL_TEST_E000D6A7BA5941278D823905F218B71F,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -502,7 +515,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             [
                 implode('', [
                     '3 named parameters. $c is optional and default value being a namespaced constant',
-                    ', EBOREUM_EXCEPTIONAL_TEST_e000d6a7ba5941278d823905f218b71f. 3 passed argument values.',
+                    ', EBOREUM_EXCEPTIONAL_TEST_E000D6A7BA5941278D823905F218B71F. 3 passed argument values.',
                 ]),
                 static function () {
                     return foo_b50e80c0945c44e98bd73f356410e342(42, 'bar', 'baz');
@@ -571,7 +584,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         [
                             42,
                             'bar',
-                            \DateTimeInterface::ATOM,
+                            DateTimeInterface::ATOM,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -629,7 +642,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         [
                             42,
                             'bar',
-                            \DateTimeInterface::ATOM,
+                            DateTimeInterface::ATOM,
                         ],
                         $functionArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
@@ -970,14 +983,14 @@ class FunctionArgumentDiscloserTest extends TestCase
                 'An anonymous function. 3 named parameters. 3 passed argument values.',
                 static function () {
                     /**
-                     * @return array{0: \ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
+                     * @return array{0: ReflectionFunction, 1: array<int, mixed>, 2: FunctionArgumentDiscloser}
                      */
-                    $foo_ec59a7b7151f481fa3c3b97b1d0e84f1 = static function (
+                    $fooec59a7b7151f481fa3c3b97b1d0e84f1 = static function (
                         int $a,
                         string $b,
                         float $c
-                    ) use (&$foo_ec59a7b7151f481fa3c3b97b1d0e84f1) {
-                        $reflectionFunction = new \ReflectionFunction($foo_ec59a7b7151f481fa3c3b97b1d0e84f1);
+                    ) use (&$fooec59a7b7151f481fa3c3b97b1d0e84f1) {
+                        $reflectionFunction = new ReflectionFunction($fooec59a7b7151f481fa3c3b97b1d0e84f1);
                         $functionArgumentValues = func_get_args();
 
                         return [
@@ -991,7 +1004,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         ];
                     };
 
-                    return $foo_ec59a7b7151f481fa3c3b97b1d0e84f1(43, 'bim', 3.14);
+                    return $fooec59a7b7151f481fa3c3b97b1d0e84f1(43, 'bim', 3.14);
                 },
                 function (string $message, FunctionArgumentDiscloser $functionArgumentDiscloser): void {
                     $this->assertSame(2, $functionArgumentDiscloser->getLastNamedParameterIndex(), $message);
@@ -1046,23 +1059,24 @@ class FunctionArgumentDiscloserTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProvider_testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction
      * @param array<int, int> $functionArgumentValues
+     *
+     * @dataProvider providerTestConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction
      */
-    public function testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction(
+    public function testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction( // phpcs:ignore
         int $expectedPassedArgumentCount,
         int $expectedNamedArgumentCount,
         string $expectedFunctionArgumentValuesStr,
         array $functionArgumentValues,
-        \Closure $callback
+        Closure $callback
     ): void {
         $reflectionFunction = $callback();
 
         try {
             new FunctionArgumentDiscloser(Caster::getInstance(), $reflectionFunction, $functionArgumentValues);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -1086,7 +1100,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -1115,9 +1129,9 @@ class FunctionArgumentDiscloserTest extends TestCase
     }
 
     /**
-     * @return array<int, array{int, int, string, array<int, int>, \Closure}>
+     * @return array<int, array{int, int, string, array<int, int>, Closure}>
      */
-    public function dataProvider_testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction(): array
+    public function providerTestConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction(): array // phpcs:ignore
     {
         return [
             [
@@ -1126,7 +1140,13 @@ class FunctionArgumentDiscloserTest extends TestCase
                 '(array(0)) []',
                 [],
                 static function () {
-                    return new \ReflectionFunction('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_4d2650269a324a3788f827ee739afee1');
+                    return new ReflectionFunction(
+                        implode('', [
+                            'TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest',
+                            '\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespaced',
+                            'ConstantDoesNotExist\foo_4d2650269a324a3788f827ee739afee1',
+                        ]),
+                    );
                 },
             ],
             [
@@ -1135,13 +1155,19 @@ class FunctionArgumentDiscloserTest extends TestCase
                 '(array(2)) [(int) 0 => (int) 42, (int) 1 => (int) 43]',
                 [42, 43],
                 static function () {
-                    return new \ReflectionFunction('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_fe25fbdda555464f982783f37b43ade9');
+                    return new ReflectionFunction(
+                        implode('', [
+                            'TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest',
+                            '\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespaced',
+                            'ConstantDoesNotExist\foo_fe25fbdda555464f982783f37b43ade9',
+                        ]),
+                    );
                 },
             ],
         ];
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenNoDefaultValueIsAvailableOnReflectionParameter(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenNoDefaultValueIsAvailableOnReflectionParameter(): void // phpcs:ignore
     {
         $functionArgumentDiscloser = foo_912de21dd0fd454f8cdb0b71ac45a9e3(42);
 
@@ -1149,9 +1175,9 @@ class FunctionArgumentDiscloserTest extends TestCase
             $functionArgumentDiscloser->getDefaultValueForReflectionParameter(
                 $functionArgumentDiscloser->getReflectionFunction()->getParameters()[0]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -1173,7 +1199,7 @@ class FunctionArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpression(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenConstantNameDoesNotMatchRegularExpression(): void // phpcs:ignore
     {
         $functionArgumentDiscloser = foo_55f325c24dc64ff4bb9df02b6f51de6d(42);
 
@@ -1195,7 +1221,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             ->willReturn(true);
 
         $reflectionParameter
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getDefaultValueConstantName')
             ->with()
             ->willReturn('  I don\'t work as a constant name  ');
@@ -1214,9 +1240,9 @@ class FunctionArgumentDiscloserTest extends TestCase
 
         try {
             $functionArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -1227,7 +1253,14 @@ class FunctionArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist', '/'),
+                    preg_quote(
+                        implode('', [
+                            'TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest',
+                            '\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespaced',
+                            'ConstantDoesNotExist',
+                        ]),
+                        '/',
+                    ),
                 ),
                 $currentException->getMessage(),
             );
@@ -1235,7 +1268,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -1257,7 +1290,7 @@ class FunctionArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedGlobalConstantDoesNotExist(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedGlobalConstantDoesNotExist(): void // phpcs:ignore
     {
         $functionArgumentDiscloser = foo_445cb914ff6f48a0a039e4eedd0f4ff0(42);
 
@@ -1298,9 +1331,9 @@ class FunctionArgumentDiscloserTest extends TestCase
 
         try {
             $functionArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -1311,7 +1344,14 @@ class FunctionArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote('TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist', '/'),
+                    preg_quote(
+                        implode('', [
+                            'TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest',
+                            '\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstant',
+                            'DoesNotExist',
+                        ]),
+                        '/',
+                    ),
                 ),
                 $currentException->getMessage(),
             );
@@ -1319,7 +1359,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',
@@ -1340,7 +1380,7 @@ class FunctionArgumentDiscloserTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist(): void
+    public function testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist(): void // phpcs:ignore
     {
         $functionArgumentDiscloser = foo_d9d24ee6520f4a2792f07471f77eaf45(42);
 
@@ -1381,9 +1421,9 @@ class FunctionArgumentDiscloserTest extends TestCase
 
         try {
             $functionArgumentDiscloser->getDefaultValueForReflectionParameter($reflectionParameter);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $currentException = $e;
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
                     implode('', [
@@ -1394,7 +1434,7 @@ class FunctionArgumentDiscloserTest extends TestCase
                         '$',
                         '/',
                     ]),
-                    preg_quote((new \ReflectionObject($this))->getShortName(), '/'),
+                    preg_quote((new ReflectionObject($this))->getShortName(), '/'),
                     preg_quote(__FUNCTION__, '/'),
                 ),
                 $currentException->getMessage(),
@@ -1403,7 +1443,7 @@ class FunctionArgumentDiscloserTest extends TestCase
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
             assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, get_class($currentException));
+            $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
                     '/',

@@ -15,16 +15,19 @@ use Eboreum\Caster\Formatter\Object_\DirectoryFormatter;
 use Eboreum\Caster\Formatter\Object_\TextuallyIdentifiableInterfaceFormatter;
 use Eboreum\Caster\Formatter\Object_\ThrowableFormatter;
 
-/**
- * {@inheritDoc}
- */
 class Caster extends OriginalCaster
 {
     private static ?Caster $instance = null;
 
-    /**
-     * {@inheritDoc}
-     */
+    public static function getInstance(): self
+    {
+        if (null === self::$instance) {
+            self::$instance = self::create();
+        }
+
+        return self::$instance;
+    }
+
     public static function create(?CharacterEncodingInterface $characterEncoding = null): static
     {
         if (null === $characterEncoding) {
@@ -43,14 +46,5 @@ class Caster extends OriginalCaster
         ]));
 
         return $caster;
-    }
-
-    public static function getInstance(): self
-    {
-        if (null === self::$instance) {
-            self::$instance = self::create();
-        }
-
-        return self::$instance;
     }
 }

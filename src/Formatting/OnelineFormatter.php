@@ -6,6 +6,15 @@ namespace Eboreum\Exceptional\Formatting;
 
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
+use ReflectionObject;
+use Throwable;
+
+use function assert;
+use function date;
+use function is_int;
+use function is_string;
+use function preg_replace;
+use function sprintf;
 
 /**
  * {@inheritDoc}
@@ -19,13 +28,10 @@ class OnelineFormatter extends AbstractFormatter
         $this->caster = $caster;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function format(\Throwable $throwable): string
+    public function format(Throwable $throwable): string
     {
         $result = $this->normalizeString(Caster::makeNormalizedClassName(
-            new \ReflectionObject($throwable)
+            new ReflectionObject($throwable)
         ));
 
         if ($this->isProvidingTimestamp()) {
