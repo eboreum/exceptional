@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional;
 
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use SebastianBergmann\Diff\Differ;
+use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
 
 use function array_map;
 use function assert;
@@ -24,6 +26,7 @@ use function preg_quote;
 use function preg_split;
 use function sprintf;
 
+#[CoversNothing()]
 class ReadmeMdTest extends TestCase
 {
     private string $contents;
@@ -57,15 +60,12 @@ class ReadmeMdTest extends TestCase
         assert(is_string($producedContents));
 
         if ($this->contents !== $producedContents) {
-            $differ = new Differ();
-
-            throw new RuntimeException(sprintf(
-                implode('', [
-                    'README.md is not up–to-date. Please run: php script/make-readme.php.',
-                    ' The diff is:\n\n%s',
-                ]),
-                $differ->diff($this->contents, $producedContents),
-            ));
+            throw new RuntimeException(
+                sprintf(
+                    "README.md is not up–to-date. Please run: php script/make-readme.php: Diff:\n\n%s",
+                    (new Differ(new UnifiedDiffOutputBuilder()))->diff($this->contents, $producedContents ?: ''),
+                ),
+            );
         }
 
         $this->assertTrue(true);

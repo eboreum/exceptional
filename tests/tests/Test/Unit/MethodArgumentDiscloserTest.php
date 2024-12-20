@@ -14,6 +14,8 @@ use Eboreum\Exceptional\MethodArgumentDiscloser;
 use Exception;
 use IDontExist2da718442a7547e2b970aed55a2324b0;
 use IDontExista8728361d30f42bfb9a954abfac4ccab;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 use ReflectionObject;
@@ -52,42 +54,20 @@ define(
     ),
 );
 
+#[CoversClass(MethodArgumentDiscloser::class)]
 class MethodArgumentDiscloserTest extends TestCase
 {
     /**
-     * @dataProvider providerTestBasics
+     * @return array<
+     *   array{
+     *     string,
+     *     Closure():object,
+     *     Closure(object):array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser},
+     *     Closure(self, string, MethodArgumentDiscloser, object):void,
+     *   }
+     * >
      */
-    public function testBasics(
-        string $message,
-        Closure $objectFactory,
-        Closure $objectValueFactoryCallback,
-        Closure $assertionsCallback
-    ): void {
-        $object = $objectFactory();
-
-        $this->assertTrue(is_object($object));
-
-        [
-            $reflectionMethod,
-            $methodArgumentValues,
-            $methodArgumentDiscloser,
-        ] = $objectValueFactoryCallback($object);
-
-        $this->assertSame($reflectionMethod, $methodArgumentDiscloser->getReflectionFunction(), $message);
-        $this->assertSame($methodArgumentValues, $methodArgumentDiscloser->getFunctionArgumentValues(), $message);
-        $this->assertSame(
-            count($methodArgumentValues),
-            $methodArgumentDiscloser->getFunctionArgumentValuesCount(),
-            $message,
-        );
-
-        $assertionsCallback($message, $methodArgumentDiscloser, $object);
-    }
-
-    /**
-     * @return array<array{string, Closure(): object, Closure, Closure(string, MethodArgumentDiscloser, object): void}>
-     */
-    public function providerTestBasics(): array
+    public static function providerTestBasics(): array
     {
         return [
             [
@@ -115,40 +95,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo();
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo();
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(-1, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(0, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(-1, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(0, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         0,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(0, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    $this->assertSame(
+                    $self->assertSame(0, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(
                         0,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -176,47 +157,48 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo();
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo();
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [42],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         1,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertSame(
                         0,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -248,47 +230,48 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(64);
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(64);
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [64],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         1,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertSame(
                         0,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -316,22 +299,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar', 3.14);
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar', 3.14);
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -340,41 +324,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(0, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(0, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -402,22 +386,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     }; // Needs to be in a variable because phpstan gets confused
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar', 3.14, true);
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar', 3.14, true);
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -427,41 +412,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         4,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(0, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(0, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -489,22 +474,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -513,41 +499,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -581,22 +567,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -605,41 +592,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -673,22 +660,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar', 'baz');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar', 'baz');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -697,41 +685,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -765,22 +753,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -789,41 +778,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -857,22 +846,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar', 'baz');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar', 'baz');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -881,41 +871,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -948,22 +938,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -972,41 +963,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1039,22 +1030,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -1063,41 +1055,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1130,22 +1122,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar', 2.72);
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar', 2.72);
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -1154,41 +1147,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1219,22 +1212,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -1243,41 +1237,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1308,22 +1302,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar', 'baz');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar', 'baz');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -1332,41 +1327,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1397,22 +1392,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -1421,41 +1417,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1487,22 +1483,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -1511,41 +1508,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1576,22 +1573,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(42, 'bar', 'baz');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(42, 'bar', 'baz');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'bar',
@@ -1600,41 +1598,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         2,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(false, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1662,49 +1660,50 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo();
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo();
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             [],
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         1,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertSame(
                         0,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(true, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(true, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1732,49 +1731,50 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     }; // Needs to be in a variable because phpstan gets confused
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(...[1, 2, 3]);
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(...[1, 2, 3]);
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             [1,2,3],
                         ],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         1,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertSame(
                         0,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(true, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(true, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1802,22 +1802,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     };
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo();
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo();
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             42,
                             'baz',
@@ -1826,41 +1827,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(3, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         0,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(true, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(true, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1888,22 +1889,23 @@ class MethodArgumentDiscloserTest extends TestCase
                         }
                     }; // Needs to be in a variable because phpstan gets confused
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(43, 'bim');
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(43, 'bim');
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             43,
                             'bim',
@@ -1912,41 +1914,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(3, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         0,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(true, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(true, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -1978,22 +1980,23 @@ class MethodArgumentDiscloserTest extends TestCase
 
                     return $object; // Needs to be in a variable because phpstan gets confused
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     assert(method_exists($object, 'foo'));
 
-                    return $object->foo(43, 'bim', ...[1.0, 2.0, 3.0]);
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo(43, 'bim', ...[1.0, 2.0, 3.0]);
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(2, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [
                             43,
                             'bim',
@@ -2002,41 +2005,41 @@ class MethodArgumentDiscloserTest extends TestCase
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         3,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(3, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(3, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(1), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'b',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(2), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'c',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
                         $message,
                     );
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
-                    $this->assertSame(
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(3), $message);
+                    $self->assertSame(
                         0,
                         $methodArgumentDiscloser->getReflectionFunction()->getNumberOfRequiredParameters(),
                         $message,
                     );
-                    $this->assertSame(true, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
+                    $self->assertSame(true, $methodArgumentDiscloser->isLastNamedParameterVariadic(), $message);
                 },
             ],
             [
@@ -2049,42 +2052,43 @@ class MethodArgumentDiscloserTest extends TestCase
 
                     return $object;
                 },
-                /**
-                 * @return array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser}
-                 */
                 static function (object $object): array {
                     // Needs to here because otherwise, phpstan gets confused
                     assert($object instanceof PrivateConstantReferencedAsDefaultInParameter);
 
-                    return $object->foo();
+                    /** @var array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $array */
+                    $array = $object->foo();
+
+                    return $array;
                 },
-                function (
+                static function (
+                    self $self,
                     string $message,
                     MethodArgumentDiscloser $methodArgumentDiscloser,
                     object $object
                 ): void {
-                    $this->assertInstanceOf(PrivateConstantReferencedAsDefaultInParameter::class, $object);
+                    $self->assertInstanceOf(PrivateConstantReferencedAsDefaultInParameter::class, $object);
 
                     // Needs to here because otherwise, phpstan gets confused
                     assert($object instanceof PrivateConstantReferencedAsDefaultInParameter);
 
-                    $this->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
-                    $this->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
-                    $this->assertSame(
+                    $self->assertSame(0, $methodArgumentDiscloser->getLastNamedParameterIndex(), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getNamedParameterCount(), $message);
+                    $self->assertSame(
                         [42],
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValues(),
                         $message,
                     );
-                    $this->assertSame(
+                    $self->assertSame(
                         1,
                         $methodArgumentDiscloser->getNormalizedFunctionArgumentValuesCount(),
                         $message,
                     );
-                    $this->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
-                    $this->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
-                    $this->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
+                    $self->assertSame(1, $methodArgumentDiscloser->getOptionalParameterCount(), $message);
+                    $self->assertSame(null, $methodArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
+                    $self->assertNotNull($methodArgumentDiscloser->getReflectionParameterByIndex(0), $message);
                     assert(null !== $methodArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
-                    $this->assertSame(
+                    $self->assertSame(
                         'a',
                         $methodArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
@@ -2095,8 +2099,39 @@ class MethodArgumentDiscloserTest extends TestCase
     }
 
     /**
-     * @dataProvider providerTestConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionMethod
+     * @param Closure():object $objectFactory
+     * @param Closure(object):array{ReflectionMethod, array<int, mixed>, MethodArgumentDiscloser} $objectValueFactory
+     * @param Closure(self, string, MethodArgumentDiscloser, object):void $assertionsCallback
      */
+    #[DataProvider('providerTestBasics')]
+    public function testBasics(
+        string $message,
+        Closure $objectFactory,
+        Closure $objectValueFactory,
+        Closure $assertionsCallback,
+    ): void {
+        $object = $objectFactory();
+
+        $this->assertTrue(is_object($object));
+
+        [
+            $reflectionMethod,
+            $methodArgumentValues,
+            $methodArgumentDiscloser,
+        ] = $objectValueFactory($object);
+
+        $this->assertSame($reflectionMethod, $methodArgumentDiscloser->getReflectionFunction(), $message);
+        $this->assertSame($methodArgumentValues, $methodArgumentDiscloser->getFunctionArgumentValues(), $message);
+        $this->assertSame(
+            count($methodArgumentValues),
+            $methodArgumentDiscloser->getFunctionArgumentValuesCount(),
+            $message,
+        );
+
+        $assertionsCallback($this, $message, $methodArgumentDiscloser, $object);
+    }
+
+    #[DataProvider('providerTestConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionMethod')] // phpcs:ignore
     public function testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionMethod( // phpcs:ignore
         string $message,
         string $glue,
@@ -2163,7 +2198,7 @@ class MethodArgumentDiscloserTest extends TestCase
     /**
      * @return array<int, array{0: string, 1: string, 2: object}>
      */
-    public function providerTestConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionMethod(): array // phpcs:ignore
+    public static function providerTestConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionMethod(): array // phpcs:ignore
     {
         return [
             [

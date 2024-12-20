@@ -548,12 +548,13 @@ echo $result;
 ## Test/development requirements
 
 ```json
+"eboreum/phpunit-with-consecutive-alternative": "dev-main",
 "nette/neon": "^3.2",
 "phpstan/phpstan": "^1.11",
-"phpunit/phpunit": "^9.5",
-"sebastian/diff": "^4.0",
+"phpunit/phpunit": "^11.3",
+"sebastian/diff": "^6.0",
 "slevomat/coding-standard": "8.15.0",
-"squizlabs/php_codesniffer": "3.10.1"
+"squizlabs/php_codesniffer": "3.10.2"
 ```
 
 ## Running tests

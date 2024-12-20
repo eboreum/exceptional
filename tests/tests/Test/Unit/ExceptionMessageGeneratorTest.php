@@ -11,9 +11,10 @@ use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Caster;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\ExceptionMessageGenerator;
+use Eboreum\PhpunitWithConsecutiveAlternative\MethodCallExpectation;
 use Exception;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
@@ -38,44 +39,21 @@ use function is_object;
 use function preg_quote;
 use function sprintf;
 
-class ExceptionMessageGeneratorTest extends TestCase
+#[CoversClass(ExceptionMessageGenerator::class)]
+class ExceptionMessageGeneratorTest extends AbstractTestCase
 {
-    public function testBasics(): void
-    {
-        $caster = Caster::create();
-        $exceptionMessageGenerator = new ExceptionMessageGenerator($caster);
-
-        $this->assertSame($caster, $exceptionMessageGenerator->getCaster());
-    }
-
     /**
-     * @param array<int, mixed> $arguments
-     *
-     * @dataProvider dataProviderTestCastFunctionArgumentsToStringWorks
+     * @return array<
+     *   array{
+     *     string,
+     *     string,
+     *     Closure():(ReflectionFunction|ReflectionMethod),
+     *     array<int, mixed>,
+     *     Closure(self):ExceptionMessageGenerator,
+     *   }
+     * >
      */
-    public function testCastFunctionArgumentsToStringWorks(
-        string $message,
-        string $expected,
-        Closure $reflectionFunctionFactory,
-        array $arguments,
-        ExceptionMessageGenerator $exceptionMessageGenerator
-    ): void {
-        $reflectionFunction = $reflectionFunctionFactory();
-
-        $this->assertSame(
-            $expected,
-            $exceptionMessageGenerator->castFunctionArgumentsToString(
-                $reflectionFunction,
-                $arguments,
-            ),
-            $message,
-        );
-    }
-
-    /**
-     * @return array<int, array{string, string, Closure, array<int, mixed>, ExceptionMessageGenerator}>
-     */
-    public function dataProviderTestCastFunctionArgumentsToStringWorks(): array
+    public static function providerTestCastFunctionArgumentsToStringWorks(): array
     {
         return [
             [
@@ -88,7 +66,9 @@ class ExceptionMessageGeneratorTest extends TestCase
                     'Lorem ipsum',
                     'ip',
                 ],
-                new ExceptionMessageGenerator($this->mockCasterInterface()),
+                static function (self $self): ExceptionMessageGenerator {
+                    return new ExceptionMessageGenerator($self->createMock(CasterInterface::class));
+                },
             ],
             [
                 '`stripos` called with 3 arguments.',
@@ -100,36 +80,34 @@ class ExceptionMessageGeneratorTest extends TestCase
                     'Lorem ipsum',
                     'ip',
                 ],
-                (function (): ExceptionMessageGenerator {
-                    $caster = $this->mockCasterInterface();
+                static function (self $self): ExceptionMessageGenerator {
+                    $caster = $self->createMock(CasterInterface::class);
 
                     $caster
-                        ->expects($this->exactly(1))
+                        ->expects($self->exactly(1))
                         ->method('withDepthCurrent')
-                        ->with($this->callback(static function ($v): bool {
-                            return (
-                                is_object($v)
-                                && $v instanceof PositiveInteger
-                            );
-                        }))
+                        ->with(
+                            $self->callback(
+                                static function ($v): bool {
+                                    return (
+                                        is_object($v)
+                                        && $v instanceof PositiveInteger
+                                    );
+                                },
+                            ),
+                        )
                         ->willReturn($caster);
 
-                    $caster
-                        ->expects($this->exactly(3))
-                        ->method('castTyped')
-                        ->withConsecutive(
-                            ['Lorem ipsum'],
-                            ['ip'],
-                            [0],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            'bar',
-                            '42',
-                        );
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'castTyped',
+                        new MethodCallExpectation('foo', 'Lorem ipsum'),
+                        new MethodCallExpectation('bar', 'ip'),
+                        new MethodCallExpectation('42', 0),
+                    );
 
                     return new ExceptionMessageGenerator($caster);
-                })(),
+                },
             ],
             [
                 implode(' ', [
@@ -153,40 +131,33 @@ class ExceptionMessageGeneratorTest extends TestCase
                     'bar',
                     'baz',
                 ],
-                (function (): ExceptionMessageGenerator {
-                    $caster = $this->mockCasterInterface();
+                static function (self $self): ExceptionMessageGenerator {
+                    $caster = $self->createMock(CasterInterface::class);
 
                     $caster
-                        ->expects($this->exactly(1))
+                        ->expects($self->exactly(1))
                         ->method('withDepthCurrent')
-                        ->with($this->callback(static function ($v): bool {
-                            return (
-                                is_object($v)
-                                && $v instanceof PositiveInteger
-                            );
-                        }))
+                        ->with(
+                            $self->callback(
+                                static function ($v): bool {
+                                    return (
+                                        is_object($v)
+                                        && $v instanceof PositiveInteger
+                                    );
+                                },
+                            ),
+                        )
                         ->willReturn($caster);
 
-                    $caster
-                        ->expects($this->any())
-                        ->method('castTyped')
-                        ->withConsecutive(
-                            [42],
-                            [
-                                [
-                                    'foo',
-                                    'bar',
-                                    'baz',
-                                ],
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            '42',
-                            'foo,bar,baz',
-                        );
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'castTyped',
+                        new MethodCallExpectation('42', 42),
+                        new MethodCallExpectation('foo,bar,baz', ['foo', 'bar', 'baz']),
+                    );
 
                     return new ExceptionMessageGenerator($caster);
-                })(),
+                },
             ],
             [
                 implode(' ', [
@@ -205,34 +176,33 @@ class ExceptionMessageGeneratorTest extends TestCase
                     return new ReflectionMethod($object, 'foo');
                 },
                 [42],
-                (function (): ExceptionMessageGenerator {
-                    $caster = $this->mockCasterInterface();
+                static function (self $self): ExceptionMessageGenerator {
+                    $caster = $self->createMock(CasterInterface::class);
 
                     $caster
-                        ->expects($this->exactly(1))
+                        ->expects($self->exactly(1))
                         ->method('withDepthCurrent')
-                        ->with($this->callback(static function ($v): bool {
-                            return (
-                                is_object($v)
-                                && $v instanceof PositiveInteger
-                            );
-                        }))
+                        ->with(
+                            $self->callback(
+                                static function ($v): bool {
+                                    return (
+                                        is_object($v)
+                                        && $v instanceof PositiveInteger
+                                    );
+                                },
+                            ),
+                        )
                         ->willReturn($caster);
 
-                    $caster
-                        ->expects($this->any())
-                        ->method('castTyped')
-                        ->withConsecutive(
-                            [42],
-                            [[]],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            '42',
-                            '[]',
-                        );
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'castTyped',
+                        new MethodCallExpectation('42', 42),
+                        new MethodCallExpectation('[]', []),
+                    );
 
                     return new ExceptionMessageGenerator($caster);
-                })(),
+                },
             ],
             [
                 implode('', [
@@ -251,182 +221,41 @@ class ExceptionMessageGeneratorTest extends TestCase
                     return new ReflectionMethod($object, 'foo');
                 },
                 [42],
-                (function (): ExceptionMessageGenerator {
-                    $caster = $this->mockCasterInterface();
+                static function (self $self): ExceptionMessageGenerator {
+                    $caster = $self->createMock(CasterInterface::class);
 
                     $caster
-                        ->expects($this->exactly(1))
+                        ->expects($self->exactly(1))
                         ->method('withDepthCurrent')
-                        ->with($this->callback(static function ($v): bool {
-                            return (
-                                is_object($v)
-                                && $v instanceof PositiveInteger
-                            );
-                        }))
+                        ->with(
+                            $self->callback(
+                                static function ($v): bool {
+                                    return (
+                                        is_object($v)
+                                        && $v instanceof PositiveInteger
+                                    );
+                                },
+                            ),
+                        )
                         ->willReturn($caster);
 
-                    $caster
-                        ->expects($this->any())
-                        ->method('castTyped')
-                        ->withConsecutive(
-                            [42],
-                            [],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            '42',
-                            '[]',
-                        );
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'castTyped',
+                        new MethodCallExpectation('42', 42),
+                        new MethodCallExpectation('[]'),
+                    );
 
                     return new ExceptionMessageGenerator($caster);
-                })(),
+                },
             ],
         ];
-    }
-
-    public function testCastFunctionArgumentsToStringThrowsExceptionWhenArgumentReflectionFunctionIsNotAccepted(): void
-    {
-        $exceptionMessageGenerator = new ExceptionMessageGenerator($this->mockCasterInterface());
-        $reflectionFunction = new class extends ReflectionFunctionAbstract
-        {
-            public function __toString(): string
-            {
-                return '';
-            }
-        };
-
-        try {
-            $exceptionMessageGenerator->castFunctionArgumentsToString($reflectionFunction, []);
-        } catch (Exception $e) {
-            $currentException = $e;
-            $this->assertSame(RuntimeException::class, $currentException::class);
-            $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in \\\\%s-\>castFunctionArgumentsToString\(',
-                            '\$reflectionFunction = \(object\) \\\\%s@anonymous\/in\/.+\/%s:\d+',
-                            ', \$functionArgumentValues = ',
-                        '\)',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(ExceptionMessageGenerator::class, '/'),
-                    preg_quote(ReflectionFunctionAbstract::class, '/'),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                $currentException->getMessage(),
-            );
-
-            $currentException = $currentException->getPrevious();
-            $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, $currentException::class);
-            $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'A \$discloser was not produced from \$reflectionFunction = \(object\)',
-                        ' \\\\ReflectionFunctionAbstract@anonymous\/in\/.+\/%s:\d+',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                $currentException->getMessage(),
-            );
-
-            $currentException = $currentException->getPrevious();
-            $this->assertTrue(null === $currentException);
-
-            return;
-        }
-
-        $this->fail('Exception was never thrown.');
-    }
-
-    public function testCastFunctionArgumentsToStringHandleExceptionGracefullyForReflectionMethod(): void
-    {
-        $caster = $this->mockCasterInterface();
-        $exception = new Exception('foo');
-
-        $caster
-            ->expects($this->exactly(1))
-            ->method('withDepthCurrent')
-            ->willThrowException($exception);
-
-        $exceptionMessageGenerator = new ExceptionMessageGenerator($caster);
-        $object = new class
-        {
-            public function foo(): string
-            {
-                return '';
-            }
-        };
-        $reflectionMethod = new ReflectionMethod($object, 'foo');
-
-        try {
-            $exceptionMessageGenerator->castFunctionArgumentsToString($reflectionMethod, []);
-        } catch (Exception $e) {
-            $currentException = $e;
-            $this->assertSame(RuntimeException::class, $currentException::class);
-            $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in \\\\%s-\>castFunctionArgumentsToString\(',
-                            '\$reflectionFunction = \(object\) \\\\ReflectionMethod \(',
-                                'declaring class: class@anonymous\/in\/.+\/%s:\d+',
-                            '\)',
-                            ', \$functionArgumentValues = ',
-                        '\)',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(ExceptionMessageGenerator::class, '/'),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                $currentException->getMessage(),
-            );
-
-            $currentException = $currentException->getPrevious();
-            $this->assertSame($exception, $currentException);
-
-            return;
-        }
-
-        $this->fail('Exception was never thrown.');
-    }
-
-    /**
-     * @dataProvider dataProviderTestMakeFailureInFunctionMessageWorksForAnonymousFunctions
-     */
-    public function testMakeFailureInFunctionMessageWorksForAnonymousFunctions(
-        string $message,
-        string $expectedRegex,
-        Closure $callback
-    ): void {
-        [
-            $reflectionFunction,
-            $functionArgumentValues,
-        ] = $callback();
-
-        $caster = Caster::create();
-        $exceptionMessageGenerator = new ExceptionMessageGenerator($caster);
-
-        $this->assertMatchesRegularExpression(
-            $expectedRegex,
-            $exceptionMessageGenerator->makeFailureInFunctionMessage($reflectionFunction, $functionArgumentValues),
-            $message,
-        );
     }
 
     /**
      * @return array<int, array{0: string, 1: string, 2: object}>
      */
-    public function dataProviderTestMakeFailureInFunctionMessageWorksForAnonymousFunctions(): array
+    public static function providerTestMakeFailureInFunctionMessageWorksForAnonymousFunctions(): array
     {
         return [
             [
@@ -600,6 +429,779 @@ class ExceptionMessageGeneratorTest extends TestCase
         ];
     }
 
+    /**
+     * @return array<int, array{string, string, Closure():object}>
+     */
+    public static function providerTestMakeFailureInMethodMessageWorksWithNonStaticMethods(): array
+    {
+        return [
+            [
+                'An anonymous class, no named arguments exist, no arguments are passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
+                        '\-\>__construct\(\) inside \(object\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function (): object {
+                    return new class
+                    {
+                        private string $message;
+
+                        public function __construct()
+                        {
+                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                $this,
+                                new ReflectionMethod(self::class, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+
+                        public function __toString(): string
+                        {
+                            return $this->message;
+                        }
+                    };
+                },
+            ],
+            [
+                implode(' ', [
+                    'An anonymous class, no named arguments exist, no arguments are passed, static::class used instead',
+                    'of $this',
+                ]),
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
+                        '\-\>__construct\(\) inside \(object\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function (): object {
+                    return new class
+                    {
+                        private string $message;
+
+                        public function __construct()
+                        {
+                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                static::class,
+                                new ReflectionMethod(self::class, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+
+                        public function __toString(): string
+                        {
+                            return $this->message;
+                        }
+                    };
+                },
+            ],
+            [
+                'An anonymous class, no named arguments exist, 1 argument is passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in class@anonymous\/in\/.+\/%s:\d+->__construct\(',
+                            '\{0\} = \(string\(5\)\) "extra"',
+                        '\) inside \(object\) class@anonymous\/in\/.+\/%s:\d+',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function (): object {
+                    /** @phpstan-ignore-next-line */
+                    return new class ('extra')
+                    {
+                        private string $message;
+
+                        public function __construct()
+                        {
+                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                $this,
+                                new ReflectionMethod(self::class, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+
+                        public function __toString(): string
+                        {
+                            return $this->message;
+                        }
+                    };
+                },
+            ],
+            [
+                'An anonymous class, 1 named argument exists, 1 argument is passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
+                        '\-\>__construct\(',
+                            '\$a = \(string\(3\)\) "bar"',
+                        '\) inside \(object\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function (): object {
+                    return new class ('bar')
+                    {
+                        private string $message;
+
+                        public function __construct(string $a)
+                        {
+                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                $this,
+                                new ReflectionMethod(self::class, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+
+                        public function __toString(): string
+                        {
+                            return $this->message;
+                        }
+                    };
+                },
+            ],
+            [
+                'An anonymous class, 4 named arguments exist, 4 arguments are passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
+                        '\-\>__construct\(',
+                            '\$a = \(string\(3\)\) "bar"',
+                            ', \$b = \(int\) 42',
+                            ', \$c = \(bool\) true',
+                            ', \$d = \(float\) 3.14',
+                        '\) inside \(object\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function (): object {
+                    return new class ('bar', 42, true, 3.14)
+                    {
+                        private string $message;
+
+                        public function __construct(string $a, int $b, bool $c, float $d)
+                        {
+                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                $this,
+                                new ReflectionMethod(self::class, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+
+                        public function __toString(): string
+                        {
+                            return $this->message;
+                        }
+                    };
+                },
+            ],
+            [
+                'An anonymous class, 4 named arguments exist, 5 arguments are passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
+                        '\-\>__construct\(',
+                            '\$a = \(string\(3\)\) "bar"',
+                            ', \$b = \(int\) 42',
+                            ', \$c = \(bool\) true',
+                            ', \$d = \(float\) 3.14',
+                            ', \{4\} = \(string\(5\)\) "extra"',
+                        '\) inside \(object\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function (): object {
+                    /** @phpstan-ignore-next-line */
+                    return new class ('bar', 42, true, 3.14, 'extra')
+                    {
+                        private string $message;
+
+                        public function __construct(string $a, int $b, bool $c, float $d)
+                        {
+                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                $this,
+                                new ReflectionMethod(self::class, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+
+                        public function __toString(): string
+                        {
+                            return $this->message;
+                        }
+                    };
+                },
+            ],
+            [
+                'An anonymous class, 1 named argument exists with an arithmetic default value, no arguments are passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (class@anonymous.+?\/%s:\d+)',
+                        '\-\>__construct\(',
+                            '\$a = \(int\) 42',
+                        '\) inside \(object\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function (): object {
+                    return new class
+                    {
+                        private string $message;
+
+                        public function __construct(int $a = 42)
+                        {
+                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                $this,
+                                new ReflectionMethod(self::class, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+
+                        public function __toString(): string
+                        {
+                            return $this->message;
+                        }
+                    };
+                },
+            ],
+            [
+                'A class, 1 named argument exists with a constant default value, no arguments are passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (\\\\%s)\-\>__construct\(',
+                            '\$a = \(int\) 99',
+                        '\) inside \(object\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(
+                        TestMakeFailureInMethodMessageWorksWithNonStaticMethodsAClassWithADefaultConstant::class,
+                        '/',
+                    ),
+                ),
+                static function (): object {
+                    return new TestMakeFailureInMethodMessageWorksWithNonStaticMethodsAClassWithADefaultConstant();
+                },
+            ],
+            [
+                'An anonymous class, 2 named argument, 2nd argument is nullable and null is passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (class@anonymous.+?\/%s:\d+)',
+                        '\-\>__construct\(',
+                            '\$a = \(int\) 42',
+                            ', \$b = \(null\) null',
+                        '\) inside \(object\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function (): object {
+                    return new class (42, null)
+                    {
+                        private string $message;
+
+                        public function __construct(int $a, ?string $b)
+                        {
+                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                $this,
+                                new ReflectionMethod(self::class, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+
+                        public function __toString(): string
+                        {
+                            return $this->message;
+                        }
+                    };
+                },
+            ],
+            [
+                'A named class, 0 named arguments exist, 0 arguments are passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s->__construct\(\)',
+                        ' inside \(object\) \\\\%s',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
+                ),
+                static function (): object {
+                    return new TestMakeFailureInMethodMessageWorksClassANoNamedArguments();
+                },
+            ],
+            [
+                'A named class, 0 named arguments exist, 1 argument is passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s->__construct\(',
+                            '\{0\} = \(string\(5\)\) "extra"',
+                        '\) inside \(object\) \\\\%s',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
+                ),
+                static function (): object {
+                    return new TestMakeFailureInMethodMessageWorksClassANoNamedArguments('extra');
+                },
+            ],
+            [
+                'A named class, 4 named arguments exist, 4 arguments are passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s->__construct\(',
+                            '\$a = \(string\(3\)\) "bar"',
+                            ', \$b = \(int\) 42',
+                            ', \$c = \(bool\) true',
+                            ', \$d = \(float\) 3.14',
+                        '\)',
+                        ' inside \(object\) \\\\%s',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
+                ),
+                static function (): object {
+                    return new TestMakeFailureInMethodMessageWorksClassB4NamedArguments('bar', 42, true, 3.14);
+                },
+            ],
+            [
+                'A named class, 4 named arguments exist, 5 arguments are passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s->__construct\(',
+                            '\$a = \(string\(3\)\) "bar"',
+                            ', \$b = \(int\) 42',
+                            ', \$c = \(bool\) true',
+                            ', \$d = \(float\) 3.14',
+                            ', \{4\} = \(string\(5\)\) "extra"',
+                        '\)',
+                        ' inside \(object\) \\\\%s',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
+                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
+                ),
+                static function (): object {
+                    return new TestMakeFailureInMethodMessageWorksClassB4NamedArguments(
+                        'bar',
+                        42,
+                        true,
+                        3.14,
+                        'extra',
+                    );
+                },
+            ],
+            [
+                'A named class, where method signature changes between uppermost class and parent classes',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s->__construct\(',
+                            '\$a = \(int\) 42',
+                            ', \$b = \(bool\) true',
+                            ', \$c = \(string\(3\)\) "foo"',
+                        '\) inside \(object\) \\\\%s',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesC::class, '/'), // phpcs:ignore
+                    preg_quote(TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesA::class, '/'), // phpcs:ignore
+                ),
+                static function (): object {
+                    return new TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesA( // phpcs:ignore
+                        42,
+                    );
+                },
+            ],
+        ];
+    }
+
+    /**
+     * @return array<int, array{0: string, 1: string, 2: object}>
+     */
+    public static function providerTestMakeFailureInMethodMessageWorksWithStaticMethods(): array
+    {
+        return [
+            [
+                'An anonymous class, no named arguments exist, no arguments are passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)::foo\(\)',
+                        ' inside \(class\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function (): string {
+                    $class = new class
+                    {
+                        public static function foo(): string
+                        {
+                            return ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                static::class,
+                                new ReflectionMethod(static::class, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+                    };
+
+                    return $class::foo();
+                },
+            ],
+            [
+                'An anonymous class, no named arguments exist, 1 argument is passed',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)::foo\(',
+                            '\{0\} = \(string\(5\)\) "extra"',
+                        '\)',
+                        ' inside \(class\) \1',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                static function (): string {
+                    $class = new class
+                    {
+                        public static function foo(): string
+                        {
+                            return ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
+                                static::class,
+                                new ReflectionMethod(static::class, __FUNCTION__),
+                                func_get_args(),
+                            );
+                        }
+                    };
+
+                    return $class::foo('extra'); // @phpstan-ignore-line
+                },
+            ],
+        ];
+    }
+
+    /**
+     * @return array<int, array{0: string, 1: string, 2: object}>
+     */
+    public static function providerTestMakeUninitializedPropertySafeToTextualIdentifierStringWorks(): array
+    {
+        return [
+            [
+                'An anonymous class without parent',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'class@anonymous.+?\/%s:\d+ \{',
+                            '\$a = \(uninitialized\)',
+                            ', \$b = \(int\) 42',
+                        '\}',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                new class
+                {
+                    private string $a; // @phpstan-ignore-line
+
+                    private int $b = 42; // @phpstan-ignore-line
+
+                    private bool $c; // @phpstan-ignore-line
+                },
+            ],
+            [
+                'An anonymous class with a parent and $a property on the parent class',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        '\\\\%s@anonymous.+?\/%s:\d+ \{',
+                            '\$a = \(uninitialized\)',
+                            ', \$b = \(int\) 42',
+                        '\}',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(
+                        TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassBParent::class,
+                        '/',
+                    ),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                new class extends TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassBParent {
+                    private int $b = 42; // @phpstan-ignore-line
+
+                    private bool $c; // @phpstan-ignore-line
+                },
+            ],
+            [
+                'A named class without parent',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        '\\\\%s \{',
+                            '\$a = \(uninitialized\)',
+                            ', \$b = \(int\) 42',
+                        '\}',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassA::class, '/'),
+                ),
+                new TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassA(),
+            ],
+            [
+                'A named class with parent and one property being on the parent',
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        '\\\\%s \{',
+                            '\$a = \(uninitialized\)',
+                            ', \$b = \(int\) 42',
+                        '\}',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassB::class, '/'),
+                ),
+                new TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassB(),
+            ],
+        ];
+    }
+
+    public function testBasics(): void
+    {
+        $caster = Caster::create();
+        $exceptionMessageGenerator = new ExceptionMessageGenerator($caster);
+
+        $this->assertSame($caster, $exceptionMessageGenerator->getCaster());
+    }
+
+    /**
+     * @param Closure():(ReflectionFunction|ReflectionMethod) $reflectionFunctionFactory
+     * @param array<int, mixed> $arguments
+     * @param Closure(self):ExceptionMessageGenerator $exceptionMessageGeneratorFactory
+     */
+    #[DataProvider('providerTestCastFunctionArgumentsToStringWorks')]
+    public function testCastFunctionArgumentsToStringWorks(
+        string $message,
+        string $expected,
+        Closure $reflectionFunctionFactory,
+        array $arguments,
+        Closure $exceptionMessageGeneratorFactory,
+    ): void {
+        $reflectionFunction = $reflectionFunctionFactory();
+        $exceptionMessageGenerator = $exceptionMessageGeneratorFactory($this);
+
+        $this->assertSame(
+            $expected,
+            $exceptionMessageGenerator->castFunctionArgumentsToString(
+                $reflectionFunction,
+                $arguments,
+            ),
+            $message,
+        );
+    }
+
+    public function testCastFunctionArgumentsToStringThrowsExceptionWhenArgumentReflectionFunctionIsNotAccepted(): void
+    {
+        $exceptionMessageGenerator = new ExceptionMessageGenerator($this->createMock(CasterInterface::class));
+        $reflectionFunction = new class extends ReflectionFunctionAbstract
+        {
+            public function __toString(): string
+            {
+                return '';
+            }
+        };
+
+        try {
+            $exceptionMessageGenerator->castFunctionArgumentsToString($reflectionFunction, []);
+        } catch (Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, $currentException::class);
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s-\>castFunctionArgumentsToString\(',
+                            '\$reflectionFunction = \(object\) \\\\%s@anonymous\/in\/.+\/%s:\d+',
+                            ', \$functionArgumentValues = ',
+                        '\)',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(ExceptionMessageGenerator::class, '/'),
+                    preg_quote(ReflectionFunctionAbstract::class, '/'),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertIsObject($currentException);
+            assert(is_object($currentException)); // Make phpstan happy
+            $this->assertSame(RuntimeException::class, $currentException::class);
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'A \$discloser was not produced from \$reflectionFunction = \(object\)',
+                        ' \\\\ReflectionFunctionAbstract@anonymous\/in\/.+\/%s:\d+',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertTrue(null === $currentException);
+
+            return;
+        }
+
+        $this->fail('Exception was never thrown.');
+    }
+
+    public function testCastFunctionArgumentsToStringHandleExceptionGracefullyForReflectionMethod(): void
+    {
+        $caster = $this->createMock(CasterInterface::class);
+        $exception = new Exception('foo');
+
+        $caster
+            ->expects($this->exactly(1))
+            ->method('withDepthCurrent')
+            ->willThrowException($exception);
+
+        $exceptionMessageGenerator = new ExceptionMessageGenerator($caster);
+        $object = new class
+        {
+            public function foo(): string
+            {
+                return '';
+            }
+        };
+        $reflectionMethod = new ReflectionMethod($object, 'foo');
+
+        try {
+            $exceptionMessageGenerator->castFunctionArgumentsToString($reflectionMethod, []);
+        } catch (Exception $e) {
+            $currentException = $e;
+            $this->assertSame(RuntimeException::class, $currentException::class);
+            $this->assertMatchesRegularExpression(
+                sprintf(
+                    implode('', [
+                        '/',
+                        '^',
+                        'Failure in \\\\%s-\>castFunctionArgumentsToString\(',
+                            '\$reflectionFunction = \(object\) \\\\ReflectionMethod \(',
+                                'declaring class: class@anonymous\/in\/.+\/%s:\d+',
+                            '\)',
+                            ', \$functionArgumentValues = ',
+                        '\)',
+                        '$',
+                        '/',
+                    ]),
+                    preg_quote(ExceptionMessageGenerator::class, '/'),
+                    preg_quote(basename(__FILE__), '/'),
+                ),
+                $currentException->getMessage(),
+            );
+
+            $currentException = $currentException->getPrevious();
+            $this->assertSame($exception, $currentException);
+
+            return;
+        }
+
+        $this->fail('Exception was never thrown.');
+    }
+
+    #[DataProvider('providerTestMakeFailureInFunctionMessageWorksForAnonymousFunctions')]
+    public function testMakeFailureInFunctionMessageWorksForAnonymousFunctions(
+        string $message,
+        string $expectedRegex,
+        Closure $callback
+    ): void {
+        [
+            $reflectionFunction,
+            $functionArgumentValues,
+        ] = $callback();
+
+        $caster = Caster::create();
+        $exceptionMessageGenerator = new ExceptionMessageGenerator($caster);
+
+        $this->assertMatchesRegularExpression(
+            $expectedRegex,
+            $exceptionMessageGenerator->makeFailureInFunctionMessage($reflectionFunction, $functionArgumentValues),
+            $message,
+        );
+    }
+
     public function testMakeFailureInFunctionMessageWorksForANamedFunction(): void
     {
         $reflectionFunction = new ReflectionFunction('strpos');
@@ -658,7 +1260,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                         '/',
                         '^',
                         'Failure in \\\\%s\-\>makeFailureInFunctionMessage\(',
-                            '\$reflectionFunction \= \(object\) \\\\Mock_ReflectionFunction_[0-9a-f]{8}',
+                            '\$reflectionFunction \= \(object\) \\\\MockObject_ReflectionFunction_[0-9a-f]{8}',
                             ', \$functionArgumentValues \= \(array\(0\)\) \[\]',
                         '\)',
                         '$',
@@ -678,9 +1280,7 @@ class ExceptionMessageGeneratorTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    /**
-     * @dataProvider dataProviderTestMakeFailureInMethodMessageWorksWithNonStaticMethods
-     */
+    #[DataProvider('providerTestMakeFailureInMethodMessageWorksWithNonStaticMethods')]
     public function testMakeFailureInMethodMessageWorksWithNonStaticMethods(
         string $message,
         string $expectedRegex,
@@ -693,449 +1293,7 @@ class ExceptionMessageGeneratorTest extends TestCase
         );
     }
 
-    /**
-     * @return array<int, array{0: string, 1: string, 2: object}>
-     */
-    public function dataProviderTestMakeFailureInMethodMessageWorksWithNonStaticMethods(): array
-    {
-        return [
-            [
-                'An anonymous class, no named arguments exist, no arguments are passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
-                        '\-\>__construct\(\) inside \(object\) \1',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                static function () {
-                    return new class
-                    {
-                        private string $message;
-
-                        public function __construct()
-                        {
-                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                $this,
-                                new ReflectionMethod(self::class, __FUNCTION__),
-                                func_get_args(),
-                            );
-                        }
-
-                        public function __toString(): string
-                        {
-                            return $this->message;
-                        }
-                    };
-                },
-            ],
-            [
-                implode(' ', [
-                    'An anonymous class, no named arguments exist, no arguments are passed, static::class used instead',
-                    'of $this',
-                ]),
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
-                        '\-\>__construct\(\) inside \(object\) \1',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                static function () {
-                    return new class
-                    {
-                        private string $message;
-
-                        public function __construct()
-                        {
-                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                static::class,
-                                new ReflectionMethod(self::class, __FUNCTION__),
-                                func_get_args(),
-                            );
-                        }
-
-                        public function __toString(): string
-                        {
-                            return $this->message;
-                        }
-                    };
-                },
-            ],
-            [
-                'An anonymous class, no named arguments exist, 1 argument is passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in class@anonymous\/in\/.+\/%s:\d+->__construct\(',
-                            '\{0\} = \(string\(5\)\) "extra"',
-                        '\) inside \(object\) class@anonymous\/in\/.+\/%s:\d+',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                static function () {
-                    /** @phpstan-ignore-next-line */
-                    return new class ('extra')
-                    {
-                        private string $message;
-
-                        public function __construct()
-                        {
-                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                $this,
-                                new ReflectionMethod(self::class, __FUNCTION__),
-                                func_get_args(),
-                            );
-                        }
-
-                        public function __toString(): string
-                        {
-                            return $this->message;
-                        }
-                    };
-                },
-            ],
-            [
-                'An anonymous class, 1 named argument exists, 1 argument is passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
-                        '\-\>__construct\(',
-                            '\$a = \(string\(3\)\) "bar"',
-                        '\) inside \(object\) \1',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                static function () {
-                    return new class ('bar')
-                    {
-                        private string $message;
-
-                        public function __construct(string $a)
-                        {
-                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                $this,
-                                new ReflectionMethod(self::class, __FUNCTION__),
-                                func_get_args(),
-                            );
-                        }
-
-                        public function __toString(): string
-                        {
-                            return $this->message;
-                        }
-                    };
-                },
-            ],
-            [
-                'An anonymous class, 4 named arguments exist, 4 arguments are passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
-                        '\-\>__construct\(',
-                            '\$a = \(string\(3\)\) "bar"',
-                            ', \$b = \(int\) 42',
-                            ', \$c = \(bool\) true',
-                            ', \$d = \(float\) 3.14',
-                        '\) inside \(object\) \1',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                static function () {
-                    return new class ('bar', 42, true, 3.14)
-                    {
-                        private string $message;
-
-                        public function __construct(string $a, int $b, bool $c, float $d)
-                        {
-                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                $this,
-                                new ReflectionMethod(self::class, __FUNCTION__),
-                                func_get_args(),
-                            );
-                        }
-
-                        public function __toString(): string
-                        {
-                            return $this->message;
-                        }
-                    };
-                },
-            ],
-            [
-                'An anonymous class, 4 named arguments exist, 5 arguments are passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)',
-                        '\-\>__construct\(',
-                            '\$a = \(string\(3\)\) "bar"',
-                            ', \$b = \(int\) 42',
-                            ', \$c = \(bool\) true',
-                            ', \$d = \(float\) 3.14',
-                            ', \{4\} = \(string\(5\)\) "extra"',
-                        '\) inside \(object\) \1',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                static function () {
-                    /** @phpstan-ignore-next-line */
-                    return new class ('bar', 42, true, 3.14, 'extra')
-                    {
-                        private string $message;
-
-                        public function __construct(string $a, int $b, bool $c, float $d)
-                        {
-                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                $this,
-                                new ReflectionMethod(self::class, __FUNCTION__),
-                                func_get_args(),
-                            );
-                        }
-
-                        public function __toString(): string
-                        {
-                            return $this->message;
-                        }
-                    };
-                },
-            ],
-            [
-                'An anonymous class, 1 named argument exists with an arithmetic default value, no arguments are passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in (class@anonymous.+?\/%s:\d+)',
-                        '\-\>__construct\(',
-                            '\$a = \(int\) 42',
-                        '\) inside \(object\) \1',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                static function () {
-                    return new class
-                    {
-                        private string $message;
-
-                        public function __construct(int $a = 42)
-                        {
-                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                $this,
-                                new ReflectionMethod(self::class, __FUNCTION__),
-                                func_get_args(),
-                            );
-                        }
-
-                        public function __toString(): string
-                        {
-                            return $this->message;
-                        }
-                    };
-                },
-            ],
-            [
-                'A class, 1 named argument exists with a constant default value, no arguments are passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in (\\\\%s)\-\>__construct\(',
-                            '\$a = \(int\) 99',
-                        '\) inside \(object\) \1',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(
-                        TestMakeFailureInMethodMessageWorksWithNonStaticMethodsAClassWithADefaultConstant::class,
-                        '/',
-                    ),
-                ),
-                static function () {
-                    return new TestMakeFailureInMethodMessageWorksWithNonStaticMethodsAClassWithADefaultConstant();
-                },
-            ],
-            [
-                'An anonymous class, 2 named argument, 2nd argument is nullable and null is passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in (class@anonymous.+?\/%s:\d+)',
-                        '\-\>__construct\(',
-                            '\$a = \(int\) 42',
-                            ', \$b = \(null\) null',
-                        '\) inside \(object\) \1',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                static function () {
-                    return new class (42, null)
-                    {
-                        private string $message;
-
-                        public function __construct(int $a, ?string $b)
-                        {
-                            $this->message = ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                $this,
-                                new ReflectionMethod(self::class, __FUNCTION__),
-                                func_get_args(),
-                            );
-                        }
-
-                        public function __toString(): string
-                        {
-                            return $this->message;
-                        }
-                    };
-                },
-            ],
-            [
-                'A named class, 0 named arguments exist, 0 arguments are passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in \\\\%s->__construct\(\)',
-                        ' inside \(object\) \\\\%s',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
-                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
-                ),
-                static function () {
-                    return new TestMakeFailureInMethodMessageWorksClassANoNamedArguments();
-                },
-            ],
-            [
-                'A named class, 0 named arguments exist, 1 argument is passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in \\\\%s->__construct\(',
-                            '\{0\} = \(string\(5\)\) "extra"',
-                        '\) inside \(object\) \\\\%s',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
-                    preg_quote(TestMakeFailureInMethodMessageWorksClassANoNamedArguments::class, '/'),
-                ),
-                static function () {
-                    return new TestMakeFailureInMethodMessageWorksClassANoNamedArguments('extra');
-                },
-            ],
-            [
-                'A named class, 4 named arguments exist, 4 arguments are passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in \\\\%s->__construct\(',
-                            '\$a = \(string\(3\)\) "bar"',
-                            ', \$b = \(int\) 42',
-                            ', \$c = \(bool\) true',
-                            ', \$d = \(float\) 3.14',
-                        '\)',
-                        ' inside \(object\) \\\\%s',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
-                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
-                ),
-                static function () {
-                    return new TestMakeFailureInMethodMessageWorksClassB4NamedArguments('bar', 42, true, 3.14);
-                },
-            ],
-            [
-                'A named class, 4 named arguments exist, 5 arguments are passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in \\\\%s->__construct\(',
-                            '\$a = \(string\(3\)\) "bar"',
-                            ', \$b = \(int\) 42',
-                            ', \$c = \(bool\) true',
-                            ', \$d = \(float\) 3.14',
-                            ', \{4\} = \(string\(5\)\) "extra"',
-                        '\)',
-                        ' inside \(object\) \\\\%s',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
-                    preg_quote(TestMakeFailureInMethodMessageWorksClassB4NamedArguments::class, '/'),
-                ),
-                static function () {
-                    return new TestMakeFailureInMethodMessageWorksClassB4NamedArguments(
-                        'bar',
-                        42,
-                        true,
-                        3.14,
-                        'extra',
-                    );
-                },
-            ],
-            [
-                'A named class, where method signature changes between uppermost class and parent classes',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in \\\\%s->__construct\(',
-                            '\$a = \(int\) 42',
-                            ', \$b = \(bool\) true',
-                            ', \$c = \(string\(3\)\) "foo"',
-                        '\) inside \(object\) \\\\%s',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesC::class, '/'), // phpcs:ignore
-                    preg_quote(TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesA::class, '/'), // phpcs:ignore
-                ),
-                static function () {
-                    return new TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesA( // phpcs:ignore
-                        42,
-                    );
-                },
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider dataProviderTestMakeFailureInMethodMessageWorksWithStaticMethods
-     */
+    #[DataProvider('providerTestMakeFailureInMethodMessageWorksWithStaticMethods')]
     public function testMakeFailureInMethodMessageWorksWithStaticMethods(
         string $message,
         string $expectedRegex,
@@ -1146,75 +1304,6 @@ class ExceptionMessageGeneratorTest extends TestCase
             $callback(),
             $message,
         );
-    }
-
-    /**
-     * @return array<int, array{0: string, 1: string, 2: object}>
-     */
-    public function dataProviderTestMakeFailureInMethodMessageWorksWithStaticMethods(): array
-    {
-        return [
-            [
-                'An anonymous class, no named arguments exist, no arguments are passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)::foo\(\)',
-                        ' inside \(class\) \1',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                static function () {
-                    $class = new class
-                    {
-                        public static function foo(): string
-                        {
-                            return ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                static::class,
-                                new ReflectionMethod(static::class, __FUNCTION__),
-                                func_get_args(),
-                            );
-                        }
-                    };
-
-                    return $class::foo();
-                },
-            ],
-            [
-                'An anonymous class, no named arguments exist, 1 argument is passed',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in (class@anonymous\/in\/.+\/%s:\d+)::foo\(',
-                            '\{0\} = \(string\(5\)\) "extra"',
-                        '\)',
-                        ' inside \(class\) \1',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                static function () {
-                    $class = new class
-                    {
-                        public static function foo(): string
-                        {
-                            return ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                                static::class,
-                                new ReflectionMethod(static::class, __FUNCTION__),
-                                func_get_args(),
-                            );
-                        }
-                    };
-
-                    return $class::foo('extra'); // @phpstan-ignore-line
-                },
-            ],
-        ];
     }
 
     public function testMakeFailureInMethodMessageWorksWhenArgumentObjectOrClassNameRefersToTheSameClassAsThatForArgumentReflectionMethod(): void // phpcs:ignore
@@ -1457,9 +1546,7 @@ class ExceptionMessageGeneratorTest extends TestCase
         $this->fail('Exception was never thrown.');
     }
 
-    /**
-     * @dataProvider dataProviderTestMakeUninitializedPropertySafeToTextualIdentifierStringWorks
-     */
+    #[DataProvider('providerTestMakeUninitializedPropertySafeToTextualIdentifierStringWorks')]
     public function testMakeUninitializedPropertySafeToTextualIdentifierStringWorks(
         string $message,
         string $expectedRegex,
@@ -1476,98 +1563,6 @@ class ExceptionMessageGeneratorTest extends TestCase
             ),
             $message
         );
-    }
-
-    /**
-     * @return array<int, array{0: string, 1: string, 2: object}>
-     */
-    public function dataProviderTestMakeUninitializedPropertySafeToTextualIdentifierStringWorks(): array
-    {
-        return [
-            [
-                'An anonymous class without parent',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'class@anonymous.+?\/%s:\d+ \{',
-                            '\$a = \(uninitialized\)',
-                            ', \$b = \(int\) 42',
-                        '\}',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                new class
-                {
-                    private string $a; // @phpstan-ignore-line
-
-                    private int $b = 42; // @phpstan-ignore-line
-
-                    private bool $c; // @phpstan-ignore-line
-                },
-            ],
-            [
-                'An anonymous class with a parent and $a property on the parent class',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        '\\\\%s@anonymous.+?\/%s:\d+ \{',
-                            '\$a = \(uninitialized\)',
-                            ', \$b = \(int\) 42',
-                        '\}',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(
-                        TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassBParent::class,
-                        '/',
-                    ),
-                    preg_quote(basename(__FILE__), '/'),
-                ),
-                new class extends TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassBParent {
-                    private int $b = 42; // @phpstan-ignore-line
-
-                    private bool $c; // @phpstan-ignore-line
-                },
-            ],
-            [
-                'A named class without parent',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        '\\\\%s \{',
-                            '\$a = \(uninitialized\)',
-                            ', \$b = \(int\) 42',
-                        '\}',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassA::class, '/'),
-                ),
-                new TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassA(),
-            ],
-            [
-                'A named class with parent and one property being on the parent',
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        '\\\\%s \{',
-                            '\$a = \(uninitialized\)',
-                            ', \$b = \(int\) 42',
-                        '\}',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassB::class, '/'),
-                ),
-                new TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassB(),
-            ],
-        ];
     }
 
     public function testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenAValueInArgumentPropertyNamesToBeShownIsNotAString(): void // phpcs:ignore
@@ -1635,10 +1630,12 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
+     * @param Closure(self, string, Throwable):void $expectedCallback
      * @param array<int, string> $propertyNamesToBeShown
-     *
-     * @dataProvider providerTestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist
      */
+    #[DataProvider(
+        'providerTestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist'
+    )]
     public function testMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist(
         string $message,
         Closure $expectedCallback,
@@ -1651,7 +1648,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                 $propertyNamesToBeShown,
             );
         } catch (Throwable $t) {
-            $expectedCallback($message, $t);
+            $expectedCallback($this, $message, $t);
 
             return;
         }
@@ -1660,17 +1657,17 @@ class ExceptionMessageGeneratorTest extends TestCase
     }
 
     /**
-     * @return array<int, array{0: string, 1: Closure, 2: object, 3: array<int, string>}>
+     * @return array<array{string, Closure(self, string, Throwable):void, object, array<int, string>}>
      */
-    public function providerTestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist(): array // phpcs:ignore
+    public static function providerTestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExist(): array // phpcs:ignore
     {
         return [
             [
                 'An anonymous class without parent',
-                function (string $message, Throwable $t): void {
+                static function (self $self, string $message, Throwable $t): void {
                     $currentThrowable = $t;
-                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
-                    $this->assertMatchesRegularExpression(
+                    $self->assertSame(RuntimeException::class, $currentThrowable::class);
+                    $self->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
                                 '/',
@@ -1690,10 +1687,10 @@ class ExceptionMessageGeneratorTest extends TestCase
                     );
 
                     $currentThrowable = $currentThrowable->getPrevious();
-                    $this->assertIsObject($currentThrowable);
+                    $self->assertIsObject($currentThrowable);
                     assert(is_object($currentThrowable)); // Make phpstan happy
-                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
-                    $this->assertMatchesRegularExpression(
+                    $self->assertSame(RuntimeException::class, $currentThrowable::class);
+                    $self->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
                                 '/',
@@ -1711,7 +1708,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                     );
 
                     $currentThrowable = $currentThrowable->getPrevious();
-                    $this->assertTrue(null === $currentThrowable);
+                    $self->assertTrue(null === $currentThrowable);
                 },
                 new class
                 {
@@ -1721,10 +1718,10 @@ class ExceptionMessageGeneratorTest extends TestCase
             ],
             [
                 'An anonymous class with a parent and the $a property on the parent',
-                function (string $message, Throwable $t): void {
+                static function (self $self, string $message, Throwable $t): void {
                     $currentThrowable = $t;
-                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
-                    $this->assertMatchesRegularExpression(
+                    $self->assertSame(RuntimeException::class, $currentThrowable::class);
+                    $self->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
                                 '/',
@@ -1748,10 +1745,10 @@ class ExceptionMessageGeneratorTest extends TestCase
                     );
 
                     $currentThrowable = $currentThrowable->getPrevious();
-                    $this->assertIsObject($currentThrowable);
+                    $self->assertIsObject($currentThrowable);
                     assert(is_object($currentThrowable)); // Make phpstan happy
-                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
-                    $this->assertMatchesRegularExpression(
+                    $self->assertSame(RuntimeException::class, $currentThrowable::class);
+                    $self->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
                                 '/',
@@ -1774,7 +1771,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                     );
 
                     $currentThrowable = $currentThrowable->getPrevious();
-                    $this->assertTrue(null === $currentThrowable);
+                    $self->assertTrue(null === $currentThrowable);
                 },
                 new class extends TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassBParent // phpcs:ignore
                 {
@@ -1784,10 +1781,10 @@ class ExceptionMessageGeneratorTest extends TestCase
             ],
             [
                 'An named class without parent',
-                function (string $message, Throwable $t): void {
+                static function (self $self, string $message, Throwable $t): void {
                     $currentThrowable = $t;
-                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
-                    $this->assertMatchesRegularExpression(
+                    $self->assertSame(RuntimeException::class, $currentThrowable::class);
+                    $self->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
                                 '/',
@@ -1807,10 +1804,10 @@ class ExceptionMessageGeneratorTest extends TestCase
                     );
 
                     $currentThrowable = $currentThrowable->getPrevious();
-                    $this->assertIsObject($currentThrowable);
+                    $self->assertIsObject($currentThrowable);
                     assert(is_object($currentThrowable)); // Make phpstan happy
-                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
-                    $this->assertMatchesRegularExpression(
+                    $self->assertSame(RuntimeException::class, $currentThrowable::class);
+                    $self->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
                                 '/',
@@ -1827,17 +1824,17 @@ class ExceptionMessageGeneratorTest extends TestCase
                     );
 
                     $currentThrowable = $currentThrowable->getPrevious();
-                    $this->assertTrue(null === $currentThrowable);
+                    $self->assertTrue(null === $currentThrowable);
                 },
                 new TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassA(), // phpcs:ignore
                 ['b'],
             ],
             [
                 'An named class with a parent and $a property on parent class',
-                function (string $message, Throwable $t): void {
+                static function (self $self, string $message, Throwable $t): void {
                     $currentThrowable = $t;
-                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
-                    $this->assertMatchesRegularExpression(
+                    $self->assertSame(RuntimeException::class, $currentThrowable::class);
+                    $self->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
                                 '/',
@@ -1857,10 +1854,10 @@ class ExceptionMessageGeneratorTest extends TestCase
                     );
 
                     $currentThrowable = $currentThrowable->getPrevious();
-                    $this->assertIsObject($currentThrowable);
+                    $self->assertIsObject($currentThrowable);
                     assert(is_object($currentThrowable)); // Make phpstan happy
-                    $this->assertSame(RuntimeException::class, $currentThrowable::class);
-                    $this->assertMatchesRegularExpression(
+                    $self->assertSame(RuntimeException::class, $currentThrowable::class);
+                    $self->assertMatchesRegularExpression(
                         sprintf(
                             implode('', [
                                 '/',
@@ -1878,7 +1875,7 @@ class ExceptionMessageGeneratorTest extends TestCase
                     );
 
                     $currentThrowable = $currentThrowable->getPrevious();
-                    $this->assertTrue(null === $currentThrowable);
+                    $self->assertTrue(null === $currentThrowable);
                 },
                 new TestMakeUninitializedPropertySafeToTextualIdentifierStringThrowsExceptionWhenPropertiesDoNotExistClassB(), // phpcs:ignore
                 ['b'],
@@ -1888,10 +1885,10 @@ class ExceptionMessageGeneratorTest extends TestCase
 
     public function testWithCasterWorks(): void
     {
-        $casterA = $this->mockCasterInterface();
+        $casterA = $this->createMock(CasterInterface::class);
         $exceptionMessageGeneratorA = new ExceptionMessageGenerator($casterA);
 
-        $casterB = $this->mockCasterInterface();
+        $casterB = $this->createMock(CasterInterface::class);
         $exceptionMessageGeneratorB = $exceptionMessageGeneratorA->withCaster($casterB);
 
         $this->assertNotSame($exceptionMessageGeneratorA, $exceptionMessageGeneratorB);
@@ -1911,16 +1908,5 @@ class ExceptionMessageGeneratorTest extends TestCase
         $exceptionMessageGeneratorB = ExceptionMessageGenerator::getInstance();
 
         $this->assertSame($exceptionMessageGeneratorA, $exceptionMessageGeneratorB);
-    }
-
-    /**
-     * @return CasterInterface&MockObject
-     */
-    private function mockCasterInterface(): CasterInterface
-    {
-        return $this
-            ->getMockBuilder(CasterInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
     }
 }

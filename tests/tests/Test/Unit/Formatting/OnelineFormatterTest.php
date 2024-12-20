@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
+use Closure;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Formatting\OnelineFormatter;
+use Eboreum\PhpunitWithConsecutiveAlternative\MethodCallExpectation;
 use Exception;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Test\Unit\Eboreum\Exceptional\AbstractTestCase;
 use Throwable;
 
 use function basename;
@@ -19,33 +23,21 @@ use function preg_match;
 use function preg_quote;
 use function sprintf;
 
-class OnelineFormatterTest extends TestCase
+#[CoversClass(OnelineFormatter::class)]
+class OnelineFormatterTest extends AbstractTestCase
 {
-    public function testBasics(): void
-    {
-        $caster = $this->mockCasterInterface();
-
-        $onelineFormatter = new OnelineFormatter($caster);
-
-        $this->assertSame(0, $onelineFormatter->getPreviousThrowableLevel());
-        $this->assertSame($caster, $onelineFormatter->getCaster());
-    }
-
     /**
-     * @dataProvider providerTestFormatWorks
+     * @return array<
+     *   int,
+     *   array{
+     *     string,
+     *     Closure(self):(CasterInterface&MockObject),
+     *     Throwable,
+     *     Closure(OnelineFormatter):OnelineFormatter,
+     *   }
+     * >
      */
-    public function testFormatWorks(
-        string $expectedJSONRegex,
-        OnelineFormatter $onelineFormatter,
-        Throwable $throwable
-    ): void {
-        $this->assertMatchesRegularExpression($expectedJSONRegex, $onelineFormatter->format($throwable));
-    }
-
-    /**
-     * @return array<int, array{0: string, 1: OnelineFormatter, 2: Exception}>
-     */
-    public function providerTestFormatWorks(): array
+    public static function providerTestFormatWorks(): array
     {
         return [
             [
@@ -65,28 +57,28 @@ class OnelineFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
+                static function (self $self): CasterInterface&MockObject {
+                    $caster = $self->createMock(CasterInterface::class);
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem'
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#\d+ /', $v);
+                        },
+                    );
 
-                    return new OnelineFormatter($caster);
-                })(),
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
+
+                    return $caster;
+                },
                 new Exception('foo'),
+                static function (OnelineFormatter $onelineFormatter): OnelineFormatter {
+                    return $onelineFormatter;
+                },
             ],
             [
                 sprintf(
@@ -105,35 +97,28 @@ class OnelineFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
+                static function (self $self): CasterInterface&MockObject {
+                    $caster = $self->createMock(CasterInterface::class);
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem'
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#\d+ /', $v);
+                        },
+                    );
 
-                    $onelineFormatter = new OnelineFormatter($caster);
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
 
-                    /**
-                     * @var OnelineFormatter $onelineFormatter
-                     */
-                    $onelineFormatter = $onelineFormatter->withIsProvidingTimestamp(true);
-
-                    return $onelineFormatter;
-                })(),
+                    return $caster;
+                },
                 new Exception('foo'),
+                static function (OnelineFormatter $onelineFormatter): OnelineFormatter {
+                    return $onelineFormatter->withIsProvidingTimestamp(true);
+                },
             ],
             [
                 sprintf(
@@ -152,28 +137,28 @@ class OnelineFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
+                static function (self $self): CasterInterface&MockObject {
+                    $caster = $self->createMock(CasterInterface::class);
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            "#0 Lorem\n#1 Ipsum\n#2 Dolor",
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#\d+ /', $v);
+                        },
+                    );
 
-                    return new OnelineFormatter($caster);
-                })(),
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation("#0 Lorem\n#1 Ipsum\n#2 Dolor", $callback),
+                    );
+
+                    return $caster;
+                },
                 new Exception('foo'),
+                static function (OnelineFormatter $onelineFormatter): OnelineFormatter {
+                    return $onelineFormatter;
+                },
             ],
             [
                 sprintf(
@@ -208,49 +193,37 @@ class OnelineFormatterTest extends TestCase
                     preg_quote(basename(__FILE__), '/'),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
+                static function (self $self): CasterInterface&MockObject {
+                    $caster = $self->createMock(CasterInterface::class);
 
-                    $caster
-                        ->expects($this->exactly(6))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                            ['bar'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                            ['baz'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                            'bar',
-                            '#0 Ipsum',
-                            'baz',
-                            '#0 Dolor',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#\d+ /', $v);
+                        },
+                    );
 
-                    return new OnelineFormatter($caster);
-                })(),
-                (static function () {
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                        new MethodCallExpectation('bar', 'bar'),
+                        new MethodCallExpectation('#0 Ipsum', $callback),
+                        new MethodCallExpectation('baz', 'baz'),
+                        new MethodCallExpectation('#0 Dolor', $callback),
+                    );
+
+                    return $caster;
+                },
+                (static function (): Exception {
                     $baz = new LogicException('baz', 2);
                     $bar = new RuntimeException('bar', 1, $baz);
 
                     return new Exception('foo', 0, $bar);
                 })(),
+                static function (OnelineFormatter $onelineFormatter): OnelineFormatter {
+                    return $onelineFormatter;
+                },
             ],
             [
                 sprintf(
@@ -277,69 +250,44 @@ class OnelineFormatterTest extends TestCase
                     preg_quote(basename(__FILE__), '/'),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
+                static function (self $self): CasterInterface&MockObject {
+                    $caster = $self->createMock(CasterInterface::class);
 
-                    $caster
-                        ->expects($this->exactly(4))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                            ['bar'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                            'bar',
-                            '#0 Ipsum',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#\d+ /', $v);
+                        },
+                    );
 
-                    $onelineFormatter = new OnelineFormatter($caster);
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                        new MethodCallExpectation('bar', 'bar'),
+                        new MethodCallExpectation('#0 Ipsum', $callback),
+                    );
 
-                    /**
-                     * @var OnelineFormatter $onelineFormatter
-                     */
-                    $onelineFormatter = $onelineFormatter->withMaximumPreviousDepth(1);
-
-                    return $onelineFormatter;
-                })(),
-                (static function () {
+                    return $caster;
+                },
+                (static function (): Exception {
                     $bim = new LogicException('bim', 3);
                     $baz = new LogicException('baz', 2, $bim);
                     $bar = new RuntimeException('bar', 1, $baz);
 
                     return new Exception('foo', 0, $bar);
                 })(),
+                static function (OnelineFormatter $onelineFormatter): OnelineFormatter {
+                    return $onelineFormatter->withMaximumPreviousDepth(1);
+                },
             ],
         ];
     }
 
     /**
-     * @dataProvider providerTestNormalizeStringWorks
-     */
-    public function testNormalizeStringWorks(string $expected, string $str): void
-    {
-        $caster = $this->mockCasterInterface();
-
-        $onelineFormatter = new OnelineFormatter($caster);
-
-        $this->assertSame($expected, $onelineFormatter->normalizeString($str));
-    }
-
-    /**
      * @return array<int, array{0: string, 1: string}>
      */
-    public function providerTestNormalizeStringWorks(): array
+    public static function providerTestNormalizeStringWorks(): array
     {
         return [
             [
@@ -361,14 +309,42 @@ class OnelineFormatterTest extends TestCase
         ];
     }
 
-    /**
-     * @return CasterInterface&MockObject
-     */
-    private function mockCasterInterface(): CasterInterface
+    public function testBasics(): void
     {
-        return $this
-            ->getMockBuilder(CasterInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $caster = $this->createMock(CasterInterface::class);
+
+        $onelineFormatter = new OnelineFormatter($caster);
+
+        $this->assertSame(0, $onelineFormatter->getPreviousThrowableLevel());
+        $this->assertSame($caster, $onelineFormatter->getCaster());
+    }
+
+    /**
+     * @param Closure(self):(CasterInterface&MockObject) $casterFactory
+     * @param Closure(OnelineFormatter):OnelineFormatter $onelineFormatterMutator
+     */
+    #[DataProvider('providerTestFormatWorks')]
+    public function testFormatWorks(
+        string $expectedJSONRegex,
+        Closure $casterFactory,
+        Throwable $throwable,
+        Closure $onelineFormatterMutator,
+    ): void {
+        $caster = $casterFactory($this);
+
+        $onelineFormatter = new OnelineFormatter($caster);
+        $onelineFormatter = $onelineFormatterMutator($onelineFormatter);
+
+        $this->assertMatchesRegularExpression($expectedJSONRegex, $onelineFormatter->format($throwable));
+    }
+
+    #[DataProvider('providerTestNormalizeStringWorks')]
+    public function testNormalizeStringWorks(string $expected, string $str): void
+    {
+        $caster = $this->createMock(CasterInterface::class);
+
+        $onelineFormatter = new OnelineFormatter($caster);
+
+        $this->assertSame($expected, $onelineFormatter->normalizeString($str));
     }
 }

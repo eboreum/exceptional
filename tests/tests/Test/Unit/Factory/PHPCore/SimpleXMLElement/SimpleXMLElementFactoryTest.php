@@ -6,16 +6,17 @@ namespace Test\Unit\Eboreum\Exceptional\Factory\PHPCore\SimpleXMLElement;
 
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Exceptional\Factory\PHPCore\SimpleXMLElement\SimpleXMLElementFactory;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 use function implode;
 
+#[CoversClass(SimpleXMLElementFactory::class)]
 class SimpleXMLElementFactoryTest extends TestCase
 {
     public function testBasics(): void
     {
-        $characterEncoding = $this->mockCharacterEncoding();
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
 
         $simpleXMLElementFactory = new SimpleXMLElementFactory($characterEncoding);
 
@@ -25,7 +26,7 @@ class SimpleXMLElementFactoryTest extends TestCase
 
     public function testCreateSimpleXMLElementWorks(): void
     {
-        $characterEncoding = $this->mockCharacterEncoding();
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
 
         $characterEncoding
             ->expects($this->exactly(3))
@@ -46,11 +47,11 @@ class SimpleXMLElementFactoryTest extends TestCase
 
     public function testWithCharacterEncodingWorks(): void
     {
-        $characterEncodingA = $this->mockCharacterEncoding();
+        $characterEncodingA = $this->createMock(CharacterEncoding::class);
         $simpleXMLElementFactoryA = new SimpleXMLElementFactory($characterEncodingA);
         $simpleXMLElementFactoryB = $simpleXMLElementFactoryA->withCharacterEncoding($characterEncodingA);
 
-        $characterEncodingC = $this->mockCharacterEncoding();
+        $characterEncodingC = $this->createMock(CharacterEncoding::class);
         $simpleXMLElementFactoryC = $simpleXMLElementFactoryA->withCharacterEncoding($characterEncodingC);
 
         $this->assertNotSame($simpleXMLElementFactoryA, $simpleXMLElementFactoryB);
@@ -63,7 +64,7 @@ class SimpleXMLElementFactoryTest extends TestCase
 
     public function testWithXMLVersionWorks(): void
     {
-        $characterEncoding = $this->mockCharacterEncoding();
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
         $simpleXMLElementFactoryA = new SimpleXMLElementFactory($characterEncoding);
         $simpleXMLElementFactoryB = $simpleXMLElementFactoryA->withXMLVersion('1.0');
 
@@ -75,16 +76,5 @@ class SimpleXMLElementFactoryTest extends TestCase
         $this->assertSame('1.0', $simpleXMLElementFactoryA->getXMLVersion());
         $this->assertSame('1.0', $simpleXMLElementFactoryB->getXMLVersion());
         $this->assertSame('2.0', $simpleXMLElementFactoryC->getXMLVersion());
-    }
-
-    /**
-     * @return CharacterEncoding&MockObject
-     */
-    private function mockCharacterEncoding(): CharacterEncoding
-    {
-        return $this
-            ->getMockBuilder(CharacterEncoding::class)
-            ->disableOriginalConstructor()
-            ->getMock();
     }
 }

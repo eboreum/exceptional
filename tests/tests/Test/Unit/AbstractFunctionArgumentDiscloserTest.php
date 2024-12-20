@@ -6,16 +6,17 @@ namespace Test\Unit\Eboreum\Exceptional;
 
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\AbstractFunctionArgumentDiscloser;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
+#[CoversClass(AbstractFunctionArgumentDiscloser::class)]
 class AbstractFunctionArgumentDiscloserTest extends TestCase
 {
     public function testBasics(): void
     {
         $reflectionMethod = new ReflectionMethod($this, __FUNCTION__);
-        $caster = $this->mockCasterInterface();
+        $caster = $this->createMock(CasterInterface::class);
 
         $object = new class ($caster, $reflectionMethod, []) extends AbstractFunctionArgumentDiscloser
         {
@@ -39,16 +40,5 @@ class AbstractFunctionArgumentDiscloserTest extends TestCase
         };
 
         $this->assertSame($reflectionMethod, $object->getReflectionFunction());
-    }
-
-    /**
-     * @return CasterInterface&MockObject
-     */
-    private function mockCasterInterface(): CasterInterface
-    {
-        return $this
-            ->getMockBuilder(CasterInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
     }
 }

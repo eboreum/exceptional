@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
+use Closure;
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Exception\RuntimeException;
@@ -11,12 +12,15 @@ use Eboreum\Exceptional\Factory\PHPCore\SimpleXMLElement\SimpleXMLElementFactory
 use Eboreum\Exceptional\Formatting\AbstractFormatter;
 use Eboreum\Exceptional\Formatting\AbstractXMLFormatter;
 use Eboreum\Exceptional\Formatting\XMLFormatter;
+use Eboreum\PhpunitWithConsecutiveAlternative\MethodCallExpectation;
 use Error;
 use Exception;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
+use Test\Unit\Eboreum\Exceptional\AbstractTestCase;
 use Throwable;
 
 use function assert;
@@ -27,32 +31,20 @@ use function preg_match;
 use function preg_quote;
 use function sprintf;
 
-class XMLFormatterTest extends TestCase
+#[CoversClass(XMLFormatter::class)]
+class XMLFormatterTest extends AbstractTestCase
 {
-    public function testBasics(): void
-    {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
-
-        $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
-
-        $this->assertSame($characterEncoding, $xmlFormatter->getCharacterEncoding());
-        $this->assertSame(0, $xmlFormatter->getPreviousThrowableLevel());
-        $this->assertSame($caster, $xmlFormatter->getCaster());
-    }
-
     /**
-     * @dataProvider providerTestFormatWorks
+     * @return array<
+     *   int,
+     *   array{
+     *     string,
+     *     Closure(self):array{CasterInterface&MockObject, CharacterEncoding&MockObject},
+     *     Throwable,
+     *     Closure(self, XMLFormatter):XMLFormatter,
+     * }>
      */
-    public function testFormatWorks(string $expectedXMLRegex, XMLFormatter $xmlFormatter, Throwable $throwable): void
-    {
-        $this->assertMatchesRegularExpression($expectedXMLRegex, $xmlFormatter->format($throwable));
-    }
-
-    /**
-     * @return array<int, array{0: string, 1: XMLFormatter, 2: Throwable}>
-     */
-    public function providerTestFormatWorks(): array
+    public static function providerTestFormatWorks(): array
     {
         return [
             [
@@ -75,35 +67,35 @@ class XMLFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
                     $characterEncoding
-                        ->expects($this->any())
+                        ->expects($self->any())
                         ->method('__toString')
                         ->with()
                         ->willReturn('UTF-8');
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    return new XMLFormatter($caster, $characterEncoding);
-                })(),
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
+
+                    return [$caster, $characterEncoding];
+                },
                 new Exception('foo'),
+                static function (self $self, XMLFormatter $xmlFormatter): XMLFormatter {
+                    return $xmlFormatter;
+                },
             ],
             [
                 sprintf(
@@ -125,35 +117,35 @@ class XMLFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
                     $characterEncoding
-                        ->expects($this->any())
+                        ->expects($self->any())
                         ->method('__toString')
                         ->with()
                         ->willReturn('UTF-8');
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    return new XMLFormatter($caster, $characterEncoding);
-                })(),
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
+
+                    return [$caster, $characterEncoding];
+                },
                 new Error('foo'),
+                static function (self $self, XMLFormatter $xmlFormatter): XMLFormatter {
+                    return $xmlFormatter;
+                },
             ],
             [
                 sprintf(
@@ -175,42 +167,35 @@ class XMLFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
                     $characterEncoding
-                        ->expects($this->any())
+                        ->expects($self->any())
                         ->method('__toString')
                         ->with()
                         ->willReturn('UTF-8');
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
 
-                    /**
-                     * @var XMLFormatter $xmlFormatter
-                     */
-                    $xmlFormatter = $xmlFormatter->withIsPrettyPrinting(true);
-
-                    return $xmlFormatter;
-                })(),
+                    return [$caster, $characterEncoding];
+                },
                 new Exception('foo'),
+                static function (self $self, XMLFormatter $xmlFormatter): XMLFormatter {
+                    return $xmlFormatter->withIsPrettyPrinting(true);
+                },
             ],
             [
                 sprintf(
@@ -233,42 +218,35 @@ class XMLFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
                     $characterEncoding
-                        ->expects($this->any())
+                        ->expects($self->any())
                         ->method('__toString')
                         ->with()
                         ->willReturn('UTF-8');
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
 
-                    /**
-                     * @var XMLFormatter $xmlFormatter
-                     */
-                    $xmlFormatter = $xmlFormatter->withIsProvidingTimestamp(true);
-
-                    return $xmlFormatter;
-                })(),
+                    return [$caster, $characterEncoding];
+                },
                 new Exception('foo'),
+                static function (self $self, XMLFormatter $xmlFormatter): XMLFormatter {
+                    return $xmlFormatter->withIsProvidingTimestamp(true);
+                },
             ],
             [
                 sprintf(
@@ -308,56 +286,44 @@ class XMLFormatterTest extends TestCase
                     preg_quote(basename(__FILE__), '/'),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
                     $characterEncoding
-                        ->expects($this->any())
+                        ->expects($self->any())
                         ->method('__toString')
                         ->with()
                         ->willReturn('UTF-8');
 
-                    $caster
-                        ->expects($this->exactly(6))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                            ['bar'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                            ['baz'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                            'bar',
-                            '#0 Ipsum',
-                            'baz',
-                            '#0 Dolor',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    return new XMLFormatter($caster, $characterEncoding);
-                })(),
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                        new MethodCallExpectation('bar', 'bar'),
+                        new MethodCallExpectation('#0 Ipsum', $callback),
+                        new MethodCallExpectation('baz', 'baz'),
+                        new MethodCallExpectation('#0 Dolor', $callback),
+                    );
+
+                    return [$caster, $characterEncoding];
+                },
                 (static function () {
                     $baz = new LogicException('baz', 2);
                     $bar = new \RuntimeException('bar', 1, $baz);
 
                     return new Exception('foo', 0, $bar);
                 })(),
+                static function (self $self, XMLFormatter $xmlFormatter): XMLFormatter {
+                    return $xmlFormatter;
+                },
             ],
             [
                 sprintf(
@@ -388,49 +354,33 @@ class XMLFormatterTest extends TestCase
                     preg_quote(basename(__FILE__), '/'),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
                     $characterEncoding
-                        ->expects($this->any())
+                        ->expects($self->any())
                         ->method('__toString')
                         ->with()
                         ->willReturn('UTF-8');
 
-                    $caster
-                        ->expects($this->exactly(4))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                            ['bar'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                            'bar',
-                            '#0 Ipsum',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                        new MethodCallExpectation('bar', 'bar'),
+                        new MethodCallExpectation('#0 Ipsum', $callback),
+                    );
 
-                    /**
-                     * @var XMLFormatter $xmlFormatter
-                     */
-                    $xmlFormatter = $xmlFormatter->withMaximumPreviousDepth(1);
-
-                    return $xmlFormatter;
-                })(),
+                    return [$caster, $characterEncoding];
+                },
                 (static function () {
                     $bim = new LogicException('bim', 3);
                     $baz = new LogicException('baz', 2, $bim);
@@ -438,6 +388,9 @@ class XMLFormatterTest extends TestCase
 
                     return new Exception('foo', 0, $bar);
                 })(),
+                static function (self $self, XMLFormatter $xmlFormatter): XMLFormatter {
+                    return $xmlFormatter->withMaximumPreviousDepth(1);
+                },
             ],
             [
                 sprintf(
@@ -459,35 +412,35 @@ class XMLFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
                     $characterEncoding
-                        ->expects($this->any())
+                        ->expects($self->any())
                         ->method('__toString')
                         ->with()
                         ->willReturn('UTF-8');
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['æøå'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'æøå',
-                            '#0 Lorem',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    return new XMLFormatter($caster, $characterEncoding);
-                })(),
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('æøå', 'æøå'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
+
+                    return [$caster, $characterEncoding];
+                },
                 new Exception('æøå'),
+                static function (self $self, XMLFormatter $xmlFormatter): XMLFormatter {
+                    return $xmlFormatter;
+                },
             ],
             [
                 sprintf(
@@ -509,57 +462,82 @@ class XMLFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
-                    $simpleXMLElementFactory = $this->mockSimpleXMLElementFactory();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
                     $characterEncoding
-                        ->expects($this->any())
+                        ->expects($self->any())
                         ->method('__toString')
                         ->with()
                         ->willReturn('UTF-8');
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
+
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
+
+                    return [$caster, $characterEncoding];
+                },
+                new Exception('foo'),
+                static function (self $self, XMLFormatter $xmlFormatter): XMLFormatter {
+                    $simpleXMLElementFactory = $self->createMock(SimpleXMLElementFactory::class);
 
                     $simpleXMLElementFactory
-                        ->expects($this->exactly(1))
+                        ->expects($self->exactly(1))
                         ->method('createSimpleXMLElement')
                         ->with('exception')
                         ->willReturn(new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><lorem></lorem>'));
 
-                    $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
-
-                    /**
-                     * @var XMLFormatter $xmlFormatter
-                     */
-                    $xmlFormatter = $xmlFormatter->withSimpleXMLElementFactory($simpleXMLElementFactory);
-
-                    return $xmlFormatter;
-                })(),
-                new Exception('foo'),
+                    return $xmlFormatter->withSimpleXMLElementFactory($simpleXMLElementFactory);
+                },
             ],
         ];
     }
 
+    public function testBasics(): void
+    {
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
+
+        $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
+
+        $this->assertSame($characterEncoding, $xmlFormatter->getCharacterEncoding());
+        $this->assertSame(0, $xmlFormatter->getPreviousThrowableLevel());
+        $this->assertSame($caster, $xmlFormatter->getCaster());
+    }
+
+    /**
+     * @param Closure(self):array{CasterInterface&MockObject, CharacterEncoding&MockObject} $factory
+     * @param Closure(self, XMLFormatter):XMLFormatter $xmlFormatterMutator
+     */
+    #[DataProvider('providerTestFormatWorks')]
+    public function testFormatWorks(
+        string $expectedXMLRegex,
+        Closure $factory,
+        Throwable $throwable,
+        Closure $xmlFormatterMutator,
+    ): void {
+        [$caster, $characterEncoding] = $factory($this);
+
+        $xmlFormatter = new XMLFormatter($caster, $characterEncoding);
+        $xmlFormatter = $xmlFormatterMutator($this, $xmlFormatter);
+
+        $this->assertMatchesRegularExpression($expectedXMLRegex, $xmlFormatter->format($throwable));
+    }
+
     public function testFormatThrowsExceptionWhenCharacterEncodingIsNotSupported(): void
     {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
 
         $characterEncoding
             ->expects($this->any())
@@ -582,9 +560,9 @@ class XMLFormatterTest extends TestCase
                         'Failure in \\\\%s-\>format\(',
                             '\$throwable = \(object\) \\\\Exception \{.+\}',
                         '\) inside \(object\) \\\\%s \{',
-                            '\$characterEncoding = \(object\) \\\\Mock_CharacterEncoding_[0-9a-f]{8}',
+                            '\$characterEncoding = \(object\) \\\\MockObject_CharacterEncoding_[0-9a-f]{8}',
                             ', \\\\%s\-\>\$isPrettyPrinting = \(bool\) false',
-                            ', \\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
+                            ', \\\\%s\-\>\$caster = \(object\) \\\\MockObject_CasterInterface_[0-9a-f]{8}',
                             ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
                             ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
                             ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
@@ -619,20 +597,6 @@ class XMLFormatterTest extends TestCase
             );
 
             $currentException = $currentException->getPrevious();
-            $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
-            $this->assertMatchesRegularExpression(
-                implode('', [
-                    '/',
-                    '^',
-                    'SimpleXMLElement\:\:__construct\(\)\: Entity: line 1\: parser error \: Invalid XML encoding name',
-                    '$',
-                    '/',
-                ]),
-                $currentException->getMessage(),
-            );
-
-            $currentException = $currentException->getPrevious();
             $this->assertTrue(null === $currentException);
 
             return;
@@ -643,13 +607,13 @@ class XMLFormatterTest extends TestCase
 
     public function testWithSimpleXMLElementFactoryWorks(): void
     {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
 
         $xmlFormatterA = new XMLFormatter($caster, $characterEncoding);
         $xmlFormatterB = $xmlFormatterA->withSimpleXMLElementFactory(null);
 
-        $simpleXMLElementFactoryC = $this->mockSimpleXMLElementFactory();
+        $simpleXMLElementFactoryC = $this->createMock(SimpleXMLElementFactory::class);
 
         $xmlFormatterC = $xmlFormatterA->withSimpleXMLElementFactory($simpleXMLElementFactoryC);
 
@@ -659,38 +623,5 @@ class XMLFormatterTest extends TestCase
         $this->assertSame(null, $xmlFormatterA->getSimpleXMLElementFactory());
         $this->assertSame(null, $xmlFormatterB->getSimpleXMLElementFactory());
         $this->assertSame($simpleXMLElementFactoryC, $xmlFormatterC->getSimpleXMLElementFactory());
-    }
-
-    /**
-     * @return CasterInterface&MockObject
-     */
-    private function mockCasterInterface(): CasterInterface
-    {
-        return $this
-            ->getMockBuilder(CasterInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
-    /**
-     * @return CharacterEncoding&MockObject
-     */
-    private function mockCharacterEncoding(): CharacterEncoding
-    {
-        return $this
-            ->getMockBuilder(CharacterEncoding::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
-    /**
-     * @return SimpleXMLElementFactory&MockObject
-     */
-    private function mockSimpleXMLElementFactory(): SimpleXMLElementFactory
-    {
-        return $this
-            ->getMockBuilder(SimpleXMLElementFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
     }
 }

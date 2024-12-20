@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
+use Closure;
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Formatting\HTML5TableFormatter;
+use Eboreum\PhpunitWithConsecutiveAlternative\MethodCallExpectation;
 use Exception;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Test\Unit\Eboreum\Exceptional\AbstractTestCase;
 use Throwable;
 
 use function basename;
@@ -20,34 +24,20 @@ use function preg_match;
 use function preg_quote;
 use function sprintf;
 
-class HTML5TableFormatterTest extends TestCase
+#[CoversClass(HTML5TableFormatter::class)]
+class HTML5TableFormatterTest extends AbstractTestCase
 {
-    public function testBasics(): void
-    {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
-
-        $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
-
-        $this->assertSame($caster, $html5TableFormatter->getCaster());
-        $this->assertSame($characterEncoding, $html5TableFormatter->getCharacterEncoding());
-    }
-
     /**
-     * @dataProvider providerTestFormatWorks
+     * @return array<
+     *   int, array{
+     *     string,
+     *     Closure(self):array{CasterInterface&MockObject, CharacterEncoding&MockObject},
+     *     Throwable,
+     *     Closure(HTML5TableFormatter):HTML5TableFormatter,
+     *   }
+     * >
      */
-    public function testFormatWorks(
-        string $expectedJSONRegex,
-        HTML5TableFormatter $html5TableFormatter,
-        Throwable $throwable
-    ): void {
-        $this->assertMatchesRegularExpression($expectedJSONRegex, $html5TableFormatter->format($throwable));
-    }
-
-    /**
-     * @return array<int, array{0: string, 1: HTML5TableFormatter, 2: Exception}>
-     */
-    public function providerTestFormatWorks(): array
+    public static function providerTestFormatWorks(): array
     {
         return [
             [
@@ -95,29 +85,30 @@ class HTML5TableFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation(
                             '#0 Lorem',
-                        );
+                            $self->callback(
+                                static function (string $v) {
+                                    return 1 === preg_match('/^#\d+ /', $v);
+                                },
+                            ),
+                        ),
+                    );
 
-                    return new HTML5TableFormatter($caster, $characterEncoding);
-                })(),
+                    return [$caster, $characterEncoding];
+                },
                 new Exception('foo'),
+                static function (HTML5TableFormatter $html5TableFormatter): HTML5TableFormatter {
+                    return $html5TableFormatter;
+                },
             ],
             [
                 sprintf(
@@ -164,36 +155,30 @@ class HTML5TableFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation(
                             '#0 Lorem',
-                        );
+                            $self->callback(
+                                static function (string $v) {
+                                    return 1 === preg_match('/^#\d+ /', $v);
+                                },
+                            ),
+                        ),
+                    );
 
-                    $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
-
-                    /**
-                     * @var HTML5TableFormatter $html5TableFormatter
-                     */
-                    $html5TableFormatter = $html5TableFormatter->withIsPrettyPrinting(true);
-
-                    return $html5TableFormatter;
-                })(),
+                    return [$caster, $characterEncoding];
+                },
                 new Exception('foo'),
+                static function (HTML5TableFormatter $html5TableFormatter): HTML5TableFormatter {
+                    return $html5TableFormatter->withIsPrettyPrinting(true);
+                },
             ],
             [
                 sprintf(
@@ -240,29 +225,30 @@ class HTML5TableFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self) {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['<p class="mellon">foo</p>'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            '<p class="mellon">foo</p>',
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('<p class="mellon">foo</p>', '<p class="mellon">foo</p>'),
+                        new MethodCallExpectation(
                             '#0 Lorem',
-                        );
+                            $self->callback(
+                                static function (string $v) {
+                                    return 1 === preg_match('/^#\d+ /', $v);
+                                },
+                            ),
+                        ),
+                    );
 
-                    return new HTML5TableFormatter($caster, $characterEncoding);
-                })(),
+                    return [$caster, $characterEncoding];
+                },
                 new Exception('<p class="mellon">foo</p>'),
+                static function (HTML5TableFormatter $html5TableFormatter): HTML5TableFormatter {
+                    return $html5TableFormatter;
+                },
             ],
             [
                 sprintf(
@@ -313,36 +299,30 @@ class HTML5TableFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation(
                             '#0 Lorem',
-                        );
+                            $self->callback(
+                                static function (string $v) {
+                                    return 1 === preg_match('/^#\d+ /', $v);
+                                },
+                            ),
+                        ),
+                    );
 
-                    $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
-
-                    /**
-                     * @var HTML5TableFormatter $html5TableFormatter
-                     */
-                    $html5TableFormatter = $html5TableFormatter->withIsProvidingTimestamp(true);
-
-                    return $html5TableFormatter;
-                })(),
+                    return [$caster, $characterEncoding];
+                },
                 new Exception('foo'),
+                static function (HTML5TableFormatter $html5TableFormatter): HTML5TableFormatter {
+                    return $html5TableFormatter->withIsProvidingTimestamp(true);
+                },
             ],
             [
                 sprintf(
@@ -463,50 +443,38 @@ class HTML5TableFormatterTest extends TestCase
                     preg_quote(basename(__FILE__), '/'),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
-                    $caster
-                        ->expects($this->exactly(6))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                            ['bar'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                            ['baz'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                            'bar',
-                            '#0 Lorem',
-                            'baz',
-                            '#0 Lorem',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v) {
+                            return 1 === preg_match('/^#\d+ /', $v);
+                        },
+                    );
 
-                    return new HTML5TableFormatter($caster, $characterEncoding);
-                })(),
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                        new MethodCallExpectation('bar', 'bar'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                        new MethodCallExpectation('baz', 'baz'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
+
+                    return [$caster, $characterEncoding];
+                },
                 (static function () {
                     $baz = new LogicException('baz', 2);
                     $bar = new RuntimeException('bar', 1, $baz);
 
                     return new Exception('foo', 0, $bar);
                 })(),
+                static function (HTML5TableFormatter $html5TableFormatter): HTML5TableFormatter {
+                    return $html5TableFormatter;
+                },
             ],
             [
                 sprintf(
@@ -590,43 +558,27 @@ class HTML5TableFormatterTest extends TestCase
                     preg_quote(basename(__FILE__), '/'),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
-                    $caster
-                        ->expects($this->exactly(4))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                            ['bar'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#\d+ /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                            'bar',
-                            '#0 Lorem',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v) {
+                            return 1 === preg_match('/^#\d+ /', $v);
+                        },
+                    );
 
-                    $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                        new MethodCallExpectation('bar', 'bar'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
 
-                    /**
-                     * @var HTML5TableFormatter $html5TableFormatter
-                     */
-                    $html5TableFormatter = $html5TableFormatter->withMaximumPreviousDepth(1);
-
-                    return $html5TableFormatter;
-                })(),
+                    return [$caster, $characterEncoding];
+                },
                 (static function () {
                     $bim = new LogicException('bim', 3);
                     $baz = new LogicException('baz', 2, $bim);
@@ -634,27 +586,17 @@ class HTML5TableFormatterTest extends TestCase
 
                     return new Exception('foo', 0, $bar);
                 })(),
+                static function (HTML5TableFormatter $html5TableFormatter): HTML5TableFormatter {
+                    return $html5TableFormatter->withMaximumPreviousDepth(1);
+                },
             ],
         ];
     }
 
     /**
-     * @dataProvider providerTestHtmlEncodeWorks
-     */
-    public function testHtmlEncodeWorks(string $expected, string $text): void
-    {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
-
-        $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
-
-        $this->assertSame($expected, $html5TableFormatter->htmlEncode($text));
-    }
-
-    /**
      * @return array<int, array{0: string, 1: string}>
      */
-    public function providerTestHtmlEncodeWorks(): array
+    public static function providerTestHtmlEncodeWorks(): array
     {
         return [
             [
@@ -673,22 +615,9 @@ class HTML5TableFormatterTest extends TestCase
     }
 
     /**
-     * @dataProvider providerTestHtmlEncodeWithLn2BrWorks
-     */
-    public function testHtmlEncodeWithLn2BrWorks(string $expected, string $text): void
-    {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
-
-        $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
-
-        $this->assertSame($expected, $html5TableFormatter->htmlEncodeWithLn2Br($text));
-    }
-
-    /**
      * @return array<int, array{0: string, 1: string}>
      */
-    public function providerTestHtmlEncodeWithLn2BrWorks(): array
+    public static function providerTestHtmlEncodeWithLn2BrWorks(): array
     {
         return [
             [
@@ -710,25 +639,55 @@ class HTML5TableFormatterTest extends TestCase
         ];
     }
 
-    /**
-     * @return CasterInterface&MockObject
-     */
-    private function mockCasterInterface(): CasterInterface
+    public function testBasics(): void
     {
-        return $this
-            ->getMockBuilder(CasterInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
+
+        $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
+
+        $this->assertSame($caster, $html5TableFormatter->getCaster());
+        $this->assertSame($characterEncoding, $html5TableFormatter->getCharacterEncoding());
     }
 
     /**
-     * @return CharacterEncoding&MockObject
+     * @param Closure(self):array{CasterInterface&MockObject, CharacterEncoding&MockObject} $factory
+     * @param Closure(HTML5TableFormatter):HTML5TableFormatter $html5TableFormatterMutator
      */
-    private function mockCharacterEncoding(): CharacterEncoding
+    #[DataProvider('providerTestFormatWorks')]
+    public function testFormatWorks(
+        string $expectedJSONRegex,
+        Closure $factory,
+        Throwable $throwable,
+        Closure $html5TableFormatterMutator,
+    ): void {
+        [$caster, $characterEncoding] = $factory($this);
+
+        $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
+        $html5TableFormatter = $html5TableFormatterMutator($html5TableFormatter);
+
+        $this->assertMatchesRegularExpression($expectedJSONRegex, $html5TableFormatter->format($throwable));
+    }
+
+    #[DataProvider('providerTestHtmlEncodeWorks')]
+    public function testHtmlEncodeWorks(string $expected, string $text): void
     {
-        return $this
-            ->getMockBuilder(CharacterEncoding::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
+
+        $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
+
+        $this->assertSame($expected, $html5TableFormatter->htmlEncode($text));
+    }
+
+    #[DataProvider('providerTestHtmlEncodeWithLn2BrWorks')]
+    public function testHtmlEncodeWithLn2BrWorks(string $expected, string $text): void
+    {
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
+
+        $html5TableFormatter = new HTML5TableFormatter($caster, $characterEncoding);
+
+        $this->assertSame($expected, $html5TableFormatter->htmlEncodeWithLn2Br($text));
     }
 }

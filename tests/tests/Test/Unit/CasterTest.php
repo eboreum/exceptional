@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Test\Unit\Eboreum\Exceptional;
 
 use Eboreum\Exceptional\Caster;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 use function count;
 
+#[CoversClass(Caster::class)]
 class CasterTest extends TestCase
 {
     public function testCreateInstanceWorks(): void

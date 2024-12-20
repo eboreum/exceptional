@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
+use Closure;
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use Eboreum\Exceptional\Formatting\AbstractFormatter;
 use Eboreum\Exceptional\Formatting\JSONFormatter;
+use Eboreum\PhpunitWithConsecutiveAlternative\MethodCallExpectation;
 use Exception;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use stdClass;
+use Test\Unit\Eboreum\Exceptional\AbstractTestCase;
 use Throwable;
 
 use function assert;
@@ -29,35 +33,20 @@ use const JSON_ERROR_NONE;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_UNICODE;
 
-class JSONFormatterTest extends TestCase
+#[CoversClass(JSONFormatter::class)]
+class JSONFormatterTest extends AbstractTestCase
 {
-    public function testBasics(): void
-    {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
-
-        $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
-
-        $this->assertSame($characterEncoding, $jsonFormatter->getCharacterEncoding());
-        $this->assertSame(0, $jsonFormatter->getPreviousThrowableLevel());
-        $this->assertSame($caster, $jsonFormatter->getCaster());
-    }
-
     /**
-     * @dataProvider providerTestFormatWorks
+     * @return array<
+     *   array{
+     *     string,
+     *     Closure(self):array{CasterInterface&MockObject, CharacterEncoding&MockObject},
+     *     Throwable,
+     *     Closure(JSONFormatter):JSONFormatter,
+     *   }
+     * >
      */
-    public function testFormatWorks(
-        string $expectedJSONRegex,
-        JSONFormatter $jsonFormatter,
-        Throwable $throwable
-    ): void {
-        $this->assertMatchesRegularExpression($expectedJSONRegex, $jsonFormatter->format($throwable));
-    }
-
-    /**
-     * @return array<array{0: string, 1: JSONFormatter, 2: Exception}>
-     */
-    public function providerTestFormatWorks(): array
+    public static function providerTestFormatWorks(): array
     {
         return [
             [
@@ -79,29 +68,29 @@ class JSONFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    return new JSONFormatter($caster, $characterEncoding);
-                })(),
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
+
+                    return [$caster, $characterEncoding];
+                },
                 new Exception('foo'),
+                static function (JSONFormatter $jsonFormatter): JSONFormatter {
+                    return $jsonFormatter;
+                },
             ],
             [
                 sprintf(
@@ -123,36 +112,29 @@ class JSONFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self) {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
 
-                    /**
-                     * @var JSONFormatter $jsonFormatter
-                     */
-                    $jsonFormatter = $jsonFormatter->withIsProvidingTimestamp(true);
-
-                    return $jsonFormatter;
-                })(),
+                    return [$caster, $characterEncoding];
+                },
                 new Exception('foo'),
+                static function (JSONFormatter $jsonFormatter): JSONFormatter {
+                    return $jsonFormatter->withIsProvidingTimestamp(true);
+                },
             ],
             [
                 sprintf(
@@ -191,50 +173,38 @@ class JSONFormatterTest extends TestCase
                     preg_quote(basename(__FILE__), '/'),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
-                    $caster
-                        ->expects($this->exactly(6))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                            ['bar'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                            ['baz'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                            'bar',
-                            '#0 Ipsum',
-                            'baz',
-                            '#0 Dolor',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    return new JSONFormatter($caster, $characterEncoding);
-                })(),
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                        new MethodCallExpectation('bar', 'bar'),
+                        new MethodCallExpectation('#0 Ipsum', $callback),
+                        new MethodCallExpectation('baz', 'baz'),
+                        new MethodCallExpectation('#0 Dolor', $callback),
+                    );
+
+                    return [$caster, $characterEncoding];
+                },
                 (static function () {
                     $baz = new LogicException('baz', 2);
                     $bar = new \RuntimeException('bar', 1, $baz);
 
                     return new Exception('foo', 0, $bar);
                 })(),
+                static function (JSONFormatter $jsonFormatter): JSONFormatter {
+                    return $jsonFormatter;
+                },
             ],
             [
                 sprintf(
@@ -264,43 +234,27 @@ class JSONFormatterTest extends TestCase
                     preg_quote(basename(__FILE__), '/'),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
-                    $caster
-                        ->expects($this->exactly(4))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['foo'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                            ['bar'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'foo',
-                            '#0 Lorem',
-                            'bar',
-                            '#0 Ipsum',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('foo', 'foo'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                        new MethodCallExpectation('bar', 'bar'),
+                        new MethodCallExpectation('#0 Ipsum', $callback),
+                    );
 
-                    /**
-                     * @var JSONFormatter $jsonFormatter
-                     */
-                    $jsonFormatter = $jsonFormatter->withMaximumPreviousDepth(1);
-
-                    return $jsonFormatter;
-                })(),
+                    return [$caster, $characterEncoding];
+                },
                 (static function () {
                     $bim = new LogicException('bim', 3);
                     $baz = new LogicException('baz', 2, $bim);
@@ -308,6 +262,9 @@ class JSONFormatterTest extends TestCase
 
                     return new Exception('foo', 0, $bar);
                 })(),
+                static function (JSONFormatter $jsonFormatter): JSONFormatter {
+                    return $jsonFormatter->withMaximumPreviousDepth(1);
+                },
             ],
             [
                 sprintf(
@@ -328,38 +285,62 @@ class JSONFormatterTest extends TestCase
                     ]),
                     preg_quote(basename(__FILE__), '/'),
                 ),
-                (function () {
-                    $caster = $this->mockCasterInterface();
-                    $characterEncoding = $this->mockCharacterEncoding();
+                static function (self $self): array {
+                    $caster = $self->createMock(CasterInterface::class);
+                    $characterEncoding = $self->createMock(CharacterEncoding::class);
 
-                    $caster
-                        ->expects($this->exactly(2))
-                        ->method('maskString')
-                        ->withConsecutive(
-                            ['æøå'],
-                            [
-                                $this->callback(static function (string $v) {
-                                    return (1 === preg_match('/^#0 /', $v));
-                                }),
-                            ],
-                        )
-                        ->willReturnOnConsecutiveCalls(
-                            'æøå',
-                            '#0 Lorem',
-                        );
+                    $callback = $self->callback(
+                        static function (string $v): bool {
+                            return 1 === preg_match('/^#0 /', $v);
+                        },
+                    );
 
-                    $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
+                    $self->expectConsecutiveCalls(
+                        $caster,
+                        'maskString',
+                        new MethodCallExpectation('æøå', 'æøå'),
+                        new MethodCallExpectation('#0 Lorem', $callback),
+                    );
 
-                    /**
-                     * @var JSONFormatter $jsonFormatter
-                     */
-                    $jsonFormatter = $jsonFormatter->withFlags(JSON_UNESCAPED_UNICODE);
-
-                    return $jsonFormatter;
-                })(),
+                    return [$caster, $characterEncoding];
+                },
                 new Exception('æøå'),
+                static function (JSONFormatter $jsonFormatter): JSONFormatter {
+                    return $jsonFormatter->withFlags(JSON_UNESCAPED_UNICODE);
+                },
             ],
         ];
+    }
+
+    public function testBasics(): void
+    {
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
+
+        $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
+
+        $this->assertSame($characterEncoding, $jsonFormatter->getCharacterEncoding());
+        $this->assertSame(0, $jsonFormatter->getPreviousThrowableLevel());
+        $this->assertSame($caster, $jsonFormatter->getCaster());
+    }
+
+    /**
+     * @param Closure(self):array{CasterInterface&MockOBject, CharacterEncoding&MockObject} $factory
+     * @param Closure(JSONFormatter):JSONFormatter $jsonFormatterMutator
+     */
+    #[DataProvider('providerTestFormatWorks')]
+    public function testFormatWorks(
+        string $expectedJSONRegex,
+        Closure $factory,
+        Throwable $throwable,
+        Closure $jsonFormatterMutator,
+    ): void {
+        [$caster, $characterEncoding] = $factory($this);
+
+        $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
+        $jsonFormatter = $jsonFormatterMutator($jsonFormatter);
+
+        $this->assertMatchesRegularExpression($expectedJSONRegex, $jsonFormatter->format($throwable));
     }
 
     public function testFormatThrowsExceptionWhenMaximumChildDepthIsReached(): void
@@ -367,24 +348,21 @@ class JSONFormatterTest extends TestCase
         $bar = new \RuntimeException('bar', 1);
         $foo = new Exception('foo', 0, $bar);
 
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
 
-        $caster
-            ->expects($this->exactly(2))
-            ->method('maskString')
-            ->withConsecutive(
-                ['foo'],
-                [
-                    $this->callback(static function (string $v) {
-                        return (1 === preg_match('/^#0 /', $v));
-                    }),
-                ],
-            )
-            ->willReturnOnConsecutiveCalls(
-                'foo',
-                '#0 Lorem',
-            );
+        $callback = $this->callback(
+            static function (string $v): bool {
+                return 1 === preg_match('/^#0 /', $v);
+            },
+        );
+
+        $this->expectConsecutiveCalls(
+            $caster,
+            'maskString',
+            new MethodCallExpectation('foo', 'foo'),
+            new MethodCallExpectation('#0 Lorem', $callback),
+        );
 
         $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
         $jsonFormatter = $jsonFormatter->withDepth(1);
@@ -402,8 +380,8 @@ class JSONFormatterTest extends TestCase
                         'Failure in \\\\%s-\>format\(',
                             '\$throwable = \(object\) \\\\Exception \{.+\}',
                         '\) inside \(object\) \\\\%s \{',
-                            '\$characterEncoding = \(object\) \\\\Mock_CharacterEncoding_[0-9a-f]{8}',
-                            ', \\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
+                            '\$characterEncoding = \(object\) \\\\MockObject_CharacterEncoding_[0-9a-f]{8}',
+                            ', \\\\%s\-\>\$caster = \(object\) \\\\MockObject_CasterInterface_[0-9a-f]{8}',
                             ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
                             ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
                             ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
@@ -450,24 +428,21 @@ class JSONFormatterTest extends TestCase
         $bar = new \RuntimeException('bar', 1);
         $foo = new Exception('foo', 0, $bar);
 
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
 
-        $caster
-            ->expects($this->exactly(2))
-            ->method('maskString')
-            ->withConsecutive(
-                ['foo'],
-                [
-                    $this->callback(static function (string $v) {
-                        return (1 === preg_match('/^#0 /', $v));
-                    }),
-                ],
-            )
-            ->willReturnOnConsecutiveCalls(
-                'foo',
-                '#0 Lorem',
-            );
+        $callback = $this->callback(
+            static function (string $v): bool {
+                return 1 === preg_match('/^#0 /', $v);
+            },
+        );
+
+        $this->expectConsecutiveCalls(
+            $caster,
+            'maskString',
+            new MethodCallExpectation('foo', 'foo'),
+            new MethodCallExpectation('#0 Lorem', $callback),
+        );
 
         $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
         $jsonFormatter = $jsonFormatter->withDepth(1);
@@ -485,8 +460,8 @@ class JSONFormatterTest extends TestCase
                         'Failure in \\\\%s-\>format\(',
                             '\$throwable = \(object\) \\\\Exception \{.+\}',
                         '\) inside \(object\) \\\\%s \{',
-                            '\$characterEncoding = \(object\) \\\\Mock_CharacterEncoding_[0-9a-f]{8}',
-                            ', \\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
+                            '\$characterEncoding = \(object\) \\\\MockObject_CharacterEncoding_[0-9a-f]{8}',
+                            ', \\\\%s\-\>\$caster = \(object\) \\\\MockObject_CasterInterface_[0-9a-f]{8}',
                             ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
                             ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
                             ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
@@ -530,8 +505,8 @@ class JSONFormatterTest extends TestCase
 
     public function testFormatThrowsExceptionWhenJsonEncodeFailsByReturningFalse(): void
     {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
 
         $jsonFormatter = new class ($caster, $characterEncoding) extends JSONFormatter
         {
@@ -567,8 +542,8 @@ class JSONFormatterTest extends TestCase
                         'Failure in \\\\%s-\>format\(',
                             '\$throwable = \(object\) \\\\Exception \{.+\}',
                         '\) inside \(object\) \\\\%s@anonymous\/in\/.+\/%s:\d+ \{',
-                            '\\\\%s\-\>\$characterEncoding = \(object\) \\\\Mock_CharacterEncoding_[0-9a-f]{8}',
-                            ', \\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
+                            '\\\\%s\-\>\$characterEncoding = \(object\) \\\\MockObject_CharacterEncoding_[0-9a-f]{8}',
+                            ', \\\\%s\-\>\$caster = \(object\) \\\\MockObject_CasterInterface_[0-9a-f]{8}',
                             ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
                             ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
                             ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
@@ -614,8 +589,8 @@ class JSONFormatterTest extends TestCase
 
     public function testFormatThrowsExceptionWhenJsonEncodeFailsByThrowingException(): void
     {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
 
         $jsonFormatter = new class ($caster, $characterEncoding) extends JSONFormatter
         {
@@ -652,8 +627,8 @@ class JSONFormatterTest extends TestCase
                         'Failure in \\\\%s-\>format\(',
                             '\$throwable = \(object\) \\\\Exception \{.+\}',
                         '\) inside \(object\) \\\\%s@anonymous\/in\/.+\/%s:\d+ \{',
-                            '\\\\%s\-\>\$characterEncoding = \(object\) \\\\Mock_CharacterEncoding_[0-9a-f]{8}',
-                            ', \\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
+                            '\\\\%s\-\>\$characterEncoding = \(object\) \\\\MockObject_CharacterEncoding_[0-9a-f]{8}',
+                            ', \\\\%s\-\>\$caster = \(object\) \\\\MockObject_CasterInterface_[0-9a-f]{8}',
                             ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
                             ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
                             ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
@@ -714,8 +689,8 @@ class JSONFormatterTest extends TestCase
 
     public function testWithDepthWorks(): void
     {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
 
         $jsonFormatterA = new JSONFormatter($caster, $characterEncoding);
 
@@ -732,8 +707,8 @@ class JSONFormatterTest extends TestCase
 
     public function testWithDepthThrowsExceptionWhenArgumentDepthIsOutOfBounds(): void
     {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
 
         $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
 
@@ -750,8 +725,8 @@ class JSONFormatterTest extends TestCase
                         'Failure in \\\\%s-\>withDepth\(',
                             '\$depth = \(int\) 0',
                         '\) inside \(object\) \\\\%s \{',
-                            '\$characterEncoding = \(object\) \\\\Mock_CharacterEncoding_[0-9a-f]{8}',
-                            ', \\\\%s\-\>\$caster = \(object\) \\\\Mock_CasterInterface_[0-9a-f]{8}',
+                            '\$characterEncoding = \(object\) \\\\MockObject_CharacterEncoding_[0-9a-f]{8}',
+                            ', \\\\%s\-\>\$caster = \(object\) \\\\MockObject_CasterInterface_[0-9a-f]{8}',
                             ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
                             ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
                             ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
@@ -795,8 +770,8 @@ class JSONFormatterTest extends TestCase
 
     public function testWithFlagsWorks(): void
     {
-        $caster = $this->mockCasterInterface();
-        $characterEncoding = $this->mockCharacterEncoding();
+        $caster = $this->createMock(CasterInterface::class);
+        $characterEncoding = $this->createMock(CharacterEncoding::class);
 
         $jsonFormatterA = new JSONFormatter($caster, $characterEncoding);
 
@@ -833,27 +808,5 @@ class JSONFormatterTest extends TestCase
             $this->assertIsInt($k);
             $this->assertIsString($v);
         }
-    }
-
-    /**
-     * @return CasterInterface&MockObject
-     */
-    private function mockCasterInterface(): CasterInterface
-    {
-        return $this
-            ->getMockBuilder(CasterInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
-    /**
-     * @return CharacterEncoding&MockObject
-     */
-    private function mockCharacterEncoding(): CharacterEncoding
-    {
-        return $this
-            ->getMockBuilder(CharacterEncoding::class)
-            ->disableOriginalConstructor()
-            ->getMock();
     }
 }

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Test\Unit\Eboreum\Exceptional\Formatting;
 
 use Eboreum\Exceptional\Formatting\AbstractXMLFormatter;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
+#[CoversClass(AbstractXMLFormatter::class)]
 class AbstractXMLFormatterTest extends TestCase
 {
     public function testBasics(): void
