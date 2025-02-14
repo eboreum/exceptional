@@ -32,7 +32,6 @@ use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMake
 use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeUninitializedPropertySafeToTextualIdentifierStringWorksClassBParent; // phpcs:ignore
 use Throwable;
 
-use function assert;
 use function basename;
 use function func_get_args;
 use function implode;
@@ -523,7 +522,6 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
                     preg_quote(basename(__FILE__), '/'),
                 ),
                 static function (): object {
-                    /** @phpstan-ignore-next-line */
                     return new class ('extra')
                     {
                         private string $message;
@@ -639,7 +637,6 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
                     preg_quote(basename(__FILE__), '/'),
                 ),
                 static function (): object {
-                    /** @phpstan-ignore-next-line */
                     return new class ('bar', 42, true, 3.14, 'extra')
                     {
                         private string $message;
@@ -933,7 +930,7 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
                         }
                     };
 
-                    return $class::foo('extra'); // @phpstan-ignore-line
+                    return $class::foo('extra');
                 },
             ],
         ];
@@ -1102,7 +1099,6 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
@@ -1404,7 +1400,6 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
@@ -1466,7 +1461,6 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
 
             $currentThrowable = $currentThrowable->getPrevious();
             $this->assertIsObject($currentThrowable);
-            assert(is_object($currentThrowable)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentThrowable::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -1524,7 +1518,6 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
 
             $currentThrowable = $currentThrowable->getPrevious();
             $this->assertIsObject($currentThrowable);
-            assert(is_object($currentThrowable)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentThrowable::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -1607,7 +1600,6 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
 
             $currentThrowable = $currentThrowable->getPrevious();
             $this->assertIsObject($currentThrowable);
-            assert(is_object($currentThrowable)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentThrowable::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -1689,7 +1681,6 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
 
                     $currentThrowable = $currentThrowable->getPrevious();
                     $self->assertIsObject($currentThrowable);
-                    assert(is_object($currentThrowable)); // Make phpstan happy
                     $self->assertSame(RuntimeException::class, $currentThrowable::class);
                     $self->assertMatchesRegularExpression(
                         sprintf(
@@ -1747,7 +1738,6 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
 
                     $currentThrowable = $currentThrowable->getPrevious();
                     $self->assertIsObject($currentThrowable);
-                    assert(is_object($currentThrowable)); // Make phpstan happy
                     $self->assertSame(RuntimeException::class, $currentThrowable::class);
                     $self->assertMatchesRegularExpression(
                         sprintf(
@@ -1806,7 +1796,6 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
 
                     $currentThrowable = $currentThrowable->getPrevious();
                     $self->assertIsObject($currentThrowable);
-                    assert(is_object($currentThrowable)); // Make phpstan happy
                     $self->assertSame(RuntimeException::class, $currentThrowable::class);
                     $self->assertMatchesRegularExpression(
                         sprintf(
@@ -1856,7 +1845,6 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
 
                     $currentThrowable = $currentThrowable->getPrevious();
                     $self->assertIsObject($currentThrowable);
-                    assert(is_object($currentThrowable)); // Make phpstan happy
                     $self->assertSame(RuntimeException::class, $currentThrowable::class);
                     $self->assertMatchesRegularExpression(
                         sprintf(

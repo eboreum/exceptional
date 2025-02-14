@@ -162,8 +162,6 @@ class XMLFormatter extends AbstractXMLFormatter
             } else {
                 $child = $this->withPreviousThrowableLevel($this->getPreviousThrowableLevel() + 1);
 
-                assert($child instanceof XMLFormatter);
-
                 $previous = $simpleXMLElement->addChild('previous');
                 $child->formatInner($throwable->getPrevious(), $previous);
             }

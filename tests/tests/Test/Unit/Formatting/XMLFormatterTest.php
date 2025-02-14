@@ -23,10 +23,8 @@ use SimpleXMLElement;
 use Test\Unit\Eboreum\Exceptional\AbstractTestCase;
 use Throwable;
 
-use function assert;
 use function basename;
 use function implode;
-use function is_object;
 use function preg_match;
 use function preg_quote;
 use function sprintf;
@@ -583,7 +581,6 @@ class XMLFormatterTest extends AbstractTestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(Exception::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [

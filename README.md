@@ -552,7 +552,7 @@ echo $result;
 ```json
 "eboreum/phpunit-with-consecutive-alternative": "dev-main",
 "nette/neon": "^3.2",
-"phpstan/phpstan": "^1.11",
+"phpstan/phpstan": "^2.1.5",
 "phpunit/phpunit": "^11.3",
 "sebastian/diff": "^6.0",
 "slevomat/coding-standard": "8.15.0",

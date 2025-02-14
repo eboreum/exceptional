@@ -16,11 +16,9 @@ use PHPUnit\Framework\TestCase;
 use ReflectionFunction;
 use ReflectionObject;
 
-use function assert;
 use function count;
 use function func_get_args;
 use function implode;
-use function is_object;
 use function preg_quote;
 use function sprintf;
 use function TestResource\Unit\Eboreum\Exceptional\FunctionArgumentDiscloserTest\testGetDefaultValueForReflectionParameterThrowsExceptionWhenReferencedNamespacedConstantDoesNotExist\foo_0632691243674084af85b52269f0d4d2; // phpcs:ignore
@@ -122,7 +120,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
@@ -162,7 +159,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
@@ -206,21 +202,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(0, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -265,21 +258,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(0, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -323,21 +313,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -384,21 +371,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -445,21 +429,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -506,21 +487,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -567,21 +545,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -628,21 +603,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -690,21 +662,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -751,21 +720,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -807,7 +773,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
@@ -849,7 +814,6 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(1, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
@@ -893,21 +857,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(3, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -951,21 +912,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(3, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -1009,21 +967,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(3, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -1089,21 +1044,18 @@ class FunctionArgumentDiscloserTest extends TestCase
                     $self->assertSame(0, $functionArgumentDiscloser->getOptionalParameterCount(), $message);
                     $self->assertSame(null, $functionArgumentDiscloser->getReflectionParameterByIndex(-1), $message);
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(0), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(0)); // Make phpstan happy
                     $self->assertSame(
                         'a',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(0)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(1), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(1)); // Make phpstan happy
                     $self->assertSame(
                         'b',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(1)->getName(),
                         $message,
                     );
                     $self->assertNotNull($functionArgumentDiscloser->getReflectionParameterByIndex(2), $message);
-                    assert(null !== $functionArgumentDiscloser->getReflectionParameterByIndex(2)); // Make phpstan happy
                     $self->assertSame(
                         'c',
                         $functionArgumentDiscloser->getReflectionParameterByIndex(2)->getName(),
@@ -1185,7 +1137,6 @@ class FunctionArgumentDiscloserTest extends TestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 sprintf(
@@ -1353,7 +1304,6 @@ class FunctionArgumentDiscloserTest extends TestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -1444,7 +1394,6 @@ class FunctionArgumentDiscloserTest extends TestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -1528,7 +1477,6 @@ class FunctionArgumentDiscloserTest extends TestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [

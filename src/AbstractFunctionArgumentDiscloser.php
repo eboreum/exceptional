@@ -9,7 +9,6 @@ use Eboreum\Caster\Contract\ImmutableObjectInterface;
 use Eboreum\Caster\SensitiveValue;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use ReflectionClass;
-use ReflectionClassConstant;
 use ReflectionFunction;
 use ReflectionMethod;
 use ReflectionParameter;
@@ -135,7 +134,6 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                                     );
 
                                     assert(is_object($reflectionClassConstant));
-                                    assert($reflectionClassConstant instanceof ReflectionClassConstant);
 
                                     if ($reflectionClassConstant->isPrivate()) {
                                         if (0 === $currentClassLevelIndex) {
@@ -373,7 +371,6 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
         return (
             array_key_exists($lastNamedParameterIndex, $this->getReflectionFunction()->getParameters())
-            && $this->getReflectionFunction()->getParameters()[$lastNamedParameterIndex] instanceof ReflectionParameter
             && $this->getReflectionFunction()->getParameters()[$lastNamedParameterIndex]->isVariadic()
         );
     }

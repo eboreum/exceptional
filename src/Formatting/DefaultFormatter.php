@@ -11,10 +11,8 @@ use ReflectionObject;
 use Throwable;
 
 use function array_map;
-use function assert;
 use function date;
 use function implode;
-use function is_array;
 use function is_int;
 use function max;
 use function sprintf;
@@ -53,9 +51,6 @@ class DefaultFormatter extends AbstractFormatter
         $indentationNextLevel = $this->makeIndentation($this->getPreviousThrowableLevel() + 1);
         $messageLines = static::splitTextLinesToArray($throwable->getMessage());
         $stacktraceLines = static::splitTextLinesToArray($throwable->getTraceAsString());
-
-        assert(is_array($messageLines));
-        assert(is_array($stacktraceLines));
 
         $result .= sprintf(
             "\n%sMessage:",
