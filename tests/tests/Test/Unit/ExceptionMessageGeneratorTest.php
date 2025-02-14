@@ -15,6 +15,7 @@ use Eboreum\PhpunitWithConsecutiveAlternative\MethodCallExpectation;
 use Exception;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
@@ -1896,9 +1897,7 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
         $this->assertSame($casterB, $exceptionMessageGeneratorB->getCaster());
     }
 
-    /**
-     * @runTestInSeparateProcess
-     */
+    #[RunInSeparateProcess]
     public function testGetInstanceWorks(): void
     {
         $exceptionMessageGeneratorA = ExceptionMessageGenerator::getInstance();
