@@ -550,7 +550,7 @@ echo $result;
 ## Test/development requirements
 
 ```json
-"eboreum/phpunit-with-consecutive-alternative": "dev-main",
+"eboreum/phpunit-with-consecutive-alternative": "^1.0",
 "nette/neon": "^3.2",
 "phpstan/phpstan": "^2.1.5",
 "phpunit/phpunit": "^11.3",
