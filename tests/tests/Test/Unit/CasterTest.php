@@ -6,6 +6,7 @@ namespace Test\Unit\Eboreum\Exceptional;
 
 use Eboreum\Exceptional\Caster;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 
 use function count;
@@ -25,6 +26,7 @@ class CasterTest extends TestCase
         $this->assertGreaterThan(0, count($casterB->getCustomObjectFormatterCollection()));
     }
 
+    #[RunInSeparateProcess]
     public function testGetInstanceWorks(): void
     {
         $casterA = Caster::getInstance();

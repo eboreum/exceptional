@@ -7,6 +7,7 @@ use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\Collection\Formatter\ObjectFormatterCollection;
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Caster\Contract\DebugIdentifierAttributeInterface;
+use Eboreum\Caster\Contract\Formatter\ObjectFormatterInterface;
 use Eboreum\Caster\Contract\TextuallyIdentifiableInterface;
 use Eboreum\Caster\Formatter\Object_\DebugIdentifierAttributeInterfaceFormatter;
 use Eboreum\Caster\Formatter\Object_\TextuallyIdentifiableInterfaceFormatter;
@@ -26,11 +27,11 @@ class Foo1990801ff8324df1b73e323d7fca71a8 implements TextuallyIdentifiableInterf
      */
     public function bar(int $a): string
     {
-        $caster = Caster::getInstance();
-        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection([
-            new TextuallyIdentifiableInterfaceFormatter(),
-        ]));
+        /** @var array<ObjectFormatterInterface> $formatters */
+        $formatters = [new TextuallyIdentifiableInterfaceFormatter()];
 
+        $caster = Caster::getInstance();
+        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection($formatters));
 
         $exceptionMessageGenerator = ExceptionMessageGenerator::getInstance()->withCaster($caster);
 
@@ -73,10 +74,11 @@ class Foo31eda25b57e8456fb2b3e8158232b5e5 implements DebugIdentifierAttributeInt
      */
     public function bar(int $a): string
     {
+        /** @var array<ObjectFormatterInterface> $formatters */
+        $formatters = [new DebugIdentifierAttributeInterfaceFormatter()];
+
         $caster = Caster::getInstance();
-        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection([
-            new DebugIdentifierAttributeInterfaceFormatter(),
-        ]));
+        $caster = $caster->withCustomObjectFormatterCollection(new ObjectFormatterCollection($formatters));
 
         $exceptionMessageGenerator = ExceptionMessageGenerator::getInstance()->withCaster($caster);
 

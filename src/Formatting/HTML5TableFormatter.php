@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Eboreum\Exceptional\Formatting;
 
 use DOMDocument;
-use DOMElement;
-use DOMNodeList;
 use Eboreum\Caster\Attribute\DebugIdentifier;
 use Eboreum\Caster\CharacterEncoding;
 use Eboreum\Caster\Contract\CasterInterface;
@@ -141,13 +139,9 @@ class HTML5TableFormatter extends AbstractXMLFormatter
             $domDocument->loadHTML($html);
 
             $tables = $domDocument->getElementsByTagName('table');
-
-            assert($tables instanceof DOMNodeList);
-
             $table = $tables->item(0);
 
             assert(is_object($table));
-            assert($table instanceof DOMElement);
             assert($table->nodeName === 'table');
 
             $html = $domDocument->saveXML($table);

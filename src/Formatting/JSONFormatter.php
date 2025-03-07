@@ -23,6 +23,7 @@ use function is_string;
 use function json_encode;
 use function json_last_error;
 use function json_last_error_msg;
+use function max;
 use function sprintf;
 use function strval;
 
@@ -143,23 +144,8 @@ class JSONFormatter extends AbstractFormatter
      */
     public function withDepth(int $depth): static
     {
-        try {
-            if (false === ($depth >= 1)) { // @phpstan-ignore-line
-                throw new RuntimeException(sprintf(
-                    'Expects argument $depth to be >= 1, but it is not. Found: %s',
-                    Caster::getInstance()->castTyped($depth),
-                ));
-            }
-
-            $clone = clone $this;
-            $clone->depth = $depth;
-        } catch (Throwable $t) { // @phpstan-ignore-line
-            throw new RuntimeException(ExceptionMessageGenerator::getInstance()->makeFailureInMethodMessage(
-                $this,
-                new ReflectionMethod($this, __FUNCTION__),
-                func_get_args(),
-            ), 0, $t);
-        }
+        $clone = clone $this;
+        $clone->depth = max(1, $depth);
 
         return $clone;
     }
@@ -227,8 +213,6 @@ class JSONFormatter extends AbstractFormatter
 
                 $child = $this->withDepth($childDepth);
                 $child = $child->withPreviousThrowableLevel($this->getPreviousThrowableLevel() + 1);
-
-                assert($child instanceof JSONFormatter);
 
                 $array['previous'] = $child->formatInner($throwable->getPrevious(), $topLevelJSONFormatter);
             }

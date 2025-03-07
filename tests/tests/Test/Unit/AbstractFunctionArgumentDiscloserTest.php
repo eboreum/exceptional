@@ -5,10 +5,16 @@ declare(strict_types=1);
 namespace Test\Unit\Eboreum\Exceptional;
 
 use Eboreum\Caster\Contract\CasterInterface;
+use Eboreum\Caster\SensitiveValue;
 use Eboreum\Exceptional\AbstractFunctionArgumentDiscloser;
+use Eboreum\Exceptional\MethodArgumentDiscloser;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
+use SensitiveParameter;
+
+use function array_key_exists;
+use function assert;
 
 #[CoversClass(AbstractFunctionArgumentDiscloser::class)]
 class AbstractFunctionArgumentDiscloserTest extends TestCase
@@ -40,5 +46,33 @@ class AbstractFunctionArgumentDiscloserTest extends TestCase
         };
 
         $this->assertSame($reflectionMethod, $object->getReflectionFunction());
+    }
+
+    public function testGetNormalizedFunctionArgumentValuesWorksWhenParameterIsSensitive(): void
+    {
+        $object = new class
+        {
+            public function foo(
+                #[SensitiveParameter()]
+                int $bar = 42,
+                int $baz = 43,
+            ): void {
+            }
+        };
+
+        $reflectionMethod = new ReflectionMethod($object, 'foo');
+        $caster = $this->createMock(CasterInterface::class);
+
+        $methodArgumentDiscloser = new MethodArgumentDiscloser($caster, $reflectionMethod, [101, 102]);
+
+        $values = $methodArgumentDiscloser->getNormalizedFunctionArgumentValues();
+
+        $this->assertArrayHasKey(0, $values);
+        assert(array_key_exists(0, $values));
+        $this->assertIsObject($values[0]);
+        $this->assertInstanceOf(SensitiveValue::class, $values[0]);
+        $this->assertArrayHasKey(1, $values);
+        assert(array_key_exists(1, $values));
+        $this->assertSame(102, $values[1]);
     }
 }

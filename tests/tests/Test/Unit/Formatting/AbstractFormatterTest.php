@@ -13,10 +13,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
-use function assert;
 use function basename;
 use function implode;
-use function is_object;
 use function preg_quote;
 use function sprintf;
 
@@ -331,7 +329,6 @@ class AbstractFormatterTest extends TestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [

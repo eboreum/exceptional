@@ -6,12 +6,13 @@ namespace Eboreum\Exceptional;
 
 use Eboreum\Caster\Contract\CasterInterface;
 use Eboreum\Caster\Contract\ImmutableObjectInterface;
+use Eboreum\Caster\SensitiveValue;
 use Eboreum\Exceptional\Exception\RuntimeException;
 use ReflectionClass;
-use ReflectionClassConstant;
 use ReflectionFunction;
 use ReflectionMethod;
 use ReflectionParameter;
+use SensitiveParameter;
 use Throwable;
 
 use function array_key_exists;
@@ -133,7 +134,6 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
                                     );
 
                                     assert(is_object($reflectionClassConstant));
-                                    assert($reflectionClassConstant instanceof ReflectionClassConstant);
 
                                     if ($reflectionClassConstant->isPrivate()) {
                                         if (0 === $currentClassLevelIndex) {
@@ -305,6 +305,12 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
                     assert(is_object($reflectionParameter));
 
+                    if ($reflectionParameter->getAttributes(SensitiveParameter::class)) {
+                        $this->normalizedFunctionArgumentValues[$index] = SensitiveValue::getInstance();
+
+                        continue;
+                    }
+
                     if ($index === $indexLastNamedParameter) {
                         if ($reflectionParameter->isVariadic()) {
                             $this->normalizedFunctionArgumentValues[$index] = array_slice(
@@ -365,7 +371,6 @@ abstract class AbstractFunctionArgumentDiscloser implements ImmutableObjectInter
 
         return (
             array_key_exists($lastNamedParameterIndex, $this->getReflectionFunction()->getParameters())
-            && $this->getReflectionFunction()->getParameters()[$lastNamedParameterIndex] instanceof ReflectionParameter
             && $this->getReflectionFunction()->getParameters()[$lastNamedParameterIndex]->isVariadic()
         );
     }

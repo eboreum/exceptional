@@ -14,7 +14,6 @@ use ReflectionMethod;
 use ReflectionObject;
 use Throwable;
 
-use function assert;
 use function class_exists;
 use function count;
 use function implode;
@@ -311,8 +310,6 @@ class ExceptionMessageGenerator implements ImmutableObjectInterface
                     );
                 }
             } else {
-                assert(is_string($objectOrClassName));
-
                 if (class_exists($objectOrClassName)) {
                     $isClassAcceptable = (
                         $objectOrClassName === $reflectionMethod->getDeclaringClass()->getName()

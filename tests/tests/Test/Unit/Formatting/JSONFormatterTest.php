@@ -20,10 +20,8 @@ use stdClass;
 use Test\Unit\Eboreum\Exceptional\AbstractTestCase;
 use Throwable;
 
-use function assert;
 use function basename;
 use function implode;
-use function is_object;
 use function preg_match;
 use function preg_quote;
 use function sprintf;
@@ -401,7 +399,6 @@ class JSONFormatterTest extends AbstractTestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -481,7 +478,6 @@ class JSONFormatterTest extends AbstractTestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -565,7 +561,6 @@ class JSONFormatterTest extends AbstractTestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -650,7 +645,6 @@ class JSONFormatterTest extends AbstractTestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame(RuntimeException::class, $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -665,7 +659,6 @@ class JSONFormatterTest extends AbstractTestCase
 
             $currentException = $currentException->getPrevious();
             $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
             $this->assertSame('JsonException', $currentException::class);
             $this->assertMatchesRegularExpression(
                 implode('', [
@@ -705,69 +698,6 @@ class JSONFormatterTest extends AbstractTestCase
         $this->assertSame(1, $jsonFormatterC->getDepth());
     }
 
-    public function testWithDepthThrowsExceptionWhenArgumentDepthIsOutOfBounds(): void
-    {
-        $caster = $this->createMock(CasterInterface::class);
-        $characterEncoding = $this->createMock(CharacterEncoding::class);
-
-        $jsonFormatter = new JSONFormatter($caster, $characterEncoding);
-
-        try {
-            $jsonFormatter->withDepth(0); // @phpstan-ignore-line
-        } catch (Exception $e) {
-            $currentException = $e;
-            $this->assertSame(RuntimeException::class, $currentException::class);
-            $this->assertMatchesRegularExpression(
-                sprintf(
-                    implode('', [
-                        '/',
-                        '^',
-                        'Failure in \\\\%s-\>withDepth\(',
-                            '\$depth = \(int\) 0',
-                        '\) inside \(object\) \\\\%s \{',
-                            '\$characterEncoding = \(object\) \\\\MockObject_CharacterEncoding_[0-9a-f]{8}',
-                            ', \\\\%s\-\>\$caster = \(object\) \\\\MockObject_CasterInterface_[0-9a-f]{8}',
-                            ', \\\\%s\-\>\$previousThrowableLevel = \(int\) 0',
-                            ', \\\\%s\-\>\$maximumPreviousDepth = \(null\) null',
-                            ', \\\\%s\-\>\$isProvidingTimestamp = \(bool\) false',
-                        '\}',
-                        '$',
-                        '/',
-                    ]),
-                    preg_quote(JSONFormatter::class, '/'),
-                    preg_quote(JSONFormatter::class, '/'),
-                    preg_quote(AbstractFormatter::class, '/'),
-                    preg_quote(AbstractFormatter::class, '/'),
-                    preg_quote(AbstractFormatter::class, '/'),
-                    preg_quote(AbstractFormatter::class, '/'),
-                ),
-                $currentException->getMessage(),
-            );
-
-            $currentException = $currentException->getPrevious();
-            $this->assertIsObject($currentException);
-            assert(is_object($currentException)); // Make phpstan happy
-            $this->assertSame(RuntimeException::class, $currentException::class);
-            $this->assertMatchesRegularExpression(
-                implode('', [
-                    '/',
-                    '^',
-                    'Expects argument \$depth to be \>\= 1, but it is not\. Found: \(int\) 0',
-                    '$',
-                    '/',
-                ]),
-                $currentException->getMessage(),
-            );
-
-            $currentException = $currentException->getPrevious();
-            $this->assertTrue(null === $currentException);
-
-            return;
-        }
-
-        $this->fail('Exception was never thrown.');
-    }
-
     public function testWithFlagsWorks(): void
     {
         $caster = $this->createMock(CasterInterface::class);
@@ -805,8 +735,8 @@ class JSONFormatterTest extends AbstractTestCase
     public function testGetErrorCodeToTextMapReturnsIntegerIndexedArrayOfStrings(): void
     {
         foreach (JSONFormatter::getErrorCodeToTextMap() as $k => $v) {
-            $this->assertIsInt($k);
-            $this->assertIsString($v);
+            $this->assertIsInt($k); // @phpstan-ignore-line
+            $this->assertIsString($v); // @phpstan-ignore-line
         }
     }
 }
