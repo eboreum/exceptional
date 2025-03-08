@@ -3,7 +3,7 @@
     "description": "Create and format PHP exceptions easily. Automatically unravel method arguments. Ensure that sensitive strings like passwords, tokens, PHPSESSID, etc. are being masked and thus will instead appear as e.g. \"******\" in the resulting text.",
     "type": "library",
     "require": {
-        "php": "^8.1",
+        "php": "^8.3",
         "eboreum/caster": "^2.1"
     },
     "require-dev": {
