@@ -218,6 +218,14 @@ See [`LICENSE`](LICENSE) file. Basically: Use this library at your own risk.
 
 We prefer that you create a ticket and or a pull request at https://github.com/eboreum/exceptional, and have a discussion about a feature or bug here.
 
+## Branch rules
+
+[`main`](https://github.com/eboreum/exceptional/tree/main) = `2.x` (not a tag)
+
+Previous branches:
+
+- [`1.x`](https://github.com/eboreum/exceptional/tree/1.x)
+
 # Credits
 
 ## Authors
