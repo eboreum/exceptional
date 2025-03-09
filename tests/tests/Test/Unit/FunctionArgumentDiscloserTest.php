@@ -1099,6 +1099,7 @@ class FunctionArgumentDiscloserTest extends TestCase
 
     /**
      * @param array<int, int> $functionArgumentValues
+     * @param Closure():ReflectionFunction $callback
      */
     #[DataProvider('providerTestConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction')] // phpcs:ignore
     public function testConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction( // phpcs:ignore
@@ -1166,7 +1167,7 @@ class FunctionArgumentDiscloserTest extends TestCase
     }
 
     /**
-     * @return array<int, array{int, int, string, array<int, int>, Closure}>
+     * @return array<int, array{int, int, string, array<int, int>, Closure():ReflectionFunction}>
      */
     public static function providerTestConstructorThrowsExceptionWhenArgumentMethodArgumentValuesContainsFewerElementsThanTheNumberOfRequiredParametersInArgumentReflectionFunction(): array // phpcs:ignore
     {

@@ -32,7 +32,7 @@ class AbstractFunctionArgumentDiscloserTest extends TestCase
             }
 
             /**
-             * @param array<mixed> $functionArgumentValues
+             * @param array<int, mixed> $functionArgumentValues
              */
             public function __construct(
                 CasterInterface $caster,

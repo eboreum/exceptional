@@ -19,6 +19,7 @@ use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
+use Stringable;
 use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesA; // phpcs:ignore
 use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeFailureInMethodMessageWorksANamedClassWhereMethodSignatureChangesBetweenUppermostClassAndParentClassesC; // phpcs:ignore
 use TestResource\Unit\Eboreum\Exceptional\ExceptionMessageGeneratorTest\TestMakeFailureInMethodMessageWorksClassANoNamedArguments; // phpcs:ignore
@@ -253,7 +254,7 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
     }
 
     /**
-     * @return array<int, array{0: string, 1: string, 2: object}>
+     * @return array<int, array{string, string, Closure}>
      */
     public static function providerTestMakeFailureInFunctionMessageWorksForAnonymousFunctions(): array
     {
@@ -430,7 +431,7 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
     }
 
     /**
-     * @return array<int, array{string, string, Closure():object}>
+     * @return array<int, array{string, string, Closure():Stringable}>
      */
     public static function providerTestMakeFailureInMethodMessageWorksWithNonStaticMethods(): array
     {
@@ -868,7 +869,7 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
     }
 
     /**
-     * @return array<int, array{0: string, 1: string, 2: object}>
+     * @return array<int, array{string, string, Closure():string}>
      */
     public static function providerTestMakeFailureInMethodMessageWorksWithStaticMethods(): array
     {
@@ -1184,10 +1185,16 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
         string $expectedRegex,
         Closure $callback
     ): void {
-        [
-            $reflectionFunction,
-            $functionArgumentValues,
-        ] = $callback();
+        $data = $callback();
+
+        $this->assertIsArray($data);
+        $this->assertCount(2, $data);
+
+        /**
+         * @var ReflectionFunction $reflectionFunction
+         * @var array<int, mixed> $functionArgumentValues
+         */
+        [$reflectionFunction, $functionArgumentValues] = $data;
 
         $caster = Caster::create();
         $exceptionMessageGenerator = new ExceptionMessageGenerator($caster);
@@ -1277,6 +1284,9 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
         $this->fail('Exception was never thrown.');
     }
 
+    /**
+     * @param Closure():Stringable $objectFactory
+     */
     #[DataProvider('providerTestMakeFailureInMethodMessageWorksWithNonStaticMethods')]
     public function testMakeFailureInMethodMessageWorksWithNonStaticMethods(
         string $message,
@@ -1285,11 +1295,14 @@ class ExceptionMessageGeneratorTest extends AbstractTestCase
     ): void {
         $this->assertMatchesRegularExpression(
             $expectedRegex,
-            (string)$objectFactory(),
+            (string) $objectFactory(),
             $message,
         );
     }
 
+    /**
+     * @param Closure():string $callback
+     */
     #[DataProvider('providerTestMakeFailureInMethodMessageWorksWithStaticMethods')]
     public function testMakeFailureInMethodMessageWorksWithStaticMethods(
         string $message,
